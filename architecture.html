@@ -7,9 +7,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#09090b;--s1:#111113;--s2:#18181b;--b:rgba(255,255,255,0.06);--t:#fafafa;--t2:#a1a1aa;--t3:#52525b;--accent:#818cf8;--green:#34d399;--amber:#fbbf24;--red:#f87171;--pink:#f472b6}
-body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
-code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);background:rgba(129,140,248,0.08);padding:2px 6px;border-radius:4px}
+:root{--bg:#000;--s1:rgba(255,255,255,0.03);--s2:rgba(255,255,255,0.05);--b:rgba(255,255,255,0.08);--t:rgba(255,255,255,0.92);--t2:rgba(255,255,255,0.55);--t3:rgba(255,255,255,0.3);--accent:#0A84FF;--green:#30D158;--amber:#FFD60A;--red:#FF453A;--pink:#FF375F}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6;letter-spacing:-0.01em}
+code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);background:rgba(10,132,255,0.08);padding:2px 6px;border-radius:4px}
 .w{max-width:960px;margin:0 auto;padding:0 24px}
 
 /* Hero */
@@ -137,8 +138,8 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);b
 .feat-list strong{color:var(--t)}
 
 /* Nav */
-.nav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(17,17,19,0.9);backdrop-filter:blur(12px);border:1px solid var(--b);border-radius:99px;padding:8px 20px;font-size:11px;color:var(--t3);z-index:99;display:flex;gap:16px}
-.nav a{color:var(--t2);text-decoration:none;transition:color 0.2s}.nav a:hover{color:var(--t)}
+.nav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(28,28,30,0.72);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:99px;padding:10px 24px;font-size:11px;color:var(--t3);z-index:99;display:flex;gap:20px;box-shadow:0 4px 30px rgba(0,0,0,0.5)}
+.nav a{color:var(--t2);text-decoration:none;transition:color 0.3s ease}.nav a:hover{color:#fff}
 
 /* Footer */
 .ftr{padding:60px 0 40px;text-align:center;font-size:11px;color:var(--t3)}
@@ -231,12 +232,12 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);b
 
   <div class="card">
     <div class="loop-steps">
-      <div class="loop-step"><div class="icon">📥</div><div class="nm">Ingest</div><div class="dt">Tenant data from Firestore + BigQuery</div></div>
-      <div class="loop-step"><div class="icon">🧠</div><div class="nm">Generate</div><div class="dt">7-node DAG with tenant LoRA + cached prompts</div></div>
-      <div class="loop-step"><div class="icon">⚖️</div><div class="nm">Evaluate</div><div class="dt">O-R-A-V multi-model scoring + DEMAS</div></div>
-      <div class="loop-step"><div class="icon">📊</div><div class="nm">Score</div><div class="dt">Weighted dimension aggregation + thresholds</div></div>
-      <div class="loop-step"><div class="icon">💾</div><div class="nm">Update</div><div class="dt">Good → reinforce in Redis LTM. Bad → mutate</div></div>
-      <div class="loop-step"><div class="icon">🔄</div><div class="nm">Re-execute</div><div class="dt">Next cycle uses improved prompts</div></div>
+      <div class="loop-step"><div class="icon">→</div><div class="nm">Ingest</div><div class="dt">Tenant data from Firestore + BigQuery</div></div>
+      <div class="loop-step"><div class="icon">◆</div><div class="nm">Generate</div><div class="dt">7-node DAG with tenant LoRA + cached prompts</div></div>
+      <div class="loop-step"><div class="icon">◆</div><div class="nm">Evaluate</div><div class="dt">O-R-A-V multi-model scoring + DEMAS</div></div>
+      <div class="loop-step"><div class="icon">◆</div><div class="nm">Score</div><div class="dt">Weighted dimension aggregation + thresholds</div></div>
+      <div class="loop-step"><div class="icon">◆</div><div class="nm">Update</div><div class="dt">Good → reinforce in Redis LTM. Bad → mutate</div></div>
+      <div class="loop-step"><div class="icon">◆</div><div class="nm">Re-execute</div><div class="dt">Next cycle uses improved prompts</div></div>
     </div>
     <div class="feedback">
       <strong>⟳ RL-Style Feedback — Backward Signal</strong>
@@ -262,14 +263,14 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);b
     </div>
     <div class="card">
       <h3>Isolation Stack</h3>
-      <div class="iso iso-t"><span class="lbl">🔒 Tenant Isolation</span><span class="tech">adapter_id binding</span></div>
-      <div class="iso iso-p"><span class="lbl">🧠 Prompt / Agent Isolation</span><span class="tech">scoped system prompts</span></div>
-      <div class="iso iso-p"><span class="lbl">⚙️ Task / Subtask Isolation</span><span class="tech">DAG node scope</span></div>
-      <div class="iso iso-k"><span class="lbl">💾 KV Cache Isolation</span><span class="tech">PagedAttention</span></div>
+      <div class="iso iso-t"><span class="lbl">■ Tenant Isolation</span><span class="tech">adapter_id binding</span></div>
+      <div class="iso iso-p"><span class="lbl">◆ Prompt / Agent Isolation</span><span class="tech">scoped system prompts</span></div>
+      <div class="iso iso-p"><span class="lbl">■ Task / Subtask Isolation</span><span class="tech">DAG node scope</span></div>
+      <div class="iso iso-k"><span class="lbl">◆ KV Cache Isolation</span><span class="tech">PagedAttention</span></div>
     </div>
   </div>
   <div class="fail-box">
-    <strong style="color:var(--red)">⛔ Fail-Closed Policy</strong>
+    <strong style="color:var(--red)">■ Fail-Closed Policy</strong>
     <p style="font-size:11px;color:var(--t2);margin-top:6px">Any dimension below threshold → pipeline halts → Firestore trace → downstream blocked → prompt mutation for next cycle</p>
   </div>
 </div>
@@ -289,12 +290,12 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);b
     <div class="card">
       <h3>What Evolves Per Tenant</h3>
       <div class="feat-list">
-        <div>📝 <strong>System prompts</strong> — tone, structure, format</div>
-        <div>🏷️ <strong>Taxonomy mappings</strong> — learned categories</div>
-        <div>🔤 <strong>Synonym libraries</strong> — domain expansions</div>
-        <div>⚖️ <strong>Scoring weights</strong> — O-R-A-V thresholds per locale</div>
-        <div>💾 <strong>Redis LTM</strong> — 8,400+ cached good outputs as exemplars</div>
-        <div>🧬 <strong>LoRA delta</strong> — behavioral drift per client</div>
+        <div>• <strong>System prompts</strong> — tone, structure, format</div>
+        <div>• <strong>Taxonomy mappings</strong> — learned categories</div>
+        <div>• <strong>Synonym libraries</strong> — domain expansions</div>
+        <div>◆ <strong>Scoring weights</strong> — O-R-A-V thresholds per locale</div>
+        <div>◆ <strong>Redis LTM</strong> — 8,400+ cached good outputs as exemplars</div>
+        <div>• <strong>LoRA delta</strong> — behavioral drift per client</div>
       </div>
     </div>
   </div>
@@ -337,17 +338,17 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);b
     <div class="card">
       <h3>Worker Instance Pool</h3>
       <div class="pool" id="pool"></div>
-      <div style="margin-top:12px;font-size:10px;color:var(--t3);display:flex;gap:14px"><span>🟢 Hot</span><span style="opacity:.5">🟢 Warm</span><span>⬜ Cold</span><span style="color:var(--accent)">🔵 Scaling</span></div>
+      <div style="margin-top:12px;font-size:10px;color:var(--t3);display:flex;gap:14px"><span>● Hot</span><span style="opacity:.5">○ Warm</span><span>□ Cold</span><span style="color:var(--accent)">◈ Scaling</span></div>
     </div>
     <div class="card">
       <h3>Scaling Policy</h3>
       <div class="feat-list" style="font-size:12px;line-height:2.2">
-        <div>📈 <strong>Scale up</strong> — queue depth &gt; 50 requests</div>
-        <div>📉 <strong>Scale down</strong> — GPU &lt; 20% for 5 min</div>
-        <div>🔄 <strong>LoRA swap</strong> — &lt;50ms adapter switch</div>
-        <div>💾 <strong>LRU eviction</strong> — coldest adapter freed</div>
-        <div>🛡️ <strong>Fail-closed</strong> — instance fail → Firestore + halt</div>
-        <div>💰 <strong>Cost guard</strong> — $50/mo cap auto-throttle</div>
+        <div>↑ <strong>Scale up</strong> — queue depth &gt; 50 requests</div>
+        <div>↓ <strong>Scale down</strong> — GPU &lt; 20% for 5 min</div>
+        <div>◆ <strong>LoRA swap</strong> — &lt;50ms adapter switch</div>
+        <div>◆ <strong>LRU eviction</strong> — coldest adapter freed</div>
+        <div>■ <strong>Fail-closed</strong> — instance fail → Firestore + halt</div>
+        <div>■ <strong>Cost guard</strong> — $50/mo cap auto-throttle</div>
       </div>
     </div>
   </div>

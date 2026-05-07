@@ -8,8 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#09090b;--s1:#111113;--s2:#18181b;--b:rgba(255,255,255,0.06);--t:#fafafa;--t2:#a1a1aa;--t3:#52525b;--accent:#818cf8;--green:#34d399;--amber:#fbbf24;--red:#f87171;--cyan:#22d3ee}
-body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+html{scroll-behavior:smooth}
+:root{--bg:#000;--s1:rgba(255,255,255,0.03);--s2:rgba(255,255,255,0.05);--b:rgba(255,255,255,0.08);--t:rgba(255,255,255,0.92);--t2:rgba(255,255,255,0.55);--t3:rgba(255,255,255,0.3);--accent:#0A84FF;--green:#30D158;--amber:#FFD60A;--red:#FF453A;--cyan:#64D2FF}
+body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,-apple-system,sans-serif;letter-spacing:-0.01em;-webkit-font-smoothing:antialiased;line-height:1.6}
 code{font-family:'JetBrains Mono',monospace;font-size:11px}
 .w{max-width:960px;margin:0 auto;padding:0 24px}
 
@@ -62,7 +63,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px}
 /* Geo */
 .geo{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
 .geo-c{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--s2);border:1px solid var(--b);border-radius:10px}
-.geo-c .flag{font-size:20px}.geo-c .name{font-size:12px;font-weight:600}
+.geo-c .flag{font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--t2);background:rgba(255,255,255,0.06);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.geo-c .name{font-size:12px;font-weight:600}
 .geo-c .det{font-size:10px;color:var(--t3)}
 
 /* Deploy */
@@ -158,10 +159,10 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px}
   <div class="label">Geographic Fanout</div>
   <h2>Multi-Country Execution</h2>
   <div class="geo">
-    <div class="geo-c"><span class="flag">🇪🇸</span><div><div class="name">Spain</div><div class="det">Zaragoza · València · Madrid · Barcelona · Málaga</div></div></div>
-    <div class="geo-c"><span class="flag">🇵🇹</span><div><div class="name">Portugal</div><div class="det">Odivelas · Guilhufe</div></div></div>
-    <div class="geo-c"><span class="flag">🇮🇱</span><div><div class="name">Israel</div><div class="det">Tel Aviv-Yafo</div></div></div>
-    <div class="geo-c"><span class="flag">🇬🇧</span><div><div class="name">United Kingdom</div><div class="det">Birmingham</div></div></div>
+    <div class="geo-c"><span class="flag">ES</span><div><div class="name">Spain</div><div class="det">Zaragoza · València · Madrid · Barcelona · Málaga</div></div></div>
+    <div class="geo-c"><span class="flag">PT</span><div><div class="name">Portugal</div><div class="det">Odivelas · Guilhufe</div></div></div>
+    <div class="geo-c"><span class="flag">IL</span><div><div class="name">Israel</div><div class="det">Tel Aviv-Yafo</div></div></div>
+    <div class="geo-c"><span class="flag">GB</span><div><div class="name">United Kingdom</div><div class="det">Birmingham</div></div></div>
   </div>
 </div>
 
@@ -170,10 +171,10 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px}
   <div class="label">Deployment Matrix</div>
   <h2>131 Endpoints · 21 Domains</h2>
   <div class="dep">
-    <div class="dep-c"><div class="icon">🏪</div><div class="val">99</div><div class="lbl">Microsites</div></div>
-    <div class="dep-c"><div class="icon">🏬</div><div class="val">109</div><div class="lbl">Stores</div></div>
-    <div class="dep-c"><div class="icon">📊</div><div class="val">128,295</div><div class="lbl">Synced Records</div></div>
-    <div class="dep-c"><div class="icon">🔄</div><div class="val">8,454</div><div class="lbl">Redis LTM Cache</div></div>
+    <div class="dep-c"><div class="val">99</div><div class="lbl">Microsites</div></div>
+    <div class="dep-c"><div class="val">109</div><div class="lbl">Stores</div></div>
+    <div class="dep-c"><div class="val">128,295</div><div class="lbl">Synced Records</div></div>
+    <div class="dep-c"><div class="val">8,454</div><div class="lbl">Redis LTM Cache</div></div>
   </div>
 </div>
 
