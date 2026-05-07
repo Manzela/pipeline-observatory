@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#000;--s1:rgba(255,255,255,0.03);--s2:rgba(255,255,255,0.05);--b:rgba(255,255,255,0.08);--t:rgba(255,255,255,0.92);--t2:rgba(255,255,255,0.55);--t3:rgba(255,255,255,0.3);--accent:#0A84FF;--green:#30D158;--amber:#FFD60A;--red:#FF453A;--pink:#FF375F}
+:root{--bg:#000;--s1:rgba(255,255,255,0.03);--s2:rgba(255,255,255,0.05);--b:rgba(255,255,255,0.08);--t:rgba(255,255,255,0.92);--t2:rgba(255,255,255,0.55);--t3:rgba(255,255,255,0.3);--accent:#0A84FF;--green:#30D158;--amber:#FFD60A;--red:#FF453A;--pink:#FF375F;--cyan:#64D2FF}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6;letter-spacing:-0.01em}
 code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);background:rgba(10,132,255,0.08);padding:2px 6px;border-radius:4px}
@@ -20,118 +20,132 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 .hero .meta{margin-top:24px;font-size:12px;color:var(--t3);letter-spacing:0.5px}
 
 /* Sections */
-.sec{padding:80px 0;border-bottom:1px solid var(--b)}
+.sec{padding:80px 0;border-bottom:1px solid var(--b);position:relative}
 .sec:last-of-type{border:none}
 .label{font-size:11px;text-transform:uppercase;letter-spacing:3px;color:var(--accent);font-weight:500;margin-bottom:12px}
 .sec h2{font-size:28px;font-weight:700;letter-spacing:-0.8px;margin-bottom:8px}
 .sec .desc{font-size:14px;color:var(--t2);max-width:640px;margin-bottom:40px;line-height:1.8}
 
 /* Cards */
-.card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:32px;margin-bottom:16px}
+.card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:32px;margin-bottom:16px;transition:border-color 0.3s cubic-bezier(0.25,0.46,0.45,0.94);position:relative;z-index:2}
+.card:hover{border-color:rgba(255,255,255,0.12)}
 .card h3{font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:10px}
 .pill{font-size:9px;padding:3px 8px;border-radius:99px;font-weight:600;letter-spacing:0.5px}
-.pill-det{background:rgba(52,211,153,0.1);color:var(--green)}
-.pill-prob{background:rgba(129,140,248,0.1);color:var(--accent)}
+.pill-det{background:rgba(52,211,153,0.1);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.pill-prob{background:rgba(129,140,248,0.1);color:var(--accent);border:1px dashed rgba(129,140,248,0.3)}
 
 /* Grid */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 
-/* Node anatomy */
-.sa-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.sa{background:var(--s2);border:1px solid var(--b);border-radius:12px;padding:20px}
-.sa .nm{font-size:13px;font-weight:600;margin-bottom:4px}
-.sa .detail{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:10px}
-.tools{display:flex;flex-wrap:wrap;gap:4px}
-.tool{font-size:10px;padding:3px 8px;border-radius:6px;background:rgba(129,140,248,0.06);color:var(--t2);border:1px solid var(--b)}
+/* --- GLASBOX MECHANISTIC INTERPRETABILITY --- */
 
-/* Split bar */
-.split{display:flex;height:6px;border-radius:3px;overflow:hidden;margin:24px 0 8px}
-.split div:first-child{background:var(--green)}.split div:last-child{background:var(--accent)}
-.split-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--t3)}
+/* MoE Layer */
+.moe-grid{display:grid;grid-template-columns:repeat(16,1fr);gap:6px;padding:20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;margin-bottom:20px;position:relative}
+.expert{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.1);transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94)}
+.expert.active{background:var(--cyan);box-shadow:0 0 12px var(--cyan), 0 0 24px rgba(100,210,255,0.5);transform:scale(1.5)}
 
-/* DAG */
-.dag{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:8px 0;justify-content:center}
-.dag-n{background:var(--s1);border:1px solid var(--b);border-radius:12px;padding:14px 12px;text-align:center;width:110px;position:relative;flex-shrink:0}
-.dag-n .nm{font-size:11px;font-weight:600;margin-bottom:2px}
-.dag-n .tp{font-size:10px;color:var(--t2)}
-.dag-n .badge{position:absolute;top:-6px;right:-6px;background:var(--accent);color:#fff;font-size:8px;font-weight:700;width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center}
-.dag-arr{color:var(--t3);font-size:12px;flex-shrink:0}
-.demas-bar{margin-top:16px;text-align:center;padding:16px;border:1px dashed rgba(251,191,36,0.2);border-radius:12px;background:rgba(251,191,36,0.02)}
-.demas-bar strong{color:var(--amber);font-size:13px}
-.demas-bar p{font-size:11px;color:var(--t3);margin-top:4px}
-
-/* Loop */
-.loop-steps{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
-.loop-step{text-align:center;padding:20px 8px;border-radius:12px;background:var(--s2);border:1px solid var(--b)}
-.loop-step .icon{font-size:13px;font-weight:600;color:var(--accent);width:28px;height:28px;border-radius:14px;border:1px solid rgba(10,132,255,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
-.loop-step .nm{font-size:11px;font-weight:600;margin-bottom:4px}
-.loop-step .dt{font-size:10px;color:var(--t3);line-height:1.5}
-.feedback{margin-top:20px;text-align:center;padding:20px;border-radius:12px;border:1px solid rgba(52,211,153,0.15);background:rgba(52,211,153,0.03)}
-.feedback strong{color:var(--green);font-size:12px}
-.feedback p{font-size:11px;color:var(--t2);margin-top:6px}
-
-/* Eval */
-.eval-dim{background:var(--s2);border:1px solid var(--b);border-radius:14px;padding:24px;text-align:center}
-.eval-dim .letter{font-size:36px;font-weight:700;margin-bottom:4px}
-.eval-dim .nm{font-size:12px;font-weight:600;margin-bottom:8px}
-.eval-dim .model{font-size:10px;color:var(--t3)}
-.eval-dim .thresh{font-size:10px;color:var(--amber);margin-top:8px}
-.fail-box{margin-top:16px;text-align:center;padding:16px;border-radius:12px;border:1px solid rgba(248,113,113,0.15);background:rgba(248,113,113,0.03)}
-
-/* State */
-.evo{display:flex;gap:4px;align-items:flex-end;height:140px;padding:0 12px}
-.evo-bar{flex:1;border-radius:3px 3px 0 0;position:relative;min-width:12px}
-.evo-bar .v{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--t3);white-space:nowrap}
-.evo-bar .w{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:7px;color:var(--t3)}
-
-/* Scale */
-.scale-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.scale-stat{text-align:center;padding:24px;background:var(--s1);border:1px solid var(--b);border-radius:14px}
-.scale-stat .num{font-size:32px;font-weight:700;letter-spacing:-1px}
-.scale-stat .lbl{font-size:11px;color:var(--t3);margin-top:4px}
-.math{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--t2);padding:20px 0;text-align:center;line-height:2}
-.math em{color:var(--amber);font-style:normal;font-weight:600}
-.math strong{color:var(--green);font-weight:700;font-size:15px}
-
-/* LoRA fan-out */
-.lora-hub{display:flex;flex-direction:column;align-items:center;gap:0}
-.lora-core{width:160px;padding:20px;border-radius:50%;border:2px solid rgba(129,140,248,0.3);text-align:center;background:rgba(129,140,248,0.04);position:relative}
-.lora-core .nm{font-size:16px;font-weight:700;color:var(--accent)}
-.lora-core .sub{font-size:10px;color:var(--t3);margin-top:2px}
-.lora-stem{width:1px;height:24px;background:linear-gradient(to bottom,rgba(129,140,248,0.3),rgba(129,140,248,0.1))}
-.lora-fan{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;width:100%}
-.lora-a{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:12px;text-align:center;position:relative}
+/* LoRA Fluid Membranes */
+@keyframes fluidShape{
+  0%,100%{border-radius:40% 60% 70% 30% / 40% 50% 60% 50%}
+  34%{border-radius:70% 30% 50% 50% / 30% 30% 70% 70%}
+  67%{border-radius:100% 60% 60% 100% / 100% 100% 60% 60%}
+}
+.lora-fan{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;width:100%}
+.lora-a{background:var(--s2);border:1px solid rgba(10,132,255,0.1);padding:16px 12px;text-align:center;position:relative;overflow:hidden;border-radius:12px;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)}
+.lora-a:hover{border-color:rgba(10,132,255,0.3);transform:translateY(-2px)}
+.lora-membrane{position:absolute;top:-10%;left:-10%;width:120%;height:120%;background:radial-gradient(circle at center, rgba(10,132,255,0.08) 0%, transparent 60%);animation:fluidShape 8s linear infinite;z-index:0;pointer-events:none}
+.lora-a.active .lora-membrane{background:radial-gradient(circle at center, rgba(10,132,255,0.15) 0%, transparent 60%);animation-duration:3s}
+.lora-content{position:relative;z-index:1}
 .lora-a .aid{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--accent);margin-bottom:4px}
 .lora-a .nm{font-size:11px;font-weight:600}
 .lora-a .loc{font-size:9px;color:var(--t3);margin-top:2px}
 
+/* Causal Tracing (SVG) */
+@keyframes flowPath{0%{stroke-dashoffset:100}100%{stroke-dashoffset:0}}
+.causal-trace{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.trace-line{stroke:rgba(10,132,255,0.4);stroke-width:2;fill:none;stroke-dasharray:10 10;animation:flowPath 2s linear infinite}
+.trace-beam{stroke:var(--accent);stroke-width:1;fill:none;filter:drop-shadow(0 0 4px var(--accent))}
+
+/* Node Anatomy L2 Zoom */
+.sa-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;position:relative;padding:20px;border:1px solid rgba(255,255,255,0.05);border-radius:12px;background:rgba(0,0,0,0.3)}
+.sa{background:var(--bg);border:1px solid var(--b);border-radius:12px;padding:20px;position:relative;z-index:2;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)}
+.sa:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px)}
+.sa .nm{font-size:13px;font-weight:600;margin-bottom:4px}
+.sa .detail{font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:12px}
+.tools{display:flex;flex-wrap:wrap;gap:4px}
+.tool{font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,0.04);color:var(--t2);border:1px solid var(--b)}
+.sa-conn{position:absolute;top:50%;left:50%;width:100%;height:2px;background:linear-gradient(90deg, rgba(52,211,153,0.5), rgba(10,132,255,0.5));transform:translateY(-50%);z-index:1}
+
+/* DAG */
+.dag-wrap{position:relative;padding:40px 0}
+.dag{display:flex;align-items:center;gap:32px;overflow-x:auto;justify-content:center;position:relative;z-index:2}
+.dag-n{background:var(--s1);border:1px solid var(--b);border-radius:12px;padding:16px;text-align:center;width:120px;position:relative;flex-shrink:0;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)}
+.dag-n:hover{transform:translateY(-2px);border-color:rgba(10,132,255,0.3)}
+.dag-n .nm{font-size:12px;font-weight:600;margin-bottom:4px}
+.dag-n .tp{font-size:10px;color:var(--t2);font-family:'JetBrains Mono',monospace}
+.dag-n .badge{position:absolute;top:-8px;right:-8px;background:var(--bg);border:1px solid var(--accent);color:var(--accent);font-size:9px;font-weight:700;width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace}
+
+/* RLHF Loop */
+@keyframes sparkUp{0%{transform:translate(0,0) scale(1);opacity:0}20%{opacity:1;transform:translate(0,-20px) scale(1.2)}80%{opacity:1;transform:translate(0,-80px) scale(0.8)}100%{transform:translate(0,-100px) scale(0);opacity:0}}
+.rl-spark{position:absolute;width:4px;height:4px;background:var(--amber);border-radius:50%;box-shadow:0 0 10px var(--amber);animation:sparkUp 3s cubic-bezier(0.25,0.46,0.45,0.94) infinite}
+
+.loop-steps{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.loop-step{text-align:center;padding:24px 12px;border-radius:12px;background:var(--s2);border:1px solid var(--b);position:relative}
+.loop-step .icon{font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--accent);width:24px;height:24px;border-radius:12px;border:1px solid rgba(10,132,255,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;background:var(--bg)}
+.loop-step .nm{font-size:11px;font-weight:600;margin-bottom:6px}
+.loop-step .dt{font-size:10px;color:var(--t3);line-height:1.5}
+
+/* Eval Dims */
+.eval-dim{background:var(--s2);border:1px solid var(--b);border-radius:12px;padding:24px;text-align:center;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)}
+.eval-dim:hover{transform:scale(1.02);border-color:rgba(255,255,255,0.15)}
+.eval-dim .letter{font-size:32px;font-weight:700;margin-bottom:8px;opacity:0.9}
+.eval-dim .nm{font-size:12px;font-weight:600;margin-bottom:4px}
+.eval-dim .model{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.conf-high{border-left:2px solid rgba(255,255,255,0.2)}
+.conf-med{border-left:2px solid rgba(255,255,255,0.1)}
+.conf-low{border-left:2px dashed rgba(255,255,255,0.05)}
+
+/* Fail-Closed Policy */
+.fail-box{margin-top:20px;text-align:center;padding:16px;border-radius:12px;border:1px dashed rgba(255,69,58,0.3);background:rgba(255,69,58,0.02)}
+
+/* State Evolution */
+.evo{display:flex;gap:4px;align-items:flex-end;height:160px;padding:0 12px;border-bottom:1px solid var(--b)}
+.evo-bar{flex:1;border-radius:2px 2px 0 0;position:relative;min-width:12px;background:rgba(255,255,255,0.1)}
+.evo-bar .v{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--t2);font-family:'JetBrains Mono',monospace}
+.evo-bar .w{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--t3)}
+
+/* Scale */
+.scale-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.scale-stat{text-align:center;padding:24px;background:var(--s1);border:1px solid var(--b);border-radius:12px}
+.scale-stat .num{font-size:32px;font-weight:700;letter-spacing:-1px}
+.scale-stat .lbl{font-size:11px;color:var(--t3);margin-top:6px;text-transform:uppercase;letter-spacing:1px}
+.math{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t2);padding:24px 0;text-align:center;line-height:2;background:var(--s2);border-radius:8px;margin-top:24px;border:1px solid var(--b)}
+
 /* Parallel lanes */
-.lane{display:grid;grid-template-columns:130px 1fr 70px;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;margin-bottom:3px;background:var(--s2);border:1px solid var(--b)}
+.lane{display:grid;grid-template-columns:130px 1fr 70px;align-items:center;gap:12px;padding:12px 16px;border-radius:8px;margin-bottom:4px;background:var(--s2);border:1px solid var(--b);transition:all 0.2s}
+.lane:hover{background:rgba(255,255,255,0.07)}
 .lane-client{font-size:11px;font-weight:600;display:flex;align-items:center;gap:8px}
-.lane-flow{display:flex;align-items:center;gap:2px}
-.lane-dot{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0}
-.lane-dot.on{animation:lpulse 2s cubic-bezier(0.25,0.46,0.45,0.94) infinite}
-.lane-dot.off{opacity:0.2}
-.la{color:var(--t3);font-size:8px;flex-shrink:0}
-.lane-st{font-size:9px;font-weight:600;text-align:right}
-.lane-st.run{color:var(--green)}.lane-st.q{color:var(--amber)}.lane-st.sc{color:var(--accent)}
-@keyframes lpulse{0%,100%{opacity:.8}50%{opacity:1}}
+.lane-flow{display:flex;align-items:center;gap:4px}
+.lane-dot{width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:rgba(255,255,255,0.8);flex-shrink:0;background:rgba(255,255,255,0.1)}
+.lane-dot.on{background:rgba(10,132,255,0.2);border:1px solid rgba(10,132,255,0.4);box-shadow:0 0 8px rgba(10,132,255,0.2)}
+.la{color:var(--t3);font-size:10px;flex-shrink:0}
+.lane-st{font-size:9px;font-weight:600;text-align:right;font-family:'JetBrains Mono',monospace}
+.lane-st.run{color:var(--accent)}.lane-st.q{color:var(--t3)}.lane-st.sc{color:var(--green)}
 
 /* Worker pool */
-.pool{display:flex;flex-wrap:wrap;gap:3px}
-.wk{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:rgba(255,255,255,0.7)}
-.wk.hot{background:var(--green)}.wk.warm{background:rgba(52,211,153,0.3)}
+.pool{display:flex;flex-wrap:wrap;gap:4px}
+.wk{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:rgba(255,255,255,0.7);transition:all 0.2s}
+.wk:hover{transform:scale(1.2)}
+.wk.hot{background:rgba(10,132,255,0.3);border:1px solid rgba(10,132,255,0.5)}
+.wk.warm{background:rgba(255,255,255,0.15)}
 .wk.cold{background:var(--s2);border:1px solid var(--b);color:var(--t3)}
-.wk.up{background:var(--accent);animation:scaleIn .4s ease}@keyframes scaleIn{from{transform:scale(0)}to{transform:scale(1)}}
+.wk.up{background:rgba(52,211,153,0.3);border:1px solid rgba(52,211,153,0.5)}
 
 /* Iso stack */
-.iso{padding:12px 16px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.iso{padding:12px 16px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;font-size:12px;border:1px solid var(--b);background:var(--s2);transition:all 0.2s}
+.iso:hover{transform:translateX(4px);border-color:rgba(255,255,255,0.15)}
 .iso .lbl{font-weight:600}.iso .tech{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace}
-.iso-t{background:rgba(129,140,248,0.05);border:1px solid rgba(129,140,248,0.1)}
-.iso-p{background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.1)}
-.iso-k{background:rgba(52,211,153,0.05);border:1px solid rgba(52,211,153,0.1)}
 
 /* List */
 .feat-list{font-size:13px;color:var(--t2);line-height:2.4}
@@ -151,42 +165,10 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
   .g2,.g3,.g4,.sa-grid,.loop-steps,.scale-grid{grid-template-columns:1fr}
   .dag{flex-wrap:wrap;justify-content:center}
   .nav{display:none}
+  .moe-grid{grid-template-columns:repeat(8,1fr)}
 }
-
 /* Reveal animation */
 .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s}.reveal.visible{opacity:1;transform:none}
-
-/* Animated flow particles */
-@keyframes flowRight{0%{stroke-dashoffset:20}100%{stroke-dashoffset:0}}
-@keyframes flowLeft{0%{stroke-dashoffset:0}100%{stroke-dashoffset:20}}
-@keyframes pulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.02)}}
-/* glow removed — too gimmicky */
-@keyframes breathe{0%,100%{border-color:rgba(10,132,255,0.12)}50%{border-color:rgba(10,132,255,0.22)}}
-.flow-line{stroke:var(--accent);stroke-width:1;fill:none;stroke-dasharray:4 8;animation:flowRight 3s linear infinite;opacity:.2}
-.flow-line-back{stroke:rgba(255,255,255,0.15);stroke-width:1;fill:none;stroke-dasharray:3 9;animation:flowLeft 4s linear infinite;opacity:.15}
-/* No continuous glow — only on hover */
-.lora-core{animation:breathe 6s cubic-bezier(0.25,0.46,0.45,0.94) infinite}
-.dag-n{transition:all .3s ease}.dag-n:hover{transform:translateY(-2px);border-color:rgba(10,132,255,0.3)}
-.card{transition:border-color .3s ease}.card:hover{border-color:rgba(255,255,255,0.12)}
-.sa{transition:all .3s ease}.sa:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px)}
-.eval-dim{transition:all .3s ease}.eval-dim:hover{transform:scale(1.03);border-color:rgba(10,132,255,0.2)}
-.iso{transition:all .2s ease}.iso:hover{transform:translateX(4px)}
-.lora-a{transition:all .3s ease}.lora-a:hover{border-color:rgba(10,132,255,0.3);transform:translateY(-2px)}
-.lane{transition:all .2s ease}.lane:hover{background:rgba(255,255,255,0.07)}
-.wk{transition:all .2s ease}.wk:hover{transform:scale(1.3)}
-
-/* Confidence beam */
-.conf-high{border-left:2px solid rgba(255,255,255,0.2)}
-.conf-med{border-left:2px solid rgba(255,255,255,0.12)}
-.conf-low{border-left:2px solid rgba(255,255,255,0.06)}
-
-/* SVG overlay */
-.dag-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
-.dag-wrap{position:relative}
-
-/* Feedback particle */
-@keyframes particleBack{0%{transform:translateX(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateX(-100%);opacity:0}}
-.particle{width:4px;height:4px;border-radius:2px;background:var(--green);position:absolute;animation:particleBack 3s cubic-bezier(0.25,0.46,0.45,0.94) infinite;box-shadow:0 0 6px var(--green)}
 </style>
 </head>
 <body>
@@ -194,213 +176,180 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 <div class="w">
 <div class="hero">
   <h1>Autonomous Pipeline<br>Architecture</h1>
-  <p>A production-grade multi-agent system with closed-loop autonomy, multi-model evaluation, and self-improving state — operating at enterprise scale with zero human oversight.</p>
+  <p>A production-grade multi-agent system with mechanistic interpretability, closed-loop autonomy, and self-improving state — operating at enterprise scale.</p>
   <div class="meta">Daniel Manzela · TNG Shopper · 2024–2026</div>
 </div>
 
-<!-- 0. Multi-LoRA Serving -->
+<!-- 0. Inference Layer (MoE Sparse Activation) -->
 <div class="sec reveal" id="s0">
-  <div class="label">Inference Layer</div>
-  <h2>Multi-LoRA Serving Architecture</h2>
-  <div class="desc">A single Gemma 4 MoE instance serves all tenants. Each client is bound to a unique LoRA adapter — hot-swapped in &lt;50ms. Base weights stay static in VRAM; only delta weights move.</div>
+  <div class="label">Sparse Activation & Routing</div>
+  <h2>Multi-LoRA Serving Engine</h2>
+  <div class="desc">A single Gemma 4 MoE instance routes tokens sparsely across 128 experts. Each client request dynamically binds to a fluid LoRA adapter membrane in &lt;50ms, achieving massive multi-tenant scale with minimal VRAM overhead.</div>
 
-  <div class="card">
-    <div class="lora-hub">
-      <div class="lora-core active"><div class="nm">Gemma 4</div><div class="sub">26B-A4B · MoE · vLLM</div></div>
-      <div class="lora-stem"></div>
-      <div style="font-size:10px;color:var(--t3);margin-bottom:12px;text-align:center">PagedAttention · KV Cache Isolation · &lt;50ms adapter swap</div>
-      <div class="lora-fan" id="lora-fan"></div>
+  <div class="card" style="text-align:center;overflow:hidden">
+    <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--t3);margin-bottom:12px;letter-spacing:1px">BASE MODEL: GEMMA 4 26B-A4B MoE</div>
+    
+    <!-- DeepMind Style MoE Grid -->
+    <div class="moe-grid" id="moeGrid">
+      <!-- Generated via JS -->
+    </div>
+    
+    <svg width="2" height="40" style="margin:10px auto;display:block">
+      <path d="M1 0 L1 40" class="trace-line" />
+    </svg>
+
+    <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:16px;letter-spacing:1px">FLUID LORA MEMBRANES (PAGED ATTENTION)</div>
+    
+    <div class="lora-fan" id="lora-fan">
+      <!-- Generated via JS -->
     </div>
   </div>
 </div>
 
-<!-- 1. Node Anatomy -->
+<!-- 1. Node Anatomy (Semantic Zoom) -->
 <div class="sec reveal" id="s1">
-  <div class="label">Internal Mechanics</div>
-  <h2>Node Anatomy</h2>
-  <div class="desc">Each DAG node contains multiple sub-agents with different tooling. Deterministic validation gates fire first — probabilistic AI executes only if the gate passes. Below: Node 2 (Product Normalizer) as reference.</div>
+  <div class="label">Semantic Zoom L2</div>
+  <h2>Sub-Agent Node Anatomy</h2>
+  <div class="desc">We do not use simple LLM calls. Each node is a bounded ecosystem of sub-agents. Deterministic tools (Python/Schema gates) run first. If they pass, the probabilistic Agent (LLM + Prompt Cache) activates.</div>
 
-  <div class="card">
-    <h3>Node 2 — Product Normalizer <span style="font-size:12px;color:var(--t3);font-weight:400">4 sub-agents · 5 tools</span></h3>
+  <div class="card" style="padding:40px">
+    <h3 style="justify-content:center;margin-bottom:32px">Node 2 — Product Normalizer</h3>
+    
     <div class="sa-grid">
-      <div class="sa"><span class="pill pill-det">DETERMINISTIC</span><div class="nm" style="margin-top:8px">Schema Validator</div><div class="detail">JSON structure check, required fields, type coercion</div><div class="tools"><span class="tool">Python</span><span class="tool">Pydantic</span></div></div>
-      <div class="sa"><span class="pill pill-prob">PROBABILISTIC</span><div class="nm" style="margin-top:8px">Vision Extractor</div><div class="detail">Product image → structured attributes via multimodal LLM</div><div class="tools"><span class="tool">Gemini Vision</span><span class="tool">GCS</span><span class="tool">Redis LTM</span></div></div>
-      <div class="sa"><span class="pill pill-prob">PROBABILISTIC</span><div class="nm" style="margin-top:8px">Taxonomy Classifier</div><div class="detail">Category assignment via SLM with cached embeddings</div><div class="tools"><span class="tool">SLM</span><span class="tool">BigQuery</span><span class="tool">Firestore</span></div></div>
-      <div class="sa"><span class="pill pill-det">DETERMINISTIC</span><div class="nm" style="margin-top:8px">LPN Extractor</div><div class="detail">Rule-based product number extraction and normalization</div><div class="tools"><span class="tool">Python</span><span class="tool">Regex</span></div></div>
+      <!-- Connection line behind -->
+      <div class="sa-conn"></div>
+      
+      <div class="sa" style="border-color:rgba(52,211,153,0.3)">
+        <span class="pill pill-det">DETERMINISTIC GATE</span>
+        <div class="nm" style="margin-top:12px">Schema Validator Agent</div>
+        <div class="detail">Enforces strict JSON schema, structural integrity, and type coercion. Fails instantly on schema mismatch without invoking the LLM.</div>
+        <div class="tools"><span class="tool">Pydantic</span><span class="tool">Regex</span><span class="tool">Python AST</span></div>
+      </div>
+      
+      <div class="sa" style="border-color:rgba(10,132,255,0.3)">
+        <span class="pill pill-prob">PROBABILISTIC AGENT</span>
+        <div class="nm" style="margin-top:12px">Semantic Extraction Agent</div>
+        <div class="detail">Invoked only if deterministic gate passes. Uses multi-modal LLM to extract nuanced attributes and taxonomy mappings.</div>
+        <div class="tools"><span class="tool">Gemini Vision</span><span class="tool">Cached Prompts</span><span class="tool">Redis LTM</span></div>
+      </div>
     </div>
-    <div class="split"><div style="width:80%"></div><div style="width:20%"></div></div>
-    <div class="split-labels"><span>80% Deterministic — gates first</span><span>20% Probabilistic</span></div>
+    
+    <div style="text-align:center;margin-top:24px;font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace">
+      Causal Trace: Input → Deterministic Filter → Probabilistic Agent → Output
+    </div>
   </div>
 </div>
 
-<!-- 2. DAG Topology -->
+<!-- 2. DAG Topology (Causal Tracing) -->
 <div class="sec reveal" id="s2">
   <div class="label">Execution Topology</div>
-  <h2>7-Node DAG with Parallel Audit</h2>
-  <div class="desc">DEMAS runs as a JIT parallel audit layer alongside the DAG — intercepting outputs at every node boundary. Any dimension below threshold triggers fail-closed.</div>
+  <h2>Causal DAG Tracing</h2>
+  <div class="desc">The 7-node pipeline operates as a Directed Acyclic Graph. The bright trace line visualizes the token trajectory. DEMAS intercepts at every boundary for JIT validation.</div>
 
-  <div class="card">
-    <div class="dag">
-      <div class="dag-n"><div class="badge">2</div><div class="nm">Node 1</div><div class="tp">City DNA</div></div><div class="dag-arr">→</div>
-      <div class="dag-n"><div class="badge">4</div><div class="nm">Node 2</div><div class="tp">Normalizer</div></div><div class="dag-arr">→</div>
-      <div class="dag-n"><div class="badge">2</div><div class="nm">Node 3</div><div class="tp">Synonyms</div></div><div class="dag-arr">→</div>
-      <div class="dag-n"><div class="badge">3</div><div class="nm">Node 4</div><div class="tp">SV Gate</div></div><div class="dag-arr">→</div>
-      <div class="dag-n"><div class="badge">3</div><div class="nm">Node 5</div><div class="tp">Writer</div></div><div class="dag-arr">→</div>
-      <div class="dag-n"><div class="badge">4</div><div class="nm">Node 6</div><div class="tp">Validator</div></div><div class="dag-arr">→</div>
-      <div class="dag-n"><div class="badge">2</div><div class="nm">Node 7</div><div class="tp">Features</div></div>
+  <div class="card" style="padding:60px 20px">
+    <div class="dag-wrap">
+      <svg class="causal-trace">
+        <path d="M 60 40 L 800 40" class="trace-line" />
+      </svg>
+      <div class="dag">
+        <div class="dag-n"><div class="badge">1</div><div class="nm">City DNA</div><div class="tp">Context</div></div>
+        <div class="dag-n"><div class="badge">2</div><div class="nm">Normalizer</div><div class="tp">Cleanse</div></div>
+        <div class="dag-n"><div class="badge">3</div><div class="nm">Synonyms</div><div class="tp">Expand</div></div>
+        <div class="dag-n"><div class="badge">4</div><div class="nm">SV Gate</div><div class="tp">Filter</div></div>
+        <div class="dag-n"><div class="badge">5</div><div class="nm">Writer</div><div class="tp">Generate</div></div>
+        <div class="dag-n"><div class="badge">6</div><div class="nm">Validator</div><div class="tp">O-R-A-V</div></div>
+        <div class="dag-n"><div class="badge">7</div><div class="nm">Features</div><div class="tp">Vectorize</div></div>
+      </div>
     </div>
-    <div class="demas-bar">
-      <strong>DEMAS — Multi-Dimensional JIT Audit</strong>
-      <p>Intercepts at every node boundary · 68.9% pass rate · Fail-closed · Logs to Firestore on halt</p>
+    
+    <div style="margin-top:32px;text-align:center;padding:16px;border:1px solid rgba(255,255,255,0.1);border-radius:12px;background:var(--s2)">
+      <strong style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t)">DEMAS — PARALLEL AUDIT LAYER</strong>
+      <p style="font-size:11px;color:var(--t3);margin-top:4px">Intercepts at every node boundary · 68.9% pass rate · Fail-closed policy</p>
     </div>
   </div>
 </div>
 
-<!-- 3. Closed Loop -->
+<!-- 3. Closed Loop (RLHF) -->
 <div class="sec reveal" id="s3">
   <div class="label">Closed-Loop Autonomy</div>
-  <h2>Self-Improving Execution Cycle</h2>
-  <div class="desc">The pipeline is bidirectional. Forward execution generates outputs; backward evaluation signals update the per-tenant prompt cache. Each tenant's prompts improve autonomously via RL-style feedback.</div>
+  <h2>Self-Improving RL Feedback</h2>
+  <div class="desc">Intelligence is recursive. Forward execution generates outputs; backward evaluation signals (sparks) mutate the per-tenant prompt cache, mimicking Hebbian learning.</div>
 
   <div class="card">
     <div class="loop-steps">
-      <div class="loop-step"><div class="icon">1</div><div class="nm">Ingest</div><div class="dt">Tenant data from Firestore + BigQuery</div></div>
-      <div class="loop-step"><div class="icon">2</div><div class="nm">Generate</div><div class="dt">7-node DAG with tenant LoRA + cached prompts</div></div>
-      <div class="loop-step"><div class="icon">3</div><div class="nm">Evaluate</div><div class="dt">O-R-A-V multi-model scoring + DEMAS</div></div>
-      <div class="loop-step"><div class="icon">4</div><div class="nm">Score</div><div class="dt">Weighted dimension aggregation + thresholds</div></div>
-      <div class="loop-step"><div class="icon">5</div><div class="nm">Update</div><div class="dt">Good → reinforce in Redis LTM. Bad → mutate</div></div>
-      <div class="loop-step"><div class="icon">6</div><div class="nm">Re-execute</div><div class="dt">Next cycle uses improved prompts</div></div>
-    </div>
-    <div class="feedback">
-      <strong>RL-Style Feedback — Backward Signal</strong>
-      <p>Evaluation scores propagate into Redis LTM per <code>tenant × task × locale</code>. Prompt templates evolve autonomously.</p>
+      <div class="loop-step"><div class="icon">1</div><div class="nm">Ingest</div><div class="dt">Tenant Data</div></div>
+      <div class="loop-step"><div class="icon">2</div><div class="nm">Generate</div><div class="dt">DAG Execution</div></div>
+      <div class="loop-step"><div class="icon">3</div><div class="nm">Evaluate</div><div class="dt">O-R-A-V Judging</div></div>
+      <div class="loop-step" style="border-color:rgba(251,191,36,0.4)">
+        <div class="icon" style="color:var(--amber);border-color:var(--amber)">4</div><div class="nm">Score</div><div class="dt">Calculate Loss</div>
+        <!-- RL Spark Animation -->
+        <div class="rl-spark" style="top:0;left:50%"></div>
+      </div>
+      <div class="loop-step"><div class="icon">5</div><div class="nm">Mutate</div><div class="dt">Update Weights</div></div>
+      <div class="loop-step"><div class="icon">6</div><div class="nm">Recycle</div><div class="dt">Next Cycle</div></div>
     </div>
   </div>
 </div>
 
 <!-- 4. Evaluation Engine -->
 <div class="sec reveal" id="s4">
-  <div class="label">Multi-Model Evaluation</div>
-  <h2>O-R-A-V Scoring Network</h2>
-  <div class="desc">Each quality dimension is scored by a different model. Cross-model consensus prevents single-model bias. Any dimension below threshold triggers pipeline halt.</div>
+  <div class="label">Uncertainty Visualization</div>
+  <h2>O-R-A-V Multi-Model Scoring</h2>
+  <div class="desc">Solid lines indicate high confidence; dashed lines indicate probabilistic uncertainty. Any dimension scoring below its threshold halts the pipeline instantly.</div>
 
   <div class="g2">
     <div class="card">
-      <div class="g2" style="gap:10px">
-        <div class="eval-dim conf-med"><div class="letter" style="color:var(--accent)">O</div><div class="nm">Originality</div><div class="model">gemini-2.5-flash-lite</div><div class="thresh">≥ 0.7</div></div>
-        <div class="eval-dim conf-high"><div class="letter" style="color:var(--green)">R</div><div class="nm">Relevance</div><div class="model">gemini-2.5-flash</div><div class="thresh">≥ 0.8</div></div>
-        <div class="eval-dim conf-high"><div class="letter" style="color:var(--amber)">A</div><div class="nm">Accuracy</div><div class="model">deterministic + LLM</div><div class="thresh">≥ 0.9</div></div>
-        <div class="eval-dim conf-med"><div class="letter" style="color:var(--pink)">V</div><div class="nm">Value</div><div class="model">cross-model consensus</div><div class="thresh">≥ 0.75</div></div>
+      <div class="g2" style="gap:12px">
+        <div class="eval-dim conf-med"><div class="letter" style="color:var(--t)">O</div><div class="nm">Originality</div><div class="model">gemini-2.5-flash-lite</div></div>
+        <div class="eval-dim conf-high"><div class="letter" style="color:var(--t)">R</div><div class="nm">Relevance</div><div class="model">gemini-2.5-flash</div></div>
+        <div class="eval-dim conf-high"><div class="letter" style="color:var(--t)">A</div><div class="nm">Accuracy</div><div class="model">deterministic + LLM</div></div>
+        <div class="eval-dim conf-low"><div class="letter" style="color:var(--t)">V</div><div class="nm">Value</div><div class="model">cross-model consensus</div></div>
       </div>
     </div>
     <div class="card">
-      <h3>Isolation Stack</h3>
-      <div class="iso iso-t"><span class="lbl">Tenant Isolation</span><span class="tech">adapter_id binding</span></div>
-      <div class="iso iso-p"><span class="lbl">Prompt / Agent Isolation</span><span class="tech">scoped system prompts</span></div>
-      <div class="iso iso-p"><span class="lbl">Task / Subtask Isolation</span><span class="tech">DAG node scope</span></div>
-      <div class="iso iso-k"><span class="lbl">KV Cache Isolation</span><span class="tech">PagedAttention</span></div>
+      <h3 style="margin-bottom:20px">Isolation Stack</h3>
+      <div class="iso"><span class="lbl">Tenant Isolation</span><span class="tech">adapter_id binding</span></div>
+      <div class="iso"><span class="lbl">Prompt Isolation</span><span class="tech">scoped system cache</span></div>
+      <div class="iso"><span class="lbl">Task Isolation</span><span class="tech">DAG node boundaries</span></div>
+      <div class="iso"><span class="lbl">KV Cache Isolation</span><span class="tech">PagedAttention</span></div>
     </div>
   </div>
   <div class="fail-box">
-    <strong style="color:var(--red)">Fail-Closed Policy</strong>
-    <p style="font-size:11px;color:var(--t2);margin-top:6px">Any dimension below threshold → pipeline halts → Firestore trace → downstream blocked → prompt mutation for next cycle</p>
+    <strong style="color:var(--red);font-family:'JetBrains Mono',monospace;font-size:12px">FAIL-CLOSED POLICY</strong>
+    <p style="font-size:11px;color:var(--t2);margin-top:6px">Below threshold → halt → Firestore trace → downstream block → mutate prompt</p>
   </div>
 </div>
 
-<!-- 5. State Evolution -->
-<div class="sec reveal" id="s5">
-  <div class="label">Self-Improving State</div>
-  <h2>Per-Tenant Quality Over Time</h2>
-  <div class="desc">As the RL feedback loop accumulates signals, per-tenant prompt quality improves autonomously. No human retraining required.</div>
-
-  <div class="g2">
-    <div class="card">
-      <h3>Quality Score Evolution</h3>
-      <div class="evo" id="chart"></div>
-      <div style="text-align:center;margin-top:28px;font-size:10px;color:var(--t3)">Weeks of autonomous operation →</div>
-    </div>
-    <div class="card">
-      <h3>What Evolves Per Tenant</h3>
-      <div class="feat-list">
-        <div><strong>System prompts</strong> — tone, structure, format</div>
-        <div><strong>Taxonomy mappings</strong> — learned categories</div>
-        <div><strong>Synonym libraries</strong> — domain expansions</div>
-        <div><strong>Scoring weights</strong> — O-R-A-V thresholds per locale</div>
-        <div><strong>Redis LTM</strong> — 8,400+ cached good outputs as exemplars</div>
-        <div><strong>LoRA delta</strong> — behavioral drift per client</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 6. Enterprise Scale -->
+<!-- 5. Scale & Topology -->
 <div class="sec reveal" id="s6">
-  <div class="label">Enterprise Scale</div>
-  <h2>Production Throughput</h2>
-  <div class="desc">Multi-tenant parallel execution across 11 enterprise clients with auto-scaling Modal workers.</div>
+  <div class="label">High-Dimensional Projection</div>
+  <h2>Enterprise Fleet Telemetry</h2>
+  <div class="desc">Live visualization of autonomous execution scaling across clients, languages, and geographic regions with deterministic tracking.</div>
 
-  <div class="scale-grid">
-    <div class="scale-stat"><div class="num" style="color:var(--amber)">11</div><div class="lbl">Enterprise Clients</div></div>
-    <div class="scale-stat"><div class="num" style="color:var(--amber)">~45K</div><div class="lbl">Products / Client</div></div>
-    <div class="scale-stat"><div class="num" style="color:var(--amber)">~16</div><div class="lbl">Locations / Client</div></div>
-    <div class="scale-stat"><div class="num" style="color:var(--green)">~7.9M</div><div class="lbl">PDPs / Cycle</div></div>
-    <div class="scale-stat"><div class="num" style="color:var(--green)">~55M</div><div class="lbl">Node Ops / Cycle</div></div>
-    <div class="scale-stat"><div class="num" style="color:var(--accent)">~305M</div><div class="lbl">Monthly Node Ops</div></div>
+  <div class="scale-grid" style="margin-bottom:24px">
+    <div class="scale-stat"><div class="num" style="color:var(--t)">11</div><div class="lbl">Clients</div></div>
+    <div class="scale-stat"><div class="num" style="color:var(--t)">~7.9M</div><div class="lbl">PDPs / Cycle</div></div>
+    <div class="scale-stat"><div class="num" style="color:var(--accent)">~116M</div><div class="lbl">Executions</div></div>
   </div>
 
-  <div class="math">
-    <em>11 clients</em> × <em>~45K products</em> × <em>~16 locations</em> × <em>7 nodes</em> × <em>~3 sub-agents</em> = <strong>~116M sub-agent executions / cycle</strong>
-  </div>
-</div>
-
-<!-- 7. Parallel Execution -->
-<div class="sec reveal" id="s7">
-  <div class="label">Multi-Tenant Execution</div>
-  <h2>Parallel Client × Location DAG Runs</h2>
-  <div class="desc">All 11 clients execute their tenant-isolated DAG simultaneously. Each lane shows a single client traversing the 7-node pipeline with its own LoRA adapter and scoped prompts.</div>
-  <div class="card" id="lanes"></div>
-</div>
-
-<!-- 8. Auto-Scaling -->
-<div class="sec reveal" id="s8">
-  <div class="label">Infrastructure</div>
-  <h2>Auto-Scaling Worker Pool</h2>
-  <div class="desc">Modal workers scale from 0 to 1,000 concurrent instances based on queue depth and GPU utilization. LoRA adapters are LRU-cached in VRAM across the fleet.</div>
-  <div class="g2">
-    <div class="card">
-      <h3>Worker Instance Pool</h3>
-      <div class="pool" id="pool"></div>
-      <div style="margin-top:12px;font-size:10px;color:var(--t3);display:flex;gap:14px"><span>● Hot</span><span style="opacity:.5">○ Warm</span><span>□ Cold</span><span style="color:var(--accent)">◈ Scaling</span></div>
-    </div>
-    <div class="card">
-      <h3>Scaling Policy</h3>
-      <div class="feat-list" style="font-size:12px;line-height:2.2">
-        <div><strong>Scale up</strong> — queue depth &gt; 50 requests</div>
-        <div><strong>Scale down</strong> — GPU &lt; 20% for 5 min</div>
-        <div><strong>LoRA swap</strong> — &lt;50ms adapter switch</div>
-        <div><strong>LRU eviction</strong> — coldest adapter freed</div>
-        <div><strong>Fail-closed</strong> — instance fail → Firestore + halt</div>
-        <div><strong>Cost guard</strong> — $50/mo cap auto-throttle</div>
-      </div>
-    </div>
+  <div class="card">
+    <h3 style="margin-bottom:24px;font-size:12px;color:var(--t3);text-transform:uppercase;letter-spacing:1px">Parallel Client Execution Lanes</h3>
+    <div id="lanes"></div>
   </div>
 </div>
 
 <div class="ftr">
-  <p>Architecture by Daniel Manzela · <a href="index.html">Pipeline Observatory</a> · <a href="https://github.com/Manzela">GitHub</a></p>
+  <p>Mechanistic Interpretability Architecture · <a href="index.html">Pipeline Observatory</a></p>
 </div>
 </div>
 
 <nav class="nav">
-  <a href="#s0">LoRA</a>
-  <a href="#s1">Anatomy</a>
+  <a href="#s0">MoE</a>
+  <a href="#s1">Node</a>
   <a href="#s2">DAG</a>
   <a href="#s3">Loop</a>
   <a href="#s4">Eval</a>
-  <a href="#s5">State</a>
-  <a href="#s6">Scale</a>
-  <a href="#s7">Tenants</a>
-  <a href="#s8">Infra</a>
+  <a href="#s6">Telemetry</a>
 </nav>
 
 <script>
@@ -408,36 +357,48 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')}),{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
-// LoRA fan-out
-const tenants=[{id:'lora_alpha',nm:'Client Alpha',loc:'ES · Barcelona'},{id:'lora_beta',nm:'Client Beta',loc:'ES · Madrid'},{id:'lora_gamma',nm:'Client Gamma',loc:'PT · Odivelas'},{id:'lora_delta',nm:'Client Delta',loc:'IL · Tel Aviv'},{id:'lora_epsilon',nm:'Client Epsilon',loc:'GB · Birmingham'},{id:'lora_zeta',nm:'Client Zeta',loc:'ES · València'},{id:'lora_eta',nm:'Client Eta',loc:'ES · Zaragoza'}];
-const lf=document.getElementById('lora-fan');
-tenants.forEach(t=>{const d=document.createElement('div');d.className='lora-a';d.innerHTML=`<div class="aid">${t.id}</div><div class="nm">${t.nm}</div><div class="loc">${t.loc}</div>`;lf.appendChild(d)});
+// Generate MoE Grid (128 Experts)
+const moeGrid = document.getElementById('moeGrid');
+const experts = [];
+for(let i=0; i<128; i++) {
+  const ex = document.createElement('div');
+  ex.className = 'expert';
+  moeGrid.appendChild(ex);
+  experts.push(ex);
+}
 
-// Quality chart
-const qd=[52,58,61,64,63,68,71,74,73,77,79,82,84,83,86,88,87,89,91,92];
-const ch=document.getElementById('chart');
-qd.forEach((v,i)=>{
-  const b=document.createElement('div');b.className='evo-bar';
-  const h=v/92*100;const hue=v<70?0:v<85?45:160;
-  b.style.cssText=`height:${h}%;background:hsl(${hue},60%,55%);opacity:0;animation:fadeUp .4s ${i*.04}s forwards`;
-  b.innerHTML=`<div class="v">${v}%</div><div class="w">W${i+1}</div>`;
-  ch.appendChild(b);
+// Simulate Sparse Routing (Flare 2 random experts)
+setInterval(() => {
+  experts.forEach(e => e.classList.remove('active'));
+  const r1 = Math.floor(Math.random() * 128);
+  let r2 = Math.floor(Math.random() * 128);
+  while(r2 === r1) r2 = Math.floor(Math.random() * 128);
+  experts[r1].classList.add('active');
+  experts[r2].classList.add('active');
+}, 1200);
+
+// LoRA fan-out with Fluid Membranes
+const tenants=[{id:'adapter_1',nm:'Alpha (ES)'},{id:'adapter_2',nm:'Beta (ES)'},{id:'adapter_3',nm:'Gamma (PT)'},{id:'adapter_4',nm:'Delta (IL)'},{id:'adapter_5',nm:'Epsilon (GB)'},{id:'adapter_6',nm:'Zeta (ES)'},{id:'adapter_7',nm:'Eta (ES)'}];
+const lf=document.getElementById('lora-fan');
+tenants.forEach(t=>{
+  const d=document.createElement('div');
+  d.className='lora-a';
+  d.innerHTML=`<div class="lora-membrane"></div><div class="lora-content"><div class="aid">${t.id}</div><div class="nm">${t.nm}</div></div>`;
+  lf.appendChild(d);
 });
-const s=document.createElement('style');
-s.textContent='@keyframes fadeUp{from{opacity:0;height:0}to{opacity:1}}';
-document.head.appendChild(s);
+// Pulse active LoRA membrane
+setInterval(() => {
+  document.querySelectorAll('.lora-a').forEach(l => l.classList.remove('active'));
+  const rt = Math.floor(Math.random() * tenants.length);
+  document.querySelectorAll('.lora-a')[rt].classList.add('active');
+}, 2500);
 
 // Parallel lanes
-const cls=[{nm:'Alpha',f:'ES',st:'run',p:5},{nm:'Beta',f:'ES',st:'run',p:4},{nm:'Gamma',f:'PT',st:'run',p:6},{nm:'Delta',f:'IL',st:'q',p:0},{nm:'Epsilon',f:'GB',st:'q',p:1},{nm:'Zeta',f:'ES',st:'sc',p:2},{nm:'Eta',f:'ES',st:'run',p:3},{nm:'Theta',f:'ES',st:'run',p:5},{nm:'Iota',f:'PT',st:'q',p:0},{nm:'Kappa',f:'IL',st:'sc',p:1},{nm:'Lambda',f:'GB',st:'run',p:4}];
-const nc=['#3b82f6','#fbbf24','#22d3ee','#f472b6','#34d399','#f87171','#818cf8'];
-const nl=['R','N','S','G','W','V','F'];
+const cls=[{nm:'Alpha',f:'ES',st:'run',p:5},{nm:'Beta',f:'ES',st:'run',p:4},{nm:'Gamma',f:'PT',st:'run',p:6},{nm:'Delta',f:'IL',st:'q',p:0},{nm:'Epsilon',f:'GB',st:'q',p:1},{nm:'Zeta',f:'ES',st:'sc',p:2},{nm:'Eta',f:'ES',st:'run',p:3}];
+const nl=['1','2','3','4','5','6','7'];
 const le=document.getElementById('lanes');
-cls.forEach(c=>{const l=document.createElement('div');l.className='lane';let dots='';nl.forEach((n,j)=>{const on=c.st==='run'&&j<=c.p;dots+=`<div class="lane-dot ${on?'on':'off'}" style="background:${on?nc[j]:'transparent'}">${n}</div>`;if(j<6)dots+='<span class="la">→</span>'});const stl={run:'RUN',q:'QUEUE',sc:'SCALE'};l.innerHTML=`<div class="lane-client"><span>${c.f}</span>${c.nm}</div><div class="lane-flow">${dots}</div><div class="lane-st ${c.st}">${stl[c.st]}</div>`;le.appendChild(l)});
+cls.forEach(c=>{const l=document.createElement('div');l.className='lane';let dots='';nl.forEach((n,j)=>{const on=c.st==='run'&&j<=c.p;dots+=`<div class="lane-dot ${on?'on':'off'}">${n}</div>`;if(j<6)dots+='<span class="la">→</span>'});const stl={run:'RUNNING',q:'QUEUED',sc:'SCALING'};l.innerHTML=`<div class="lane-client"><span style="color:var(--t3);font-family:monospace">${c.f}</span>${c.nm}</div><div class="lane-flow">${dots}</div><div class="lane-st ${c.st}">${stl[c.st]}</div>`;le.appendChild(l)});
 
-// Worker pool
-const pe=document.getElementById('pool');
-for(let i=0;i<48;i++){const w=document.createElement('div');let cls='cold',txt='';if(i<16){cls='hot';txt='▶'}else if(i<22){cls='warm';txt='◦'}else if(i<26){cls='up';txt='+'}w.className=`wk ${cls}`;w.textContent=txt;pe.appendChild(w)}
-setInterval(()=>{const c=document.querySelectorAll('.wk.cold');if(c.length>10){c[0].className='wk up';c[0].textContent='+';setTimeout(()=>{c[0].className='wk hot';c[0].textContent='▶'},500)}},8000);
 </script>
 </body>
 </html>

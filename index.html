@@ -103,6 +103,13 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px}
 .dep-c{transition:all .2s ease}.dep-c:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px)}
 .trace{transition:background .2s ease}.trace:hover{background:rgba(255,255,255,0.03)}
 .tl-row{transition:background .2s ease}.tl-row:hover{background:rgba(255,255,255,0.02)}
+
+/* Causal Tracing (SVG) */
+@keyframes flowPath{0%{stroke-dashoffset:100}100%{stroke-dashoffset:0}}
+.causal-trace{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.trace-line{stroke:rgba(10,132,255,0.4);stroke-width:2;fill:none;stroke-dasharray:10 10;animation:flowPath 2s linear infinite}
+.dag-wrap{position:relative;padding:10px 0}
+.dag{position:relative;z-index:2}
 </style>
 </head>
 <body>
@@ -144,17 +151,22 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px}
 <div class="sec reveal">
   <div class="label">Agent Topology</div>
   <h2>DAG — Per-Node Throughput</h2>
-  <div class="card">
-    <div class="dag">
-      <div class="dag-n n1"><div class="nm">Node 1</div><div class="tp">City DNA</div><div class="ct">—</div></div><div class="dag-arr">→</div>
-      <div class="dag-n n2"><div class="nm">Node 2</div><div class="tp">Normalizer</div><div class="ct">22,760</div></div><div class="dag-arr">→</div>
-      <div class="dag-n n3"><div class="nm">Node 3</div><div class="tp">Synonyms</div><div class="ct">—</div></div><div class="dag-arr">→</div>
-      <div class="dag-n n4"><div class="nm">Node 4</div><div class="tp">SV Gate</div><div class="ct">—</div></div><div class="dag-arr">→</div>
-      <div class="dag-n n5"><div class="nm">Node 5</div><div class="tp">Writer</div><div class="ct">20,314</div></div><div class="dag-arr">→</div>
-      <div class="dag-n n6"><div class="nm">Node 6</div><div class="tp">Validator</div><div class="ct">O-R-A-V</div></div><div class="dag-arr">→</div>
-      <div class="dag-n n7"><div class="nm">Node 7</div><div class="tp">Features</div><div class="ct">—</div></div>
+  <div class="card" style="padding:40px 20px">
+    <div class="dag-wrap">
+      <svg class="causal-trace">
+        <path d="M 60 40 L 800 40" class="trace-line" />
+      </svg>
+      <div class="dag">
+        <div class="dag-n n1"><div class="nm">Node 1</div><div class="tp">City DNA</div><div class="ct">—</div></div><div class="dag-arr">→</div>
+        <div class="dag-n n2"><div class="nm">Node 2</div><div class="tp">Normalizer</div><div class="ct">22,760</div></div><div class="dag-arr">→</div>
+        <div class="dag-n n3"><div class="nm">Node 3</div><div class="tp">Synonyms</div><div class="ct">—</div></div><div class="dag-arr">→</div>
+        <div class="dag-n n4"><div class="nm">Node 4</div><div class="tp">SV Gate</div><div class="ct">—</div></div><div class="dag-arr">→</div>
+        <div class="dag-n n5"><div class="nm">Node 5</div><div class="tp">Writer</div><div class="ct">20,314</div></div><div class="dag-arr">→</div>
+        <div class="dag-n n6"><div class="nm">Node 6</div><div class="tp">Validator</div><div class="ct">O-R-A-V</div></div><div class="dag-arr">→</div>
+        <div class="dag-n n7"><div class="nm">Node 7</div><div class="tp">Features</div><div class="ct">—</div></div>
+      </div>
     </div>
-    <div class="demas"><span style="color:var(--amber);font-weight:600">DEMAS</span><span style="color:var(--t3);font-size:11px"> — JIT Audit · 5,563 executions · 68.9% pass rate · Fail-Closed</span></div>
+    <div class="demas" style="margin-top:24px"><span style="color:var(--amber);font-weight:600">DEMAS</span><span style="color:var(--t3);font-size:11px"> — JIT Audit · 5,563 executions · 68.9% pass rate · Fail-Closed</span></div>
   </div>
 </div>
 
