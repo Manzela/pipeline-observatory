@@ -41,8 +41,8 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 /* --- GLASBOX MECHANISTIC INTERPRETABILITY --- */
 
 /* MoE Layer */
-.moe-grid{display:grid;grid-template-columns:repeat(16,1fr);gap:6px;padding:20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;margin-bottom:20px;position:relative}
-.expert{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.1);transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94)}
+.moe-grid{display:grid;grid-template-columns:repeat(16,1fr);gap:8px;padding:24px;justify-items:center;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;margin-bottom:20px;position:relative}
+.expert{width:16px;height:16px;margin:auto;border-radius:50%;background:rgba(255,255,255,0.1);transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94)}
 .expert.active{background:var(--cyan);box-shadow:0 0 12px var(--cyan), 0 0 24px rgba(100,210,255,0.5);transform:scale(1.5)}
 
 /* LoRA Fluid Membranes */
@@ -75,12 +75,15 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 .sa .detail{font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:12px}
 .tools{display:flex;flex-wrap:wrap;gap:4px}
 .tool{font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,0.04);color:var(--t2);border:1px solid var(--b)}
-.sa-conn{position:absolute;top:50%;left:50%;width:100%;height:2px;background:linear-gradient(90deg, rgba(52,211,153,0.5), rgba(10,132,255,0.5));transform:translateY(-50%);z-index:1}
+.sa-conn{position:absolute;top:50%;left:0;width:100%;height:2px;background:linear-gradient(90deg, rgba(52,211,153,0.5), rgba(10,132,255,0.5));transform:translateY(-50%);z-index:0}
+
+/* DAG arrows */
+.dag-arr{color:var(--t3);font-size:14px;flex-shrink:0;user-select:none}
 
 /* DAG */
 .dag-wrap{position:relative;padding:40px 0}
-.dag{display:flex;align-items:center;gap:32px;overflow-x:auto;justify-content:center;position:relative;z-index:2}
-.dag-n{background:var(--s1);border:1px solid var(--b);border-radius:12px;padding:16px;text-align:center;width:120px;position:relative;flex-shrink:0;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)}
+.dag{display:flex;align-items:center;gap:8px;overflow-x:auto;justify-content:center;position:relative;z-index:2}
+.dag-n{background:var(--s1);border:1px solid var(--b);border-radius:12px;padding:12px 8px;text-align:center;width:100px;position:relative;flex-shrink:0;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)}
 .dag-n:hover{transform:translateY(-2px);border-color:rgba(10,132,255,0.3)}
 .dag-n .nm{font-size:12px;font-weight:600;margin-bottom:4px}
 .dag-n .tp{font-size:10px;color:var(--t2);font-family:'JetBrains Mono',monospace}
@@ -91,7 +94,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 .rl-spark{position:absolute;width:4px;height:4px;background:var(--amber);border-radius:50%;box-shadow:0 0 10px var(--amber);animation:sparkUp 3s cubic-bezier(0.25,0.46,0.45,0.94) infinite}
 
 .loop-steps{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
-.loop-step{text-align:center;padding:24px 12px;border-radius:12px;background:var(--s2);border:1px solid var(--b);position:relative}
+.loop-step{text-align:center;padding:24px 12px;border-radius:12px;background:var(--s2);border:1px solid var(--b);position:relative;overflow:hidden}
 .loop-step .icon{font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--accent);width:24px;height:24px;border-radius:12px;border:1px solid rgba(10,132,255,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;background:var(--bg)}
 .loop-step .nm{font-size:11px;font-weight:600;margin-bottom:6px}
 .loop-step .dt{font-size:10px;color:var(--t3);line-height:1.5}
@@ -156,7 +159,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 .nav a{color:var(--t2);text-decoration:none;transition:color 0.3s ease}.nav a:hover{color:#fff}
 
 /* Footer */
-.ftr{padding:60px 0 40px;text-align:center;font-size:11px;color:var(--t3)}
+.ftr{padding:60px 0 100px;text-align:center;font-size:11px;color:var(--t3)}
 .ftr a{color:var(--accent);text-decoration:none}
 
 /* Responsive */
@@ -194,9 +197,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
       <!-- Generated via JS -->
     </div>
     
-    <svg width="2" height="40" style="margin:10px auto;display:block">
-      <path d="M1 0 L1 40" class="trace-line" />
-    </svg>
+    <div style="width:1px;height:40px;margin:12px auto;background:linear-gradient(to bottom,rgba(10,132,255,0.3),rgba(10,132,255,0.08))"></div>
 
     <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:16px;letter-spacing:1px">FLUID LORA MEMBRANES (PAGED ATTENTION)</div>
     
@@ -248,16 +249,20 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 
   <div class="card" style="padding:60px 20px">
     <div class="dag-wrap">
-      <svg class="causal-trace">
-        <path d="M 60 40 L 800 40" class="trace-line" />
-      </svg>
+
       <div class="dag">
         <div class="dag-n"><div class="badge">1</div><div class="nm">City DNA</div><div class="tp">Context</div></div>
+        <span class="dag-arr">→</span>
         <div class="dag-n"><div class="badge">2</div><div class="nm">Normalizer</div><div class="tp">Cleanse</div></div>
+        <span class="dag-arr">→</span>
         <div class="dag-n"><div class="badge">3</div><div class="nm">Synonyms</div><div class="tp">Expand</div></div>
+        <span class="dag-arr">→</span>
         <div class="dag-n"><div class="badge">4</div><div class="nm">SV Gate</div><div class="tp">Filter</div></div>
+        <span class="dag-arr">→</span>
         <div class="dag-n"><div class="badge">5</div><div class="nm">Writer</div><div class="tp">Generate</div></div>
+        <span class="dag-arr">→</span>
         <div class="dag-n"><div class="badge">6</div><div class="nm">Validator</div><div class="tp">O-R-A-V</div></div>
+        <span class="dag-arr">→</span>
         <div class="dag-n"><div class="badge">7</div><div class="nm">Features</div><div class="tp">Vectorize</div></div>
       </div>
     </div>
