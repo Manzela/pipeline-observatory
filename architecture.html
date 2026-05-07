@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Autonomous Pipeline Architecture</title>
+<title>Autonomous Pipeline Architecture — Daniel Manzela</title>
+<meta name="description" content="Mechanistic interpretability visualization of a production multi-agent DAG pipeline with MoE sparse routing, LoRA serving, and O-R-A-V evaluation.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -82,7 +84,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 
 /* DAG */
 .dag-wrap{position:relative;padding:40px 0}
-.dag{display:flex;align-items:center;gap:8px;overflow-x:auto;justify-content:center;position:relative;z-index:2}
+.dag{display:flex;align-items:center;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;justify-content:center;position:relative;z-index:2}
 .dag-n{background:var(--s1);border:1px solid var(--b);border-radius:12px;padding:12px 8px;text-align:center;width:100px;position:relative;flex-shrink:0;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94)}
 .dag-n:hover{transform:translateY(-2px);border-color:rgba(10,132,255,0.3)}
 .dag-n .nm{font-size:12px;font-weight:600;margin-bottom:4px}
@@ -156,7 +158,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 
 /* Nav */
 .nav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(28,28,30,0.72);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:99px;padding:10px 24px;font-size:11px;color:var(--t3);z-index:99;display:flex;gap:20px;box-shadow:0 4px 30px rgba(0,0,0,0.5)}
-.nav a{color:var(--t2);text-decoration:none;transition:color 0.3s ease}.nav a:hover{color:#fff}
+.nav a{color:var(--t2);text-decoration:none;transition:color 0.3s ease}.nav a:hover{color:#fff}.nav a.active{color:#fff}
 
 /* Footer */
 .ftr{padding:60px 0 100px;text-align:center;font-size:11px;color:var(--t3)}
@@ -165,19 +167,20 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 /* Responsive */
 @media(max-width:768px){
   .hero h1{font-size:28px}.sec h2{font-size:22px}
-  .g2,.g3,.g4,.sa-grid,.loop-steps,.scale-grid{grid-template-columns:1fr}
-  .node-card{padding:20px;min-height:auto}
-  .node-panel{left:20px;right:20px}
+  .g2,.g3,.g4,.sa-grid,.scale-grid{grid-template-columns:1fr}
+  .loop-steps{grid-template-columns:repeat(2,1fr)}
+  .node-card{padding:20px}
+  .node-track .desc{margin-bottom:20px}
   .dag{flex-wrap:wrap;justify-content:center}
   .nav{display:none}
   .moe-grid{grid-template-columns:repeat(8,1fr)}
 }
 
 /* Sticky Scroll Node Explorer */
-.node-track{position:relative;padding:0}
+.node-track{position:relative;padding:80px 0 0}
 .node-track .label,.node-track h2,.node-track .desc{position:relative;z-index:3}
 .node-sticky{position:sticky;top:10vh;z-index:2}
-.node-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:40px;position:relative;overflow:hidden;min-height:420px;transition:border-color 0.4s}
+.node-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:40px;position:relative;transition:border-color 0.4s}
 .node-card:hover{border-color:rgba(255,255,255,0.12)}
 
 /* Progress indicator */
@@ -186,8 +189,8 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 .node-pip.active{background:var(--accent)}
 
 /* Animated content panels */
-.node-panel{position:absolute;top:100px;left:40px;right:40px;bottom:40px;opacity:0;transform:translateY(16px);transition:opacity 0.5s cubic-bezier(0.25,0.46,0.45,0.94),transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);pointer-events:none}
-.node-panel.active{opacity:1;transform:translateY(0);pointer-events:auto;position:relative;top:0;left:0;right:0;bottom:0}
+.node-panel{display:none;opacity:0;transform:translateY(16px);transition:opacity 0.5s cubic-bezier(0.25,0.46,0.45,0.94),transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);pointer-events:none}
+.node-panel.active{display:block;opacity:1;transform:translateY(0);pointer-events:auto}
 
 .node-title{font-size:15px;font-weight:600;text-align:center;margin-bottom:24px;display:flex;align-items:center;justify-content:center;gap:10px}
 .node-badge{width:24px;height:24px;border-radius:12px;border:1px solid var(--accent);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace}
@@ -195,7 +198,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 .node-trace{text-align:center;margin-top:20px;font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace;padding-top:16px;border-top:1px solid var(--b)}
 
 /* Scroll hint */
-.scroll-hint{text-align:center;margin-top:20px;font-size:11px;color:var(--t3);letter-spacing:1px;animation:pulseOp 2s ease-in-out infinite}
+.scroll-hint{text-align:center;margin-top:20px;font-size:11px;color:var(--t3);letter-spacing:1px;animation:pulseOp 2s ease-in-out infinite;transition:opacity 0.5s}
 @keyframes pulseOp{0%,100%{opacity:0.3}50%{opacity:0.7}}
 
 /* Reveal animation */
@@ -208,7 +211,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 <div class="hero">
   <h1>Autonomous Pipeline<br>Architecture</h1>
   <p>A production-grade multi-agent system with mechanistic interpretability, closed-loop autonomy, and self-improving state — operating at enterprise scale.</p>
-  <div class="meta">Daniel Manzela · TNG Shopper · 2024–2026</div>
+  <div class="meta"><a href="index.html" style="color:var(--accent);text-decoration:none">Pipeline Observatory</a> · Daniel Manzela · TNG Shopper · 2024–2026</div>
 </div>
 
 <!-- 0. Inference Layer (MoE Sparse Activation) -->
@@ -372,7 +375,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 
 <script>
 // Reveal on scroll
-const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')}),{threshold:0.1});
+const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')}),{threshold:0.05});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
 // Generate MoE Grid (128 Experts)
@@ -504,10 +507,8 @@ function updateNodeScroll() {
     panels.forEach((p, i) => {
       if (i === activeIdx) {
         p.classList.add('active');
-        p.style.position = 'relative';
       } else {
         p.classList.remove('active');
-        p.style.position = 'absolute';
       }
     });
     lastActive = activeIdx;
@@ -520,6 +521,21 @@ function updateNodeScroll() {
 
 window.addEventListener('scroll', updateNodeScroll, {passive: true});
 updateNodeScroll();
+
+
+// Active nav highlighting
+const navLinks = document.querySelectorAll('.nav a');
+const sections = document.querySelectorAll('[id^="s"]');
+const navObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav a[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, {threshold: 0.3, rootMargin: '-20% 0px -60% 0px'});
+sections.forEach(s => navObs.observe(s));
 
 </script>
 </body>
