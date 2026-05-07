@@ -65,7 +65,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 /* Loop */
 .loop-steps{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
 .loop-step{text-align:center;padding:20px 8px;border-radius:12px;background:var(--s2);border:1px solid var(--b)}
-.loop-step .icon{font-size:20px;margin-bottom:8px}
+.loop-step .icon{font-size:13px;font-weight:600;color:var(--accent);width:28px;height:28px;border-radius:14px;border:1px solid rgba(10,132,255,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
 .loop-step .nm{font-size:11px;font-weight:600;margin-bottom:4px}
 .loop-step .dt{font-size:10px;color:var(--t3);line-height:1.5}
 .feedback{margin-top:20px;text-align:center;padding:20px;border-radius:12px;border:1px solid rgba(52,211,153,0.15);background:rgba(52,211,153,0.03)}
@@ -218,7 +218,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
       <div class="dag-n"><div class="badge">2</div><div class="nm">Node 7</div><div class="tp">Features</div></div>
     </div>
     <div class="demas-bar">
-      <strong>⟳ DEMAS — Multi-Dimensional JIT Audit</strong>
+      <strong>DEMAS — Multi-Dimensional JIT Audit</strong>
       <p>Intercepts at every node boundary · 68.9% pass rate · Fail-closed · Logs to Firestore on halt</p>
     </div>
   </div>
@@ -232,15 +232,15 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 
   <div class="card">
     <div class="loop-steps">
-      <div class="loop-step"><div class="icon">→</div><div class="nm">Ingest</div><div class="dt">Tenant data from Firestore + BigQuery</div></div>
-      <div class="loop-step"><div class="icon">◆</div><div class="nm">Generate</div><div class="dt">7-node DAG with tenant LoRA + cached prompts</div></div>
-      <div class="loop-step"><div class="icon">◆</div><div class="nm">Evaluate</div><div class="dt">O-R-A-V multi-model scoring + DEMAS</div></div>
-      <div class="loop-step"><div class="icon">◆</div><div class="nm">Score</div><div class="dt">Weighted dimension aggregation + thresholds</div></div>
-      <div class="loop-step"><div class="icon">◆</div><div class="nm">Update</div><div class="dt">Good → reinforce in Redis LTM. Bad → mutate</div></div>
-      <div class="loop-step"><div class="icon">◆</div><div class="nm">Re-execute</div><div class="dt">Next cycle uses improved prompts</div></div>
+      <div class="loop-step"><div class="icon">1</div><div class="nm">Ingest</div><div class="dt">Tenant data from Firestore + BigQuery</div></div>
+      <div class="loop-step"><div class="icon">2</div><div class="nm">Generate</div><div class="dt">7-node DAG with tenant LoRA + cached prompts</div></div>
+      <div class="loop-step"><div class="icon">3</div><div class="nm">Evaluate</div><div class="dt">O-R-A-V multi-model scoring + DEMAS</div></div>
+      <div class="loop-step"><div class="icon">4</div><div class="nm">Score</div><div class="dt">Weighted dimension aggregation + thresholds</div></div>
+      <div class="loop-step"><div class="icon">5</div><div class="nm">Update</div><div class="dt">Good → reinforce in Redis LTM. Bad → mutate</div></div>
+      <div class="loop-step"><div class="icon">6</div><div class="nm">Re-execute</div><div class="dt">Next cycle uses improved prompts</div></div>
     </div>
     <div class="feedback">
-      <strong>⟳ RL-Style Feedback — Backward Signal</strong>
+      <strong>RL-Style Feedback — Backward Signal</strong>
       <p>Evaluation scores propagate into Redis LTM per <code>tenant × task × locale</code>. Prompt templates evolve autonomously.</p>
     </div>
   </div>
@@ -263,14 +263,14 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
     </div>
     <div class="card">
       <h3>Isolation Stack</h3>
-      <div class="iso iso-t"><span class="lbl">■ Tenant Isolation</span><span class="tech">adapter_id binding</span></div>
-      <div class="iso iso-p"><span class="lbl">◆ Prompt / Agent Isolation</span><span class="tech">scoped system prompts</span></div>
-      <div class="iso iso-p"><span class="lbl">■ Task / Subtask Isolation</span><span class="tech">DAG node scope</span></div>
-      <div class="iso iso-k"><span class="lbl">◆ KV Cache Isolation</span><span class="tech">PagedAttention</span></div>
+      <div class="iso iso-t"><span class="lbl">Tenant Isolation</span><span class="tech">adapter_id binding</span></div>
+      <div class="iso iso-p"><span class="lbl">Prompt / Agent Isolation</span><span class="tech">scoped system prompts</span></div>
+      <div class="iso iso-p"><span class="lbl">Task / Subtask Isolation</span><span class="tech">DAG node scope</span></div>
+      <div class="iso iso-k"><span class="lbl">KV Cache Isolation</span><span class="tech">PagedAttention</span></div>
     </div>
   </div>
   <div class="fail-box">
-    <strong style="color:var(--red)">■ Fail-Closed Policy</strong>
+    <strong style="color:var(--red)">Fail-Closed Policy</strong>
     <p style="font-size:11px;color:var(--t2);margin-top:6px">Any dimension below threshold → pipeline halts → Firestore trace → downstream blocked → prompt mutation for next cycle</p>
   </div>
 </div>
@@ -290,12 +290,12 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
     <div class="card">
       <h3>What Evolves Per Tenant</h3>
       <div class="feat-list">
-        <div>• <strong>System prompts</strong> — tone, structure, format</div>
-        <div>• <strong>Taxonomy mappings</strong> — learned categories</div>
-        <div>• <strong>Synonym libraries</strong> — domain expansions</div>
-        <div>◆ <strong>Scoring weights</strong> — O-R-A-V thresholds per locale</div>
-        <div>◆ <strong>Redis LTM</strong> — 8,400+ cached good outputs as exemplars</div>
-        <div>• <strong>LoRA delta</strong> — behavioral drift per client</div>
+        <div><strong>System prompts</strong> — tone, structure, format</div>
+        <div><strong>Taxonomy mappings</strong> — learned categories</div>
+        <div><strong>Synonym libraries</strong> — domain expansions</div>
+        <div><strong>Scoring weights</strong> — O-R-A-V thresholds per locale</div>
+        <div><strong>Redis LTM</strong> — 8,400+ cached good outputs as exemplars</div>
+        <div><strong>LoRA delta</strong> — behavioral drift per client</div>
       </div>
     </div>
   </div>
@@ -343,12 +343,12 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
     <div class="card">
       <h3>Scaling Policy</h3>
       <div class="feat-list" style="font-size:12px;line-height:2.2">
-        <div>↑ <strong>Scale up</strong> — queue depth &gt; 50 requests</div>
-        <div>↓ <strong>Scale down</strong> — GPU &lt; 20% for 5 min</div>
-        <div>◆ <strong>LoRA swap</strong> — &lt;50ms adapter switch</div>
-        <div>◆ <strong>LRU eviction</strong> — coldest adapter freed</div>
-        <div>■ <strong>Fail-closed</strong> — instance fail → Firestore + halt</div>
-        <div>■ <strong>Cost guard</strong> — $50/mo cap auto-throttle</div>
+        <div><strong>Scale up</strong> — queue depth &gt; 50 requests</div>
+        <div><strong>Scale down</strong> — GPU &lt; 20% for 5 min</div>
+        <div><strong>LoRA swap</strong> — &lt;50ms adapter switch</div>
+        <div><strong>LRU eviction</strong> — coldest adapter freed</div>
+        <div><strong>Fail-closed</strong> — instance fail → Firestore + halt</div>
+        <div><strong>Cost guard</strong> — $50/mo cap auto-throttle</div>
       </div>
     </div>
   </div>
@@ -377,7 +377,7 @@ const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
 // LoRA fan-out
-const tenants=[{id:'lora_alpha',nm:'Client Alpha',loc:'🇪🇸 Barcelona'},{id:'lora_beta',nm:'Client Beta',loc:'🇪🇸 Madrid'},{id:'lora_gamma',nm:'Client Gamma',loc:'🇵🇹 Odivelas'},{id:'lora_delta',nm:'Client Delta',loc:'🇮🇱 Tel Aviv'},{id:'lora_epsilon',nm:'Client Epsilon',loc:'🇬🇧 Birmingham'},{id:'lora_zeta',nm:'Client Zeta',loc:'🇪🇸 València'},{id:'lora_eta',nm:'Client Eta',loc:'🇪🇸 Zaragoza'}];
+const tenants=[{id:'lora_alpha',nm:'Client Alpha',loc:'ES · Barcelona'},{id:'lora_beta',nm:'Client Beta',loc:'ES · Madrid'},{id:'lora_gamma',nm:'Client Gamma',loc:'PT · Odivelas'},{id:'lora_delta',nm:'Client Delta',loc:'IL · Tel Aviv'},{id:'lora_epsilon',nm:'Client Epsilon',loc:'GB · Birmingham'},{id:'lora_zeta',nm:'Client Zeta',loc:'ES · València'},{id:'lora_eta',nm:'Client Eta',loc:'ES · Zaragoza'}];
 const lf=document.getElementById('lora-fan');
 tenants.forEach(t=>{const d=document.createElement('div');d.className='lora-a';d.innerHTML=`<div class="aid">${t.id}</div><div class="nm">${t.nm}</div><div class="loc">${t.loc}</div>`;lf.appendChild(d)});
 
@@ -396,7 +396,7 @@ s.textContent='@keyframes fadeUp{from{opacity:0;height:0}to{opacity:1}}';
 document.head.appendChild(s);
 
 // Parallel lanes
-const cls=[{nm:'Alpha',f:'🇪🇸',st:'run',p:5},{nm:'Beta',f:'🇪🇸',st:'run',p:4},{nm:'Gamma',f:'🇵🇹',st:'run',p:6},{nm:'Delta',f:'🇮🇱',st:'q',p:0},{nm:'Epsilon',f:'🇬🇧',st:'q',p:1},{nm:'Zeta',f:'🇪🇸',st:'sc',p:2},{nm:'Eta',f:'🇪🇸',st:'run',p:3},{nm:'Theta',f:'🇪🇸',st:'run',p:5},{nm:'Iota',f:'🇵🇹',st:'q',p:0},{nm:'Kappa',f:'🇮🇱',st:'sc',p:1},{nm:'Lambda',f:'🇬🇧',st:'run',p:4}];
+const cls=[{nm:'Alpha',f:'ES',st:'run',p:5},{nm:'Beta',f:'ES',st:'run',p:4},{nm:'Gamma',f:'PT',st:'run',p:6},{nm:'Delta',f:'IL',st:'q',p:0},{nm:'Epsilon',f:'GB',st:'q',p:1},{nm:'Zeta',f:'ES',st:'sc',p:2},{nm:'Eta',f:'ES',st:'run',p:3},{nm:'Theta',f:'ES',st:'run',p:5},{nm:'Iota',f:'PT',st:'q',p:0},{nm:'Kappa',f:'IL',st:'sc',p:1},{nm:'Lambda',f:'GB',st:'run',p:4}];
 const nc=['#3b82f6','#fbbf24','#22d3ee','#f472b6','#34d399','#f87171','#818cf8'];
 const nl=['R','N','S','G','W','V','F'];
 const le=document.getElementById('lanes');
