@@ -15,7 +15,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px}
 .w{max-width:960px;margin:0 auto;padding:0 24px}
 
 /* Hero */
-.hero{padding:100px 0 80px;text-align:center;border-bottom:1px solid var(--b)}
+.hero{padding:100px 0 80px;text-align:center;border-bottom:1px solid var(--b);background:radial-gradient(ellipse at 50% 0%,rgba(10,132,255,0.04) 0%,transparent 60%)}
 .hero h1{font-size:40px;font-weight:700;letter-spacing:-1.5px;margin-bottom:12px}
 .hero p{font-size:15px;color:var(--t2);max-width:560px;margin:0 auto}
 .hero .live{margin-top:20px;display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--t3);background:var(--s1);border:1px solid var(--b);padding:6px 14px;border-radius:99px}
@@ -92,6 +92,17 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px}
 .reveal{opacity:0;transform:translateY(20px);transition:all .6s}.reveal.visible{opacity:1;transform:none}
 
 @media(max-width:768px){.stats{grid-template-columns:repeat(2,1fr)}.dep{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}.trace{grid-template-columns:1fr}.hero h1{font-size:28px}}
+
+/* Organic animations */
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(10,132,255,0.05)}50%{box-shadow:0 0 16px rgba(10,132,255,0.15)}}
+.stat{transition:all .3s ease}.stat:hover{background:rgba(255,255,255,0.06)}
+.card{transition:border-color .3s ease}.card:hover{border-color:rgba(255,255,255,0.12)}
+.dag-n{transition:all .3s ease}.dag-n:hover{transform:translateY(-2px);border-color:rgba(10,132,255,0.3)}
+.geo-c{transition:all .2s ease}.geo-c:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px)}
+.dep-c{transition:all .2s ease}.dep-c:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px)}
+.trace{transition:background .2s ease}.trace:hover{background:rgba(255,255,255,0.03)}
+.tl-row{transition:background .2s ease}.tl-row:hover{background:rgba(255,255,255,0.02)}
 </style>
 </head>
 <body>
