@@ -169,37 +169,24 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
   .hero h1{font-size:28px}.sec h2{font-size:22px}
   .g2,.g3,.g4,.sa-grid,.scale-grid{grid-template-columns:1fr}
   .loop-steps{grid-template-columns:repeat(2,1fr)}
-  .node-card{padding:20px}
-  .node-track .desc{margin-bottom:20px}
+  .node-item{padding:20px}
   .dag{flex-wrap:wrap;justify-content:center}
   .nav{display:none}
   .moe-grid{grid-template-columns:repeat(8,1fr)}
 }
 
-/* Sticky Scroll Node Explorer */
-.node-track{position:relative;padding:80px 0 0}
-.node-track .label,.node-track h2,.node-track .desc{position:relative;z-index:3}
-.node-sticky{position:sticky;top:10vh;z-index:2}
-.node-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:40px;position:relative;transition:border-color 0.4s}
-.node-card:hover{border-color:rgba(255,255,255,0.12)}
-
-/* Progress indicator */
-.node-progress{display:flex;gap:6px;justify-content:center;margin-bottom:28px}
-.node-pip{width:32px;height:3px;border-radius:2px;background:rgba(255,255,255,0.08);transition:all 0.5s cubic-bezier(0.25,0.46,0.45,0.94)}
-.node-pip.active{background:var(--accent)}
-
-/* Animated content panels */
-.node-panel{display:none;opacity:0;transform:translateY(16px);transition:opacity 0.5s cubic-bezier(0.25,0.46,0.45,0.94),transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);pointer-events:none}
-.node-panel.active{display:block;opacity:1;transform:translateY(0);pointer-events:auto}
-
-.node-title{font-size:15px;font-weight:600;text-align:center;margin-bottom:24px;display:flex;align-items:center;justify-content:center;gap:10px}
-.node-badge{width:24px;height:24px;border-radius:12px;border:1px solid var(--accent);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace}
-
-.node-trace{text-align:center;margin-top:20px;font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace;padding-top:16px;border-top:1px solid var(--b)}
-
-/* Scroll hint */
-.scroll-hint{text-align:center;margin-top:20px;font-size:11px;color:var(--t3);letter-spacing:1px;animation:pulseOp 2s ease-in-out infinite;transition:opacity 0.5s}
-@keyframes pulseOp{0%,100%{opacity:0.3}50%{opacity:0.7}}
+/* Node Sequence — vertical reveal */
+.node-seq{display:flex;flex-direction:column;gap:24px;counter-reset:nodecount}
+.node-item{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:36px;opacity:0;transform:translateY(30px);transition:opacity 0.7s cubic-bezier(0.25,0.46,0.45,0.94),transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94),border-color 0.3s}
+.node-item.visible{opacity:1;transform:translateY(0)}
+.node-item:hover{border-color:rgba(255,255,255,0.15)}
+.node-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.node-num{width:28px;height:28px;border-radius:14px;border:1.5px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.node-name{font-size:15px;font-weight:600}
+.node-role{font-size:9px;padding:3px 8px;border-radius:99px;font-weight:600;letter-spacing:0.5px;background:rgba(52,211,153,0.1);color:var(--green);border:1px solid rgba(52,211,153,0.2);margin-left:auto;flex-shrink:0}
+.node-arrow{text-align:center;color:var(--t3);font-size:16px;opacity:0;transform:translateY(10px);transition:opacity 0.5s 0.2s,transform 0.5s 0.2s}
+.node-arrow.visible{opacity:1;transform:translateY(0)}
+.node-trace{text-align:center;margin-top:16px;font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace;padding-top:12px;border-top:1px solid var(--b)}
 
 /* Reveal animation */
 .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s}.reveal.visible{opacity:1;transform:none}
@@ -238,22 +225,14 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
   </div>
 </div>
 
-<!-- 1. Node Anatomy (Sticky Scroll Explorer) -->
-<div class="sec node-track reveal" id="s1" style="padding-bottom:0;border:none">
+<!-- 1. Node Anatomy (Sequential Reveal) -->
+<div class="sec reveal" id="s1">
   <div class="label">Semantic Zoom L2</div>
   <h2>Sub-Agent Node Anatomy</h2>
-  <div class="desc">Each node is a bounded ecosystem of sub-agents. Deterministic tools fire first. The LLM activates only if the gate passes. Scroll to explore all 7 nodes.</div>
-</div>
+  <div class="desc">Each of the 7 pipeline nodes is a bounded ecosystem of sub-agents. A deterministic gate fires first; the probabilistic LLM activates only if the gate passes.</div>
 
-<div id="nodeTrack" style="height:500vh;position:relative">
-  <div class="w">
-    <div class="node-sticky">
-      <div class="node-card">
-        <div class="node-progress" id="nodePips"></div>
-        <div id="nodePanels"></div>
-      </div>
-      <div class="scroll-hint" id="scrollHint">SCROLL TO EXPLORE ALL NODES</div>
-    </div>
+  <div class="node-seq" id="nodeSeq">
+    <!-- Generated via JS -->
   </div>
 </div>
 
@@ -421,7 +400,7 @@ const le=document.getElementById('lanes');
 cls.forEach(c=>{const l=document.createElement('div');l.className='lane';let dots='';nl.forEach((n,j)=>{const on=c.st==='run'&&j<=c.p;dots+=`<div class="lane-dot ${on?'on':'off'}">${n}</div>`;if(j<6)dots+='<span class="la">→</span>'});const stl={run:'RUNNING',q:'QUEUED',sc:'SCALING'};l.innerHTML=`<div class="lane-client"><span style="color:var(--t3);font-family:monospace">${c.f}</span>${c.nm}</div><div class="lane-flow">${dots}</div><div class="lane-st ${c.st}">${stl[c.st]}</div>`;le.appendChild(l)});
 
 
-// ===== 7-Node Sticky Scroll Explorer =====
+// ===== 7-Node Sequential Reveal =====
 const nodeData = [
   {id:1,nm:'City DNA',role:'Context Injection',
    gate:{nm:'Locale Resolver',desc:'Validates ISO locale codes, timezone offsets, and geographic taxonomy. Rejects malformed location data before any LLM invocation.',tools:['ISO-3166','Timezone DB','GeoHash']},
@@ -453,74 +432,55 @@ const nodeData = [
    trace:'Validated Content \u2192 Dimension Gate \u2192 Embedding Generation \u2192 Feature Vector'}
 ];
 
-// Build UI
-const pipsEl = document.getElementById('nodePips');
-const panelsEl = document.getElementById('nodePanels');
-
+const nodeSeq = document.getElementById('nodeSeq');
 nodeData.forEach((n, i) => {
-  // Pip
-  const pip = document.createElement('div');
-  pip.className = 'node-pip' + (i === 0 ? ' active' : '');
-  pip.dataset.idx = i;
-  pipsEl.appendChild(pip);
-
-  // Panel
-  const panel = document.createElement('div');
-  panel.className = 'node-panel' + (i === 0 ? ' active' : '');
-  panel.innerHTML = `
-    <div class="node-title"><span class="node-badge">${n.id}</span> Node ${n.id} \u2014 ${n.nm} <span class="pill pill-det" style="margin-left:8px">${n.role.toUpperCase()}</span></div>
+  // Node card
+  const item = document.createElement('div');
+  item.className = 'node-item';
+  item.innerHTML = `
+    <div class="node-header">
+      <div class="node-num">${n.id}</div>
+      <div class="node-name">Node ${n.id} \u2014 ${n.nm}</div>
+      <div class="node-role">${n.role.toUpperCase()}</div>
+    </div>
     <div class="sa-grid">
       <div class="sa-conn"></div>
       <div class="sa" style="border-color:rgba(52,211,153,0.3)">
         <span class="pill pill-det">DETERMINISTIC GATE</span>
         <div class="nm" style="margin-top:12px">${n.gate.nm}</div>
         <div class="detail">${n.gate.desc}</div>
-        <div class="tools">${n.gate.tools.map(t => `<span class="tool">${t}</span>`).join('')}</div>
+        <div class="tools">${n.gate.tools.map(t => '<span class="tool">' + t + '</span>').join('')}</div>
       </div>
       <div class="sa" style="border-color:rgba(10,132,255,0.3)">
         <span class="pill pill-prob">PROBABILISTIC AGENT</span>
         <div class="nm" style="margin-top:12px">${n.agent.nm}</div>
         <div class="detail">${n.agent.desc}</div>
-        <div class="tools">${n.agent.tools.map(t => `<span class="tool">${t}</span>`).join('')}</div>
+        <div class="tools">${n.agent.tools.map(t => '<span class="tool">' + t + '</span>').join('')}</div>
       </div>
     </div>
     <div class="node-trace">${n.trace}</div>`;
-  panelsEl.appendChild(panel);
+  nodeSeq.appendChild(item);
+
+  // Arrow between nodes (not after the last one)
+  if (i < 6) {
+    const arrow = document.createElement('div');
+    arrow.className = 'node-arrow';
+    arrow.textContent = '\u2193';
+    nodeSeq.appendChild(arrow);
+  }
 });
 
-// Scroll-linked animation
-const track = document.getElementById('nodeTrack');
-const pips = document.querySelectorAll('.node-pip');
-const panels = document.querySelectorAll('.node-panel');
-const hint = document.getElementById('scrollHint');
-let lastActive = 0;
+// Staggered reveal on scroll
+const nodeObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      nodeObs.unobserve(e.target);
+    }
+  });
+}, {threshold: 0.15, rootMargin: '0px 0px -50px 0px'});
 
-function updateNodeScroll() {
-  const rect = track.getBoundingClientRect();
-  const trackH = track.offsetHeight;
-  const scrolled = -rect.top;
-  const progress = Math.max(0, Math.min(1, scrolled / (trackH - window.innerHeight)));
-  const activeIdx = Math.min(6, Math.floor(progress * 7));
-
-  if (activeIdx !== lastActive) {
-    pips.forEach((p, i) => p.classList.toggle('active', i <= activeIdx));
-    panels.forEach((p, i) => {
-      if (i === activeIdx) {
-        p.classList.add('active');
-      } else {
-        p.classList.remove('active');
-      }
-    });
-    lastActive = activeIdx;
-  }
-
-  // Hide scroll hint after first scroll
-  if (progress > 0.05 && hint) hint.style.opacity = '0';
-  else if (hint) hint.style.opacity = '';
-}
-
-window.addEventListener('scroll', updateNodeScroll, {passive: true});
-updateNodeScroll();
+document.querySelectorAll('.node-item, .node-arrow').forEach(el => nodeObs.observe(el));
 
 
 // Active nav highlighting
