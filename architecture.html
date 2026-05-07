@@ -166,10 +166,38 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 @media(max-width:768px){
   .hero h1{font-size:28px}.sec h2{font-size:22px}
   .g2,.g3,.g4,.sa-grid,.loop-steps,.scale-grid{grid-template-columns:1fr}
+  .node-card{padding:20px;min-height:auto}
+  .node-panel{left:20px;right:20px}
   .dag{flex-wrap:wrap;justify-content:center}
   .nav{display:none}
   .moe-grid{grid-template-columns:repeat(8,1fr)}
 }
+
+/* Sticky Scroll Node Explorer */
+.node-track{position:relative;padding:0}
+.node-track .label,.node-track h2,.node-track .desc{position:relative;z-index:3}
+.node-sticky{position:sticky;top:10vh;z-index:2}
+.node-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:40px;position:relative;overflow:hidden;min-height:420px;transition:border-color 0.4s}
+.node-card:hover{border-color:rgba(255,255,255,0.12)}
+
+/* Progress indicator */
+.node-progress{display:flex;gap:6px;justify-content:center;margin-bottom:28px}
+.node-pip{width:32px;height:3px;border-radius:2px;background:rgba(255,255,255,0.08);transition:all 0.5s cubic-bezier(0.25,0.46,0.45,0.94)}
+.node-pip.active{background:var(--accent)}
+
+/* Animated content panels */
+.node-panel{position:absolute;top:100px;left:40px;right:40px;bottom:40px;opacity:0;transform:translateY(16px);transition:opacity 0.5s cubic-bezier(0.25,0.46,0.45,0.94),transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);pointer-events:none}
+.node-panel.active{opacity:1;transform:translateY(0);pointer-events:auto;position:relative;top:0;left:0;right:0;bottom:0}
+
+.node-title{font-size:15px;font-weight:600;text-align:center;margin-bottom:24px;display:flex;align-items:center;justify-content:center;gap:10px}
+.node-badge{width:24px;height:24px;border-radius:12px;border:1px solid var(--accent);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace}
+
+.node-trace{text-align:center;margin-top:20px;font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace;padding-top:16px;border-top:1px solid var(--b)}
+
+/* Scroll hint */
+.scroll-hint{text-align:center;margin-top:20px;font-size:11px;color:var(--t3);letter-spacing:1px;animation:pulseOp 2s ease-in-out infinite}
+@keyframes pulseOp{0%,100%{opacity:0.3}50%{opacity:0.7}}
+
 /* Reveal animation */
 .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s}.reveal.visible{opacity:1;transform:none}
 </style>
@@ -207,36 +235,21 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
   </div>
 </div>
 
-<!-- 1. Node Anatomy (Semantic Zoom) -->
-<div class="sec reveal" id="s1">
+<!-- 1. Node Anatomy (Sticky Scroll Explorer) -->
+<div class="sec node-track reveal" id="s1" style="padding-bottom:0;border:none">
   <div class="label">Semantic Zoom L2</div>
   <h2>Sub-Agent Node Anatomy</h2>
-  <div class="desc">We do not use simple LLM calls. Each node is a bounded ecosystem of sub-agents. Deterministic tools (Python/Schema gates) run first. If they pass, the probabilistic Agent (LLM + Prompt Cache) activates.</div>
+  <div class="desc">Each node is a bounded ecosystem of sub-agents. Deterministic tools fire first. The LLM activates only if the gate passes. Scroll to explore all 7 nodes.</div>
+</div>
 
-  <div class="card" style="padding:40px">
-    <h3 style="justify-content:center;margin-bottom:32px">Node 2 — Product Normalizer</h3>
-    
-    <div class="sa-grid">
-      <!-- Connection line behind -->
-      <div class="sa-conn"></div>
-      
-      <div class="sa" style="border-color:rgba(52,211,153,0.3)">
-        <span class="pill pill-det">DETERMINISTIC GATE</span>
-        <div class="nm" style="margin-top:12px">Schema Validator Agent</div>
-        <div class="detail">Enforces strict JSON schema, structural integrity, and type coercion. Fails instantly on schema mismatch without invoking the LLM.</div>
-        <div class="tools"><span class="tool">Pydantic</span><span class="tool">Regex</span><span class="tool">Python AST</span></div>
+<div id="nodeTrack" style="height:500vh;position:relative">
+  <div class="w">
+    <div class="node-sticky">
+      <div class="node-card">
+        <div class="node-progress" id="nodePips"></div>
+        <div id="nodePanels"></div>
       </div>
-      
-      <div class="sa" style="border-color:rgba(10,132,255,0.3)">
-        <span class="pill pill-prob">PROBABILISTIC AGENT</span>
-        <div class="nm" style="margin-top:12px">Semantic Extraction Agent</div>
-        <div class="detail">Invoked only if deterministic gate passes. Uses multi-modal LLM to extract nuanced attributes and taxonomy mappings.</div>
-        <div class="tools"><span class="tool">Gemini Vision</span><span class="tool">Cached Prompts</span><span class="tool">Redis LTM</span></div>
-      </div>
-    </div>
-    
-    <div style="text-align:center;margin-top:24px;font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace">
-      Causal Trace: Input → Deterministic Filter → Probabilistic Agent → Output
+      <div class="scroll-hint" id="scrollHint">SCROLL TO EXPLORE ALL NODES</div>
     </div>
   </div>
 </div>
@@ -403,6 +416,110 @@ const cls=[{nm:'Alpha',f:'ES',st:'run',p:5},{nm:'Beta',f:'ES',st:'run',p:4},{nm:
 const nl=['1','2','3','4','5','6','7'];
 const le=document.getElementById('lanes');
 cls.forEach(c=>{const l=document.createElement('div');l.className='lane';let dots='';nl.forEach((n,j)=>{const on=c.st==='run'&&j<=c.p;dots+=`<div class="lane-dot ${on?'on':'off'}">${n}</div>`;if(j<6)dots+='<span class="la">→</span>'});const stl={run:'RUNNING',q:'QUEUED',sc:'SCALING'};l.innerHTML=`<div class="lane-client"><span style="color:var(--t3);font-family:monospace">${c.f}</span>${c.nm}</div><div class="lane-flow">${dots}</div><div class="lane-st ${c.st}">${stl[c.st]}</div>`;le.appendChild(l)});
+
+
+// ===== 7-Node Sticky Scroll Explorer =====
+const nodeData = [
+  {id:1,nm:'City DNA',role:'Context Injection',
+   gate:{nm:'Locale Resolver',desc:'Validates ISO locale codes, timezone offsets, and geographic taxonomy. Rejects malformed location data before any LLM invocation.',tools:['ISO-3166','Timezone DB','GeoHash']},
+   agent:{nm:'Cultural Context Agent',desc:'Enriches product context with city-level cultural and seasonal signals. Adapts tone, idioms, and relevance framing per locale.',tools:['Gemini Pro','Redis LTM','Locale Cache']},
+   trace:'Locale ID \u2192 Geo Validation \u2192 Cultural Enrichment \u2192 Context Object'},
+  {id:2,nm:'Normalizer',role:'Data Cleansing',
+   gate:{nm:'Schema Validator Agent',desc:'Enforces strict JSON schema, structural integrity, and type coercion. Fails instantly on schema mismatch without invoking the LLM.',tools:['Pydantic','Regex','Python AST']},
+   agent:{nm:'Semantic Extraction Agent',desc:'Invoked only if deterministic gate passes. Uses multi-modal LLM to extract nuanced attributes and taxonomy mappings.',tools:['Gemini Vision','Cached Prompts','Redis LTM']},
+   trace:'Raw Input \u2192 Schema Gate \u2192 Semantic Extraction \u2192 Normalized Record'},
+  {id:3,nm:'Synonyms',role:'Semantic Expansion',
+   gate:{nm:'Deduplication Filter',desc:'Hash-based exact-match and fuzzy deduplication. Eliminates redundant synonym candidates before LLM expansion, reducing token waste.',tools:['SimHash','Levenshtein','Set Algebra']},
+   agent:{nm:'Synonym Generation Agent',desc:'Generates locale-aware semantic variants and long-tail expansions. Respects brand-specific terminology constraints per tenant.',tools:['Gemini Flash','Embedding Similarity','Tenant Dict']},
+   trace:'Base Terms \u2192 Dedup Gate \u2192 LLM Expansion \u2192 Synonym Set'},
+  {id:4,nm:'SV Gate',role:'Volume Filtering',
+   gate:{nm:'Threshold Comparator',desc:'Applies configurable numeric thresholds against search volume data. Purely mathematical filtering with zero probabilistic uncertainty.',tools:['NumPy','Threshold Config','BigQuery']},
+   agent:{nm:'Trend Analysis Agent',desc:'For borderline candidates, applies time-series trend detection to identify emerging terms that pass the volume threshold trajectory.',tools:['Gemini Flash Lite','Pandas','Seasonal Decomp']},
+   trace:'Synonym Set \u2192 Volume Lookup \u2192 Threshold Gate \u2192 Qualified Terms'},
+  {id:5,nm:'Writer',role:'Content Generation',
+   gate:{nm:'Template Selector',desc:'Pattern-matches product category to pre-validated content templates. Enforces structural constraints (length, heading count, keyword density).',tools:['Jinja2','Template Registry','Constraint DSL']},
+   agent:{nm:'Content Generation Agent',desc:'Produces SEO-optimized, locale-aware product content. Operates within strict template boundaries with per-tenant LoRA adapter binding.',tools:['Gemma 4 MoE','LoRA Adapter','Prompt Cache']},
+   trace:'Qualified Terms \u2192 Template Gate \u2192 LoRA Generation \u2192 Draft Content'},
+  {id:6,nm:'Validator',role:'O-R-A-V Evaluation',
+   gate:{nm:'Format Compliance Check',desc:'Validates output structure, word count bounds, and forbidden pattern exclusion. Deterministic binary pass/fail before expensive multi-model scoring.',tools:['Regex','Word Counter','Blocklist']},
+   agent:{nm:'Multi-Model Consensus Judge',desc:'Orchestrates O-R-A-V scoring across multiple model tiers. Any dimension below threshold triggers fail-closed policy and prompt mutation feedback.',tools:['Gemini Flash','Gemini Pro','Cross-Model Vote']},
+   trace:'Draft Content \u2192 Format Gate \u2192 O-R-A-V Scoring \u2192 Accept or Reject'},
+  {id:7,nm:'Features',role:'Vectorization',
+   gate:{nm:'Embedding Dimension Check',desc:'Validates vector dimensionality, NaN detection, and magnitude normalization. Prevents corrupt embeddings from entering the downstream index.',tools:['NumPy','Dim Validator','NaN Guard']},
+   agent:{nm:'Feature Extraction Agent',desc:'Generates dense vector representations for similarity search, clustering, and downstream recommendation systems.',tools:['Text Embeddings','Feature Store','Firestore']},
+   trace:'Validated Content \u2192 Dimension Gate \u2192 Embedding Generation \u2192 Feature Vector'}
+];
+
+// Build UI
+const pipsEl = document.getElementById('nodePips');
+const panelsEl = document.getElementById('nodePanels');
+
+nodeData.forEach((n, i) => {
+  // Pip
+  const pip = document.createElement('div');
+  pip.className = 'node-pip' + (i === 0 ? ' active' : '');
+  pip.dataset.idx = i;
+  pipsEl.appendChild(pip);
+
+  // Panel
+  const panel = document.createElement('div');
+  panel.className = 'node-panel' + (i === 0 ? ' active' : '');
+  panel.innerHTML = `
+    <div class="node-title"><span class="node-badge">${n.id}</span> Node ${n.id} \u2014 ${n.nm} <span class="pill pill-det" style="margin-left:8px">${n.role.toUpperCase()}</span></div>
+    <div class="sa-grid">
+      <div class="sa-conn"></div>
+      <div class="sa" style="border-color:rgba(52,211,153,0.3)">
+        <span class="pill pill-det">DETERMINISTIC GATE</span>
+        <div class="nm" style="margin-top:12px">${n.gate.nm}</div>
+        <div class="detail">${n.gate.desc}</div>
+        <div class="tools">${n.gate.tools.map(t => `<span class="tool">${t}</span>`).join('')}</div>
+      </div>
+      <div class="sa" style="border-color:rgba(10,132,255,0.3)">
+        <span class="pill pill-prob">PROBABILISTIC AGENT</span>
+        <div class="nm" style="margin-top:12px">${n.agent.nm}</div>
+        <div class="detail">${n.agent.desc}</div>
+        <div class="tools">${n.agent.tools.map(t => `<span class="tool">${t}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div class="node-trace">${n.trace}</div>`;
+  panelsEl.appendChild(panel);
+});
+
+// Scroll-linked animation
+const track = document.getElementById('nodeTrack');
+const pips = document.querySelectorAll('.node-pip');
+const panels = document.querySelectorAll('.node-panel');
+const hint = document.getElementById('scrollHint');
+let lastActive = 0;
+
+function updateNodeScroll() {
+  const rect = track.getBoundingClientRect();
+  const trackH = track.offsetHeight;
+  const scrolled = -rect.top;
+  const progress = Math.max(0, Math.min(1, scrolled / (trackH - window.innerHeight)));
+  const activeIdx = Math.min(6, Math.floor(progress * 7));
+
+  if (activeIdx !== lastActive) {
+    pips.forEach((p, i) => p.classList.toggle('active', i <= activeIdx));
+    panels.forEach((p, i) => {
+      if (i === activeIdx) {
+        p.classList.add('active');
+        p.style.position = 'relative';
+      } else {
+        p.classList.remove('active');
+        p.style.position = 'absolute';
+      }
+    });
+    lastActive = activeIdx;
+  }
+
+  // Hide scroll hint after first scroll
+  if (progress > 0.05 && hint) hint.style.opacity = '0';
+  else if (hint) hint.style.opacity = '';
+}
+
+window.addEventListener('scroll', updateNodeScroll, {passive: true});
+updateNodeScroll();
 
 </script>
 </body>
