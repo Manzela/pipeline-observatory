@@ -3,187 +3,209 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pipeline Observatory</title>
-<meta name="description" content="Multi-Agent DAG execution traces, model timeline, and deployment metrics for an autonomous enterprise-scale pipeline.">
+<title>Pipeline Observatory — Daniel Manzela</title>
+<meta name="description" content="Live execution telemetry for an autonomous multi-agent DAG pipeline operating at enterprise scale across 5 countries and 11 clients.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
 :root{--bg:#000;--s1:rgba(255,255,255,0.03);--s2:rgba(255,255,255,0.05);--b:rgba(255,255,255,0.08);--t:rgba(255,255,255,0.92);--t2:rgba(255,255,255,0.55);--t3:rgba(255,255,255,0.3);--accent:#0A84FF;--green:#30D158;--amber:#FFD60A;--red:#FF453A;--cyan:#64D2FF}
-body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,-apple-system,sans-serif;letter-spacing:-0.01em;-webkit-font-smoothing:antialiased;line-height:1.6}
-code{font-family:'JetBrains Mono',monospace;font-size:11px}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6;letter-spacing:-0.01em}
 .w{max-width:960px;margin:0 auto;padding:0 24px}
 
 /* Hero */
-.hero{padding:100px 0 80px;text-align:center;border-bottom:1px solid var(--b);background:radial-gradient(ellipse at 50% 0%,rgba(10,132,255,0.025) 0%,transparent 50%)}
-.hero h1{font-size:40px;font-weight:700;letter-spacing:-1.5px;margin-bottom:12px}
-.hero p{font-size:15px;color:var(--t2);max-width:560px;margin:0 auto}
-.hero .live{margin-top:20px;display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--t3);background:var(--s1);border:1px solid var(--b);padding:6px 14px;border-radius:99px}
-.hero .live::before{content:'';width:6px;height:6px;border-radius:3px;background:var(--green);animation:blink 2s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero{padding:120px 0 80px;text-align:center;border-bottom:1px solid var(--b);background:radial-gradient(ellipse at 50% 0%,rgba(10,132,255,0.025) 0%,transparent 50%)}
+.hero h1{font-size:42px;font-weight:700;letter-spacing:-1.5px;line-height:1.08;margin-bottom:16px}
+.hero .sub{font-size:16px;color:var(--t2);max-width:560px;margin:0 auto;line-height:1.7}
+.hero .meta{margin-top:28px;font-size:12px;color:var(--t3);letter-spacing:0.3px}
+.hero .meta a{color:var(--accent);text-decoration:none}
+.live-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--t3);background:var(--s1);border:1px solid var(--b);padding:6px 16px;border-radius:99px;margin-top:16px;letter-spacing:0.3px}
+.live-dot{width:6px;height:6px;border-radius:3px;background:var(--green);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:16px;overflow:hidden;margin:80px 0}
-.stat{background:var(--s1);padding:28px 16px;text-align:center}
-.stat .num{font-size:24px;font-weight:700;letter-spacing:-0.5px}
-.stat .lbl{font-size:10px;color:var(--t3);margin-top:4px}
+/* Stats Grid */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:16px;overflow:hidden;margin:80px 0}
+.stat{background:var(--s1);padding:32px 20px;text-align:center;transition:background 0.3s ease}
+.stat:hover{background:rgba(255,255,255,0.05)}
+.stat .num{font-size:28px;font-weight:700;letter-spacing:-0.5px}
+.stat .lbl{font-size:10px;color:var(--t3);margin-top:6px;text-transform:uppercase;letter-spacing:1px}
 
 /* Sections */
 .sec{padding:80px 0;border-bottom:1px solid var(--b)}
 .sec:last-of-type{border:none}
 .label{font-size:11px;text-transform:uppercase;letter-spacing:3px;color:var(--accent);font-weight:500;margin-bottom:12px}
 .sec h2{font-size:28px;font-weight:700;letter-spacing:-0.8px;margin-bottom:8px}
-.sec .desc{font-size:14px;color:var(--t2);max-width:640px;margin-bottom:40px}
+.sec .desc{font-size:14px;color:var(--t2);max-width:640px;margin-bottom:40px;line-height:1.8}
 
-/* Card */
-.card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:32px;margin-bottom:16px}
-.card h3{font-size:15px;font-weight:600;margin-bottom:16px}
+/* Cards */
+.card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:32px;margin-bottom:16px;transition:border-color 0.3s ease}
+.card:hover{border-color:rgba(255,255,255,0.12)}
+.card h3{font-size:13px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:20px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 
+/* Scale Box */
+.scale-box{border:1px solid rgba(10,132,255,0.12);border-radius:16px;padding:40px;background:rgba(10,132,255,0.02)}
+.scale-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center;margin-bottom:24px}
+.scale-nums .num{font-size:32px;font-weight:700;letter-spacing:-1px}
+.scale-nums .lbl{font-size:10px;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.scale-math{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t2);text-align:center;padding-top:20px;border-top:1px solid rgba(10,132,255,0.08);line-height:2}
+.scale-math em{color:var(--accent);font-style:normal;font-weight:600}
+.scale-math strong{color:var(--green);font-size:14px}
+
 /* DAG */
-.dag{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:8px 0;justify-content:center}
-.dag-n{border:1px solid var(--b);border-radius:12px;padding:14px 10px;text-align:center;min-width:100px;flex-shrink:0;position:relative}
-.dag-n .nm{font-size:11px;font-weight:600}.dag-n .tp{font-size:9px;color:var(--t2)}
+.dag-wrap{position:relative;padding:10px 0}
+.dag{display:flex;align-items:center;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px 0;justify-content:center;position:relative;z-index:2}
+.dag-n{border:1px solid var(--b);border-radius:12px;padding:14px 10px;text-align:center;min-width:100px;flex-shrink:0;position:relative;transition:all 0.3s ease}
+.dag-n:hover{transform:translateY(-2px);border-color:rgba(10,132,255,0.3)}
+.dag-n .nm{font-size:11px;font-weight:600}
+.dag-n .tp{font-size:9px;color:var(--t2)}
 .dag-n .ct{font-size:10px;color:var(--accent);margin-top:4px;font-weight:600}
-.dag-arr{color:var(--t3);font-size:12px;flex-shrink:0}
+.dag-arr{color:var(--t3);font-size:12px;flex-shrink:0;user-select:none}
 .dag-n.n1{background:rgba(59,130,246,0.06)}.dag-n.n2{background:rgba(251,191,36,0.06)}
 .dag-n.n3{background:rgba(34,211,238,0.06)}.dag-n.n4{background:rgba(244,114,182,0.06)}
 .dag-n.n5{background:rgba(52,211,153,0.06)}.dag-n.n6{background:rgba(248,113,113,0.06)}
 .dag-n.n7{background:rgba(129,140,248,0.06)}
-.demas{margin-top:16px;text-align:center;padding:14px;border:1px dashed rgba(251,191,36,0.2);border-radius:12px}
+.demas{margin-top:20px;text-align:center;padding:16px;border:1px dashed rgba(251,191,36,0.2);border-radius:12px;background:rgba(251,191,36,0.02)}
 
 /* Timeline */
-.tl-row{display:grid;grid-template-columns:100px 160px 1fr 60px;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--b)}
+.tl-row{display:grid;grid-template-columns:100px 180px 1fr 60px;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--b);transition:background 0.2s ease}
 .tl-row:last-child{border:none}
-.tl-date{font-size:12px;color:var(--t3)}.tl-model{font-size:12px;font-weight:600}
+.tl-row:hover{background:rgba(255,255,255,0.02)}
+.tl-date{font-size:12px;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.tl-model{font-size:12px;font-weight:600}
 .tl-bar{height:6px;border-radius:3px;background:var(--s2);overflow:hidden}
-.tl-fill{height:100%;border-radius:3px;transition:width 1s ease}
-.tl-calls{font-size:11px;color:var(--t2);text-align:right}
+.tl-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(0.25,0.46,0.45,0.94)}
+.tl-calls{font-size:11px;color:var(--t2);text-align:right;font-family:'JetBrains Mono',monospace}
 
 /* Geo */
-.geo{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
-.geo-c{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--s2);border:1px solid var(--b);border-radius:10px}
-.geo-c .flag{font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--t2);background:rgba(255,255,255,0.06);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.geo-c .name{font-size:12px;font-weight:600}
-.geo-c .det{font-size:10px;color:var(--t3)}
+.geo{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.geo-c{display:flex;align-items:center;gap:12px;padding:16px;background:var(--s2);border:1px solid var(--b);border-radius:12px;transition:all 0.2s ease}
+.geo-c:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px)}
+.geo-c .flag{font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--t2);background:rgba(255,255,255,0.06);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.geo-c .name{font-size:13px;font-weight:600}
+.geo-c .det{font-size:10px;color:var(--t3);margin-top:2px;line-height:1.5}
 
 /* Deploy */
-.dep{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.dep-c{padding:16px;background:var(--s2);border:1px solid var(--b);border-radius:10px;text-align:center}
-.dep-c .icon{font-size:20px;margin-bottom:6px}
-.dep-c .val{font-size:14px;font-weight:600}.dep-c .lbl{font-size:10px;color:var(--t3);margin-top:2px}
+.dep{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dep-c{padding:20px;background:var(--s2);border:1px solid var(--b);border-radius:12px;text-align:center;transition:all 0.2s ease}
+.dep-c:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px)}
+.dep-c .val{font-size:18px;font-weight:700;letter-spacing:-0.5px}
+.dep-c .lbl{font-size:10px;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:0.5px}
 
 /* Traces */
-.trace{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 0;border-bottom:1px solid var(--b);display:grid;grid-template-columns:180px 60px 1fr 80px;gap:8px;opacity:0;animation:fadeIn .3s forwards}
-.trace .ts{color:var(--t3)}.trace .stage{color:var(--cyan)}.trace .event{color:var(--t2)}.trace .ok{color:var(--green)}.trace .fail{color:var(--red)}
-@keyframes fadeIn{to{opacity:1}}
+.trace{font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 12px;margin-bottom:2px;border-radius:6px;display:grid;grid-template-columns:140px 60px 1fr 50px;gap:12px;background:transparent;transition:background 0.2s ease}
+.trace:hover{background:rgba(255,255,255,0.03)}
+.trace .ts{color:var(--t3)}.trace .stage{color:var(--cyan)}.trace .event{color:var(--t2)}.trace .ok{color:var(--green);font-weight:600}.trace .fail{color:var(--red);font-weight:600}
 
-/* Scale box */
-.scale-box{background:rgba(251,191,36,0.03);border:1px solid rgba(251,191,36,0.1);border-radius:16px;padding:32px}
-.scale-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center;margin-bottom:20px}
-.scale-nums .num{font-size:28px;font-weight:700}.scale-nums .lbl{font-size:10px;color:var(--t3);margin-top:2px}
-.scale-math{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t2);text-align:center;padding-top:16px;border-top:1px solid rgba(251,191,36,0.08)}
-.scale-math em{color:var(--amber);font-style:normal;font-weight:600}
-.scale-math strong{color:var(--green);font-size:14px}
+/* CTA */
+.cta{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border:1px solid var(--accent);border-radius:99px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:500;transition:all 0.3s ease;margin-top:32px}
+.cta:hover{background:rgba(10,132,255,0.1);transform:translateY(-1px)}
 
 /* Footer */
-.ftr{padding:60px 0 40px;text-align:center;font-size:11px;color:var(--t3)}.ftr a{color:var(--accent);text-decoration:none}
+.ftr{padding:60px 0 40px;text-align:center;font-size:11px;color:var(--t3)}
+.ftr a{color:var(--accent);text-decoration:none}
 
 /* Reveal */
-.reveal{opacity:0;transform:translateY(20px);transition:all .6s}.reveal.visible{opacity:1;transform:none}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s}.reveal.visible{opacity:1;transform:none}
 
-@media(max-width:768px){.stats{grid-template-columns:repeat(2,1fr)}.dep{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}.trace{grid-template-columns:1fr}.hero h1{font-size:28px}}
-
-/* Organic animations */
-@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
-/* removed */
-.stat{transition:all .3s ease}.stat:hover{background:rgba(255,255,255,0.06)}
-.card{transition:border-color .3s ease}.card:hover{border-color:rgba(255,255,255,0.12)}
-.dag-n{transition:all .3s ease}.dag-n:hover{transform:translateY(-2px);border-color:rgba(10,132,255,0.3)}
-.geo-c{transition:all .2s ease}.geo-c:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px)}
-.dep-c{transition:all .2s ease}.dep-c:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px)}
-.trace{transition:background .2s ease}.trace:hover{background:rgba(255,255,255,0.03)}
-.tl-row{transition:background .2s ease}.tl-row:hover{background:rgba(255,255,255,0.02)}
-
-/* Causal Tracing (SVG) */
-@keyframes flowPath{0%{stroke-dashoffset:100}100%{stroke-dashoffset:0}}
-.causal-trace{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
-.trace-line{stroke:rgba(10,132,255,0.4);stroke-width:2;fill:none;stroke-dasharray:10 10;animation:flowPath 2s linear infinite}
-.dag-wrap{position:relative;padding:10px 0}
-.dag{position:relative;z-index:2}
+/* Responsive */
+@media(max-width:768px){
+  .hero h1{font-size:28px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .dep{grid-template-columns:repeat(2,1fr)}
+  .g2{grid-template-columns:1fr}
+  .trace{grid-template-columns:1fr;gap:4px}
+  .trace .ts{font-size:10px}
+  .tl-row{grid-template-columns:1fr;gap:6px}
+  .scale-nums{grid-template-columns:repeat(3,1fr)}
+}
 </style>
 </head>
 <body>
 <div class="w">
 
 <div class="hero">
-  <h1>Pipeline Observatory</h1>
-  <p>Multi-Agent DAG · Enterprise-Scale Execution Traces</p>
-  <div class="live">Last execution: 2026-05-07T11:45:24Z</div>
+  <h1>Pipeline<br>Observatory</h1>
+  <p class="sub">Live execution telemetry for an autonomous multi-agent DAG pipeline — processing millions of product pages across 5 countries with mechanistic interpretability and fail-closed safety.</p>
+  <div class="meta"><a href="architecture.html">Architecture Deep View</a> &middot; Daniel Manzela &middot; TNG Shopper &middot; 2024–2026</div>
+  <div class="live-badge"><span class="live-dot"></span> Last execution: 2026-05-07T11:45:24Z</div>
 </div>
 
-<div class="stats">
-  <div class="stat"><div class="num" id="s1">—</div><div class="lbl">Node Executions</div></div>
-  <div class="stat"><div class="num" id="s2">—</div><div class="lbl">Pipeline Runs</div></div>
-  <div class="stat"><div class="num" id="s3">—</div><div class="lbl">Endpoints</div></div>
-  <div class="stat"><div class="num" id="s4">—</div><div class="lbl">Model Generations</div></div>
-  <div class="stat"><div class="num" id="s5">—</div><div class="lbl">Countries</div></div>
-  <div class="stat"><div class="num" id="s6">—</div><div class="lbl">Success Rate</div></div>
+<!-- Key Metrics -->
+<div class="stats reveal">
+  <div class="stat"><div class="num" id="ct1">—</div><div class="lbl">Node Executions</div></div>
+  <div class="stat"><div class="num" id="ct2">—</div><div class="lbl">Pipeline Runs</div></div>
+  <div class="stat"><div class="num" id="ct3">—</div><div class="lbl">Active Endpoints</div></div>
+  <div class="stat"><div class="num" id="ct4">—</div><div class="lbl">Model Generations</div></div>
+  <div class="stat"><div class="num" id="ct5">—</div><div class="lbl">Countries</div></div>
+  <div class="stat"><div class="num" id="ct6">—</div><div class="lbl">Success Rate</div></div>
 </div>
 
 <!-- Enterprise Scale -->
 <div class="sec reveal">
   <div class="label">Production Scale</div>
   <h2>Enterprise Throughput</h2>
+  <div class="desc">The pipeline processes product data for 11 commercial clients across 5 countries. Each cycle traverses all 7 DAG nodes per product, generating ~55M node operations from ~7.9M product-page inputs.</div>
+
   <div class="scale-box">
     <div class="scale-nums">
-      <div><div class="num" style="color:var(--amber)">11</div><div class="lbl">Clients</div></div>
-      <div><div class="num" style="color:var(--amber)">~45K</div><div class="lbl">Products / Client</div></div>
-      <div><div class="num" style="color:var(--amber)">~16</div><div class="lbl">Locations / Client</div></div>
+      <div><div class="num" style="color:var(--t)">11</div><div class="lbl">Clients</div></div>
+      <div><div class="num" style="color:var(--t)">~45K</div><div class="lbl">Products / Client</div></div>
+      <div><div class="num" style="color:var(--t)">~16</div><div class="lbl">Locations / Client</div></div>
       <div><div class="num" style="color:var(--green)">~7.9M</div><div class="lbl">PDPs / Cycle</div></div>
       <div><div class="num" style="color:var(--green)">~55M</div><div class="lbl">Node Ops / Cycle</div></div>
       <div><div class="num" style="color:var(--accent)">~305M</div><div class="lbl">Monthly Node Ops</div></div>
     </div>
-    <div class="scale-math"><em>11</em> × <em>~45K</em> × <em>~16</em> = <strong>~7.9M PDPs</strong> per cycle · <a href="architecture.html" style="color:var(--accent)">Deep Architecture View →</a></div>
+    <div class="scale-math"><em>11</em> clients &times; <em>~45K</em> products &times; <em>~16</em> locations = <strong>~7.9M PDPs</strong> per cycle &times; 7 nodes = <strong>~55M ops</strong></div>
   </div>
 </div>
 
-<!-- DAG -->
+<!-- DAG Topology -->
 <div class="sec reveal">
   <div class="label">Agent Topology</div>
-  <h2>DAG — Per-Node Throughput</h2>
-  <div class="card" style="padding:40px 20px">
+  <h2>7-Node Execution DAG</h2>
+  <div class="desc">Each pipeline run traverses a strict Directed Acyclic Graph. Deterministic gates fire at every node boundary; the probabilistic LLM activates only when the gate passes. DEMAS audits every transition.</div>
+
+  <div class="card">
     <div class="dag-wrap">
-      <svg class="causal-trace">
-        <path d="M 60 40 L 800 40" class="trace-line" />
-      </svg>
       <div class="dag">
-        <div class="dag-n n1"><div class="nm">Node 1</div><div class="tp">City DNA</div><div class="ct">—</div></div><div class="dag-arr">→</div>
-        <div class="dag-n n2"><div class="nm">Node 2</div><div class="tp">Normalizer</div><div class="ct">22,760</div></div><div class="dag-arr">→</div>
-        <div class="dag-n n3"><div class="nm">Node 3</div><div class="tp">Synonyms</div><div class="ct">—</div></div><div class="dag-arr">→</div>
-        <div class="dag-n n4"><div class="nm">Node 4</div><div class="tp">SV Gate</div><div class="ct">—</div></div><div class="dag-arr">→</div>
-        <div class="dag-n n5"><div class="nm">Node 5</div><div class="tp">Writer</div><div class="ct">20,314</div></div><div class="dag-arr">→</div>
-        <div class="dag-n n6"><div class="nm">Node 6</div><div class="tp">Validator</div><div class="ct">O-R-A-V</div></div><div class="dag-arr">→</div>
+        <div class="dag-n n1"><div class="nm">Node 1</div><div class="tp">City DNA</div><div class="ct">—</div></div><span class="dag-arr">&rarr;</span>
+        <div class="dag-n n2"><div class="nm">Node 2</div><div class="tp">Normalizer</div><div class="ct">22,760</div></div><span class="dag-arr">&rarr;</span>
+        <div class="dag-n n3"><div class="nm">Node 3</div><div class="tp">Synonyms</div><div class="ct">—</div></div><span class="dag-arr">&rarr;</span>
+        <div class="dag-n n4"><div class="nm">Node 4</div><div class="tp">SV Gate</div><div class="ct">—</div></div><span class="dag-arr">&rarr;</span>
+        <div class="dag-n n5"><div class="nm">Node 5</div><div class="tp">Writer</div><div class="ct">20,314</div></div><span class="dag-arr">&rarr;</span>
+        <div class="dag-n n6"><div class="nm">Node 6</div><div class="tp">Validator</div><div class="ct">O-R-A-V</div></div><span class="dag-arr">&rarr;</span>
         <div class="dag-n n7"><div class="nm">Node 7</div><div class="tp">Features</div><div class="ct">—</div></div>
       </div>
     </div>
-    <div class="demas" style="margin-top:24px"><span style="color:var(--amber);font-weight:600">DEMAS</span><span style="color:var(--t3);font-size:11px"> — JIT Audit · 5,563 executions · 68.9% pass rate · Fail-Closed</span></div>
+    <div class="demas"><span style="color:var(--amber);font-weight:600;font-size:12px">DEMAS</span><span style="color:var(--t3);font-size:11px"> — JIT Audit Layer &middot; 5,563 executions &middot; 68.9% pass rate &middot; Fail-Closed</span></div>
   </div>
+
+  <a href="architecture.html" class="cta">Explore Node Anatomy &rarr;</a>
 </div>
 
 <!-- Model Timeline -->
 <div class="sec reveal">
   <div class="label">Model Evolution</div>
   <h2>3 Generations in Production</h2>
-  <div class="card" id="timeline"></div>
+  <div class="desc">The inference backbone has evolved through three distinct model generations — from on-premise Gemma to cloud-hosted Gemini — with each migration tracked through execution volume.</div>
+
+  <div class="card">
+    <h3>Execution Volume by Model</h3>
+    <div id="timeline"></div>
+  </div>
 </div>
 
 <!-- Geo -->
 <div class="sec reveal">
-  <div class="label">Geographic Fanout</div>
+  <div class="label">Geographic Coverage</div>
   <h2>Multi-Country Execution</h2>
+  <div class="desc">The pipeline adapts content per locale — language, cultural signals, and timezone offsets are injected at Node 1 (City DNA) before any downstream LLM invocation.</div>
+
   <div class="geo">
-    <div class="geo-c"><span class="flag">ES</span><div><div class="name">Spain</div><div class="det">Zaragoza · València · Madrid · Barcelona · Málaga</div></div></div>
-    <div class="geo-c"><span class="flag">PT</span><div><div class="name">Portugal</div><div class="det">Odivelas · Guilhufe</div></div></div>
+    <div class="geo-c"><span class="flag">ES</span><div><div class="name">Spain</div><div class="det">Zaragoza &middot; Val&egrave;ncia &middot; Madrid &middot; Barcelona &middot; M&aacute;laga</div></div></div>
+    <div class="geo-c"><span class="flag">PT</span><div><div class="name">Portugal</div><div class="det">Odivelas &middot; Guilhufe</div></div></div>
     <div class="geo-c"><span class="flag">IL</span><div><div class="name">Israel</div><div class="det">Tel Aviv-Yafo</div></div></div>
     <div class="geo-c"><span class="flag">GB</span><div><div class="name">United Kingdom</div><div class="det">Birmingham</div></div></div>
   </div>
@@ -192,7 +214,9 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px}
 <!-- Deployment -->
 <div class="sec reveal">
   <div class="label">Deployment Matrix</div>
-  <h2>131 Endpoints · 21 Domains</h2>
+  <h2>131 Endpoints &middot; 21 Domains</h2>
+  <div class="desc">Pipeline outputs are synced to production e-commerce surfaces in real-time. Each tenant's content is isolated via adapter binding and scoped prompt caching.</div>
+
   <div class="dep">
     <div class="dep-c"><div class="val">99</div><div class="lbl">Microsites</div></div>
     <div class="dep-c"><div class="val">109</div><div class="lbl">Stores</div></div>
@@ -204,33 +228,100 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px}
 <!-- Traces -->
 <div class="sec reveal">
   <div class="label">Execution Traces</div>
-  <h2>Live Stream (Anonymized)</h2>
-  <div class="card" id="traces" style="max-height:400px;overflow-y:auto"></div>
+  <h2>Live Stream</h2>
+  <div class="desc">Anonymized execution traces from the most recent pipeline runs. Each line represents a single node invocation with its audit status.</div>
+
+  <div class="card" style="padding:20px">
+    <div id="traces"></div>
+  </div>
 </div>
 
 <div class="ftr">
-  <p>BigQuery execution logs · <a href="https://github.com/Manzela">github.com/Manzela</a> · <a href="architecture.html">Architecture Deep View →</a></p>
+  <p>Autonomous Pipeline Observatory &middot; <a href="architecture.html">Architecture Deep View &rarr;</a> &middot; <a href="https://github.com/Manzela">github.com/Manzela</a></p>
 </div>
 </div>
 
 <script>
-// Counters
-function ac(el,t,s=''){let c=0;const st=Math.ceil(t/50);const i=setInterval(()=>{c+=st;if(c>=t){c=t;clearInterval(i)}el.textContent=c.toLocaleString()+s},30)}
-setTimeout(()=>{ac(document.getElementById('s1'),48637);ac(document.getElementById('s2'),2009);ac(document.getElementById('s3'),131);ac(document.getElementById('s4'),3);ac(document.getElementById('s5'),5);ac(document.getElementById('s6'),100,'%')},600);
+// Animated counters
+function animateCount(el, target, suffix) {
+  suffix = suffix || '';
+  let current = 0;
+  const step = Math.ceil(target / 40);
+  const interval = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(interval); }
+    el.textContent = current.toLocaleString() + suffix;
+  }, 35);
+}
 
-// Timeline
-const tl=[{d:'Mar 24–31',m:'gemma-3-4b-it',c:25847,col:'#818cf8'},{d:'Apr 5–6',m:'gemma-4-26b-a4b',c:1438,col:'#a78bfa'},{d:'Apr 13–14',m:'gemini-2.5-flash-lite',c:5595,col:'#34d399'},{d:'May 7',m:'gemini-2.5-flash-lite',c:164,col:'#34d399'}];
-const te=document.getElementById('timeline');
-tl.forEach((t,i)=>{const r=document.createElement('div');r.className='tl-row';const p=Math.max((t.c/25847)*100,4);r.innerHTML=`<div class="tl-date">${t.d}</div><div class="tl-model">${t.m}</div><div class="tl-bar"><div class="tl-fill" style="width:0;background:${t.col}"></div></div><div class="tl-calls">${t.c.toLocaleString()}</div>`;te.appendChild(r);setTimeout(()=>r.querySelector('.tl-fill').style.width=p+'%',400+i*200)});
+// Trigger counters on scroll
+const statsObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animateCount(document.getElementById('ct1'), 48637);
+      animateCount(document.getElementById('ct2'), 2009);
+      animateCount(document.getElementById('ct3'), 131);
+      animateCount(document.getElementById('ct4'), 3);
+      animateCount(document.getElementById('ct5'), 5);
+      animateCount(document.getElementById('ct6'), 100, '%');
+      statsObs.disconnect();
+    }
+  });
+}, {threshold: 0.3});
+const statsEl = document.querySelector('.stats');
+if (statsEl) statsObs.observe(statsEl);
 
-// Traces
-const tr=[{ts:'2026-05-07T11:45:24Z',st:'demas',ev:'demas_jit_audit',s:'pass'},{ts:'2026-05-07T11:45:22Z',st:'node5',ev:'content_generation',s:'ok'},{ts:'2026-05-07T11:45:20Z',st:'node5',ev:'content_generation',s:'ok'},{ts:'2026-05-07T11:45:18Z',st:'demas',ev:'demas_jit_audit',s:'pass'},{ts:'2026-05-07T11:45:16Z',st:'node5',ev:'content_generation',s:'ok'},{ts:'2026-05-07T11:45:15Z',st:'node2',ev:'vision_extraction',s:'ok'},{ts:'2026-05-07T11:45:14Z',st:'demas',ev:'demas_jit_audit',s:'pass'},{ts:'2026-05-07T11:45:12Z',st:'node2',ev:'taxonomy_classify',s:'ok'},{ts:'2026-05-07T11:45:10Z',st:'demas',ev:'demas_jit_audit',s:'fail'},{ts:'2026-05-07T11:45:09Z',st:'node5',ev:'content_generation',s:'ok'},{ts:'2026-04-13T09:12:44Z',st:'node5',ev:'content_generation',s:'ok'},{ts:'2026-04-06T14:33:12Z',st:'node2',ev:'vision_extraction',s:'ok'},{ts:'2026-03-30T08:21:55Z',st:'node5',ev:'content_generation',s:'ok'},{ts:'2026-03-30T08:20:11Z',st:'node2',ev:'taxonomy_classify',s:'fail'},{ts:'2026-03-26T16:45:33Z',st:'demas',ev:'demas_jit_audit',s:'pass'}];
-const tEl=document.getElementById('traces');
-tr.forEach((t,i)=>{setTimeout(()=>{const l=document.createElement('div');l.className='trace';l.style.animationDelay=i*.08+'s';const sc=t.s==='ok'||t.s==='pass'?'ok':'fail';l.innerHTML=`<span class="ts">${t.ts}</span><span class="stage">${t.st}</span><span class="event">${t.ev}</span><span class="${sc}">${t.s.toUpperCase()}</span>`;tEl.appendChild(l)},600+i*120)});
+// Model timeline
+const tl = [
+  {d:'Mar 24–31', m:'gemma-3-4b-it', c:25847, col:'#818cf8'},
+  {d:'Apr 5–6', m:'gemma-4-26b-a4b', c:1438, col:'#a78bfa'},
+  {d:'Apr 13–14', m:'gemini-2.5-flash-lite', c:5595, col:'#34d399'},
+  {d:'May 7', m:'gemini-3.1-flash-lite', c:164, col:'#64D2FF'}
+];
+const te = document.getElementById('timeline');
+tl.forEach((t, i) => {
+  const r = document.createElement('div');
+  r.className = 'tl-row';
+  const pct = Math.max((t.c / 25847) * 100, 4);
+  r.innerHTML = `<div class="tl-date">${t.d}</div><div class="tl-model">${t.m}</div><div class="tl-bar"><div class="tl-fill" style="width:0;background:${t.col}"></div></div><div class="tl-calls">${t.c.toLocaleString()}</div>`;
+  te.appendChild(r);
+  setTimeout(() => r.querySelector('.tl-fill').style.width = pct + '%', 400 + i * 200);
+});
 
-// Reveal
-const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')}),{threshold:0.1});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+// Execution traces
+const traces = [
+  {ts:'11:45:24Z', st:'demas', ev:'jit_audit', s:'pass'},
+  {ts:'11:45:22Z', st:'node5', ev:'content_generation', s:'ok'},
+  {ts:'11:45:20Z', st:'node5', ev:'content_generation', s:'ok'},
+  {ts:'11:45:18Z', st:'demas', ev:'jit_audit', s:'pass'},
+  {ts:'11:45:16Z', st:'node5', ev:'content_generation', s:'ok'},
+  {ts:'11:45:15Z', st:'node2', ev:'vision_extraction', s:'ok'},
+  {ts:'11:45:14Z', st:'demas', ev:'jit_audit', s:'pass'},
+  {ts:'11:45:12Z', st:'node2', ev:'taxonomy_classify', s:'ok'},
+  {ts:'11:45:10Z', st:'demas', ev:'jit_audit', s:'fail'},
+  {ts:'11:45:09Z', st:'node5', ev:'content_generation', s:'ok'},
+  {ts:'11:44:55Z', st:'node5', ev:'content_generation', s:'ok'},
+  {ts:'11:44:42Z', st:'node2', ev:'vision_extraction', s:'ok'}
+];
+const tEl = document.getElementById('traces');
+traces.forEach((t, i) => {
+  setTimeout(() => {
+    const l = document.createElement('div');
+    l.className = 'trace';
+    l.style.opacity = '0';
+    l.style.transition = 'opacity 0.3s ease';
+    const sc = (t.s === 'ok' || t.s === 'pass') ? 'ok' : 'fail';
+    l.innerHTML = `<span class="ts">${t.ts}</span><span class="stage">${t.st}</span><span class="event">${t.ev}</span><span class="${sc}">${t.s.toUpperCase()}</span>`;
+    tEl.appendChild(l);
+    requestAnimationFrame(() => l.style.opacity = '1');
+  }, 800 + i * 100);
+});
+
+// Reveal on scroll
+const obs = new IntersectionObserver(e => e.forEach(x => {
+  if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); }
+}), {threshold: 0.08});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 </script>
 </body>
 </html>
