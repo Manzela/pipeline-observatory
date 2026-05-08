@@ -172,7 +172,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 <div class="hero">
   <h1>Autonomous Pipeline<br>Architecture</h1>
   <p>A production-grade multi-agent system with mechanistic interpretability, closed-loop autonomy, and self-improving state — operating at enterprise scale.</p>
-  <div class="meta"><a href="index.html" style="color:var(--accent);text-decoration:none">Pipeline Observatory</a> · Daniel Manzela · TNG Shopper · 2024–2026</div>
+  <div class="meta"><a href="index.html" style="color:var(--accent);text-decoration:none">Pipeline Observatory</a> · Daniel Manzela · 2024–2026</div>
 </div>
 
 <!-- 0. Inference Layer (MoE Sparse Activation) -->
@@ -291,6 +291,84 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
   <div class="fail-box">
     <strong style="color:var(--red);font-family:'JetBrains Mono',monospace;font-size:12px">FAIL-CLOSED POLICY</strong>
     <p style="font-size:11px;color:var(--t2);margin-top:6px">Below threshold → halt → Firestore trace → downstream block → mutate prompt</p>
+  </div>
+</div>
+
+<!-- 5a. Data Flywheel (3-Tier Curation) -->
+<div class="sec reveal" id="s5">
+  <div class="label">Self-Improving Data Loop</div>
+  <h2>3-Tier Dataset Flywheel</h2>
+  <div class="desc">Intelligence is recursive. Every pipeline execution — success or failure — feeds a closed-loop data flywheel that continuously improves model quality through RLAIF-grade preference optimization.</div>
+
+  <div class="card">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;align-items:center;gap:16px;padding:16px;border:1px solid rgba(48,209,88,0.2);border-radius:12px;background:rgba(48,209,88,0.04)">
+        <div style="flex-shrink:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(48,209,88,0.1);color:var(--green);font-weight:700;font-family:'JetBrains Mono',monospace">T1</div>
+        <div><div style="font-weight:600;font-size:13px;color:var(--t)">production-baseline</div><div style="font-size:11px;color:var(--t3);margin-top:2px">All production runs ingested. Raw I/O pairs across 17 prompt-specific partitions.</div></div>
+      </div>
+      <div style="text-align:center;color:var(--t3);font-size:18px">↓ <span style="font-size:10px;font-family:'JetBrains Mono',monospace">O-R-A-V ≥ 0.7 && DEMAS PASS</span></div>
+      <div style="display:flex;align-items:center;gap:16px;padding:16px;border:1px solid rgba(10,132,255,0.2);border-radius:12px;background:rgba(10,132,255,0.04)">
+        <div style="flex-shrink:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(10,132,255,0.1);color:var(--accent);font-weight:700;font-family:'JetBrains Mono',monospace">T2</div>
+        <div><div style="font-weight:600;font-size:13px;color:var(--t)">quality-approved</div><div style="font-size:11px;color:var(--t3);margin-top:2px">High-quality outputs curated as <strong style="color:var(--accent)">chosen</strong> examples for DPO training pairs.</div></div>
+      </div>
+      <div style="text-align:center;color:var(--t3);font-size:18px">↓ <span style="font-size:10px;font-family:'JetBrains Mono',monospace">O-R-A-V &lt; 0.5 || DEMAS FAIL</span></div>
+      <div style="display:flex;align-items:center;gap:16px;padding:16px;border:1px solid rgba(255,69,58,0.2);border-radius:12px;background:rgba(255,69,58,0.04)">
+        <div style="flex-shrink:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,69,58,0.1);color:var(--red);font-weight:700;font-family:'JetBrains Mono',monospace">T3</div>
+        <div><div style="font-weight:600;font-size:13px;color:var(--t)">failure-cases</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Rejected outputs curated as <strong style="color:var(--red)">rejected</strong> examples. Includes DEMAS failures + node errors.</div></div>
+      </div>
+    </div>
+    <div style="margin-top:24px;padding:16px;border:1px solid rgba(255,214,10,0.2);border-radius:12px;background:rgba(255,214,10,0.04);text-align:center">
+      <strong style="color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px">DPO PREFERENCE PAIRS → LoRA FINE-TUNING → MODEL UPDATE</strong>
+      <p style="font-size:11px;color:var(--t3);margin-top:6px">Margin-maximized (chosen, rejected) pairs with score gap ≥ 0.15 feed curriculum-based LoRA training</p>
+    </div>
+  </div>
+</div>
+
+<!-- 5b. Multi-Dimensional Scoring -->
+<div class="sec reveal" id="s5b">
+  <div class="label">Evaluation Granularity</div>
+  <h2>15+ Multi-Dimensional Metrics</h2>
+  <div class="desc">Beyond the 4 O-R-A-V dimensions, 15+ typed evaluation metrics power the flywheel with granular, per-node performance analysis.</div>
+
+  <div class="card">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:4px">NUMERIC · 0.0–1.0</div><div style="font-size:12px;font-weight:600">orav_quality</div><div style="font-size:10px;color:var(--t3)">Composite quality score</div></div>
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:4px">NUMERIC · 0.0–1.0</div><div style="font-size:12px;font-weight:600">orav_originality</div><div style="font-size:10px;color:var(--t3)">Content uniqueness vs. corpus</div></div>
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:4px">NUMERIC · 0.0–1.0</div><div style="font-size:12px;font-weight:600">orav_relevance</div><div style="font-size:10px;color:var(--t3)">Context alignment score</div></div>
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:4px">NUMERIC · 0.0–1.0</div><div style="font-size:12px;font-weight:600">orav_accuracy</div><div style="font-size:10px;color:var(--t3)">Factual correctness</div></div>
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:4px">NUMERIC · 0.0–1.0</div><div style="font-size:12px;font-weight:600">orav_value</div><div style="font-size:10px;color:var(--t3)">Cross-model consensus</div></div>
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:4px">BOOLEAN · pass/fail</div><div style="font-size:12px;font-weight:600">n2_schema_valid</div><div style="font-size:10px;color:var(--t3)">Pydantic validation gate</div></div>
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:4px">BOOLEAN · pass/fail</div><div style="font-size:12px;font-weight:600">n5_generation_success</div><div style="font-size:10px;color:var(--t3)">LLM completion gate</div></div>
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:4px">BOOLEAN · pass/fail</div><div style="font-size:12px;font-weight:600">n6_label_leak_free</div><div style="font-size:10px;color:var(--t3)">No internal label leaks</div></div>
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);margin-bottom:4px">BOOLEAN · pass/fail</div><div style="font-size:12px;font-weight:600">n6_transactional_free</div><div style="font-size:10px;color:var(--t3)">No sales language</div></div>
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--amber);margin-bottom:4px">CATEGORICAL · P/R/F</div><div style="font-size:12px;font-weight:600">orav_decision</div><div style="font-size:10px;color:var(--t3)">PASS / RETRY / FAIL</div></div>
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--amber);margin-bottom:4px">CATEGORICAL · P/R/F</div><div style="font-size:12px;font-weight:600">demas_jit_verdict</div><div style="font-size:10px;color:var(--t3)">Per-block JIT audit</div></div>
+      <div style="padding:12px;border:1px solid var(--b);border-radius:8px"><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:4px">NUMERIC · 0.0–1.0</div><div style="font-size:12px;font-weight:600">demas_provenance_coverage</div><div style="font-size:10px;color:var(--t3)">Ground-truth coverage %</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5c. Provenance Matrix -->
+<div class="sec reveal" id="s5c">
+  <div class="label">Attention Dilution Prevention</div>
+  <h2>Provenance Matrix</h2>
+  <div class="desc">The Provenance Matrix maps each content block to its exact ground-truth variables. This prevents attention dilution when the LLM-as-Judge evaluates generated content — the judge sees ONLY the variables relevant to the block being scored.</div>
+
+  <div class="card" style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:11px;font-family:'JetBrains Mono',monospace">
+      <tr style="border-bottom:1px solid var(--b)">
+        <th style="text-align:left;padding:8px 12px;color:var(--t2);font-weight:500">Content Block</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--t2);font-weight:500">Ground-Truth Variables</th>
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.04)"><td style="padding:8px 12px;color:var(--accent)">full_description</td><td style="padding:8px 12px;color:var(--t3)">lean_product_name · semantic_category · brand · trigger_term · city_dna · style_seed · visual_context</td></tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.04)"><td style="padding:8px 12px;color:var(--accent)">short_description</td><td style="padding:8px 12px;color:var(--t3)">lean_product_name · semantic_category · trigger_term</td></tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.04)"><td style="padding:8px 12px;color:var(--accent)">meta_title</td><td style="padding:8px 12px;color:var(--t3)">lean_product_name · trigger_term · city</td></tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.04)"><td style="padding:8px 12px;color:var(--accent)">meta_description</td><td style="padding:8px 12px;color:var(--t3)">lean_product_name · semantic_category · trigger_term · secondary_keyword</td></tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.04)"><td style="padding:8px 12px;color:var(--accent)">store_welcome_line</td><td style="padding:8px 12px;color:var(--t3)">city · store_name · lean_product_name</td></tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.04)"><td style="padding:8px 12px;color:var(--accent)">image_alt_tag</td><td style="padding:8px 12px;color:var(--t3)">lean_product_name · brand · color · visual_context</td></tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.04)"><td style="padding:8px 12px;color:var(--accent)">key_features</td><td style="padding:8px 12px;color:var(--t3)">lean_product_name · semantic_category · visual_context</td></tr>
+      <tr><td style="padding:8px 12px;color:var(--accent)">faq_items</td><td style="padding:8px 12px;color:var(--t3)">lean_product_name · semantic_category · trigger_term · relevant_search_queries</td></tr>
+    </table>
   </div>
 </div>
 
