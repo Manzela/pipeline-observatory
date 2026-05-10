@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daniel Manzela — AI Product Engineer</title>
+<meta name="description" content="AI Product Engineer building autonomous, eval-driven systems at enterprise scale. 8 years shipping AI from 0→1. Open-source contributor, Google Cloud certified.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="profile.css">
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav"><div class="nav-inner">
+  <div class="nav-brand"><strong>Daniel</strong> Manzela</div>
+  <div class="nav-links">
+    <a href="#work">Work</a>
+    <a href="#engineering">Engineering</a>
+    <a href="#credentials">Credentials</a>
+    <a href="index.html">Telemetry</a>
+    <a href="case-studies.html">Evidence</a>
+  </div>
+</div></nav>
+
+<div class="w">
+
+<!-- ════ HERO ════ -->
+<section class="hero" id="top">
+  <div class="eyebrow">AI Product Engineer</div>
+  <h1>I build autonomous AI systems<br>that actually work in production.</h1>
+  <p class="tagline">8 years shipping AI from 0→1. Multi-agent orchestration, eval-driven development, fail-closed safety. Zero human-in-the-loop at enterprise scale.</p>
+  <div class="hero-metrics">
+    <div class="hm"><span class="hm-val">11</span><span class="hm-lbl">Enterprise Clients</span></div>
+    <div class="hm"><span class="hm-val">~7.9M</span><span class="hm-lbl">Data Points / Cycle</span></div>
+    <div class="hm"><span class="hm-val">~116M</span><span class="hm-lbl">Sub-Agent Executions</span></div>
+    <div class="hm"><span class="hm-val">&lt;$0.00002</span><span class="hm-lbl">Cost per Run</span></div>
+  </div>
+  <div class="hero-cta">
+    <a href="#work" class="btn-primary">View Projects</a>
+    <a href="https://github.com/Manzela" class="btn-secondary" target="_blank">GitHub</a>
+    <a href="https://linkedin.com/in/manzela" class="btn-secondary" target="_blank">LinkedIn</a>
+  </div>
+</section>
+
+<!-- ════ FEATURED WORK ════ -->
+<section id="work">
+  <div class="section-label">Featured Work</div>
+
+  <!-- Project 1: Agent DAG -->
+  <div class="project reveal">
+    <div class="proj-header">
+      <div class="proj-number">01</div>
+      <div>
+        <h2>Autonomous Multi-Agent DAG Pipeline</h2>
+        <p class="proj-role">Founder & Lead Engineer — TNG Shopper <span class="badge-award">Top 100 Retail Tech 2025/6</span></p>
+      </div>
+    </div>
+
+    <div class="proj-grid">
+      <div class="proj-card">
+        <h4>Problem</h4>
+        <p>Enterprise retailers need thousands of localized product pages — but manual content creation can't scale, and naive LLM generation produces hallucinations, duplicates, and SEO-toxic output.</p>
+      </div>
+      <div class="proj-card">
+        <h4>AI Solution</h4>
+        <p>7-node Directed Acyclic Graph with dual-layer Gate-Agent pattern. Each node: deterministic validation fires first (Pydantic, regex, AST), LLM activates <em>only</em> if gate passes. 80% deterministic, 20% probabilistic.</p>
+      </div>
+      <div class="proj-card highlight">
+        <h4>Product Twist — Eval-First</h4>
+        <p>O-R-A-V multi-model judge scores every output on Originality, Relevance, Accuracy, Value. 68.9% pass rate <em>by design</em> — fail-closed policy rejects and feeds failures into the RL data flywheel for prompt mutation.</p>
+      </div>
+    </div>
+
+    <div class="metrics-bar">
+      <div class="mb"><span class="mb-val">260K+</span><span class="mb-lbl">Pages Indexed</span></div>
+      <div class="mb"><span class="mb-val">400K+</span><span class="mb-lbl">Impressions</span></div>
+      <div class="mb"><span class="mb-val">5.1K+</span><span class="mb-lbl">Clicks</span></div>
+      <div class="mb"><span class="mb-val">4</span><span class="mb-lbl">Countries</span></div>
+    </div>
+
+    <div class="stack">
+      <span class="pill">Python</span><span class="pill">Google ADK</span><span class="pill">Gemini</span>
+      <span class="pill">Pydantic</span><span class="pill">Langfuse</span><span class="pill">BigQuery</span>
+      <span class="pill">Redis</span><span class="pill">Firestore</span><span class="pill">Docker</span>
+    </div>
+
+    <div class="proof">
+      <a href="https://github.com/Manzela/agent-dag-pipeline" class="proof-link" target="_blank">Open Source Repo<span class="arrow">&rarr;</span></a>
+      <a href="case-studies.html" class="proof-link" target="_blank">GSC Evidence<span class="arrow">&rarr;</span></a>
+      <a href="https://youtu.be/czZsPbylC1M" class="proof-link" target="_blank">Video Demo<span class="arrow">&rarr;</span></a>
+    </div>
+  </div>
+
+  <!-- Project 2: Gemma 4 -->
+  <div class="project reveal">
+    <div class="proj-header">
+      <div class="proj-number">02</div>
+      <div>
+        <h2>Gemma 4 MoE — Production Deployment on Vertex AI</h2>
+        <p class="proj-role">Open-Source Contributor — Google Gemma Ecosystem</p>
+      </div>
+    </div>
+
+    <div class="proj-grid">
+      <div class="proj-card">
+        <h4>Problem</h4>
+        <p>Deploying Gemma 4 26B-A4B-it (MoE) on Vertex AI with vLLM had zero community documentation. The dependency triangle between vLLM, Transformers 5.5, and huggingface_hub made PyPI-only deployments impossible.</p>
+      </div>
+      <div class="proj-card">
+        <h4>Engineering Solution</h4>
+        <p>Documented 20 distinct failure modes across 30+ deployment versions over 16+ hours. Built a GCSFUSE-enabled Dockerfile, dependency matrix proof, and working config: BF16 precision, 8K context, single A100 80GB.</p>
+      </div>
+      <div class="proj-card highlight">
+        <h4>Community Impact</h4>
+        <p>Published the forensic runbook as open source. Posted deployment guide on Google's official Gemma 4 model card — became the most-engaged community discussion. Identified blockers: NF4 quantization, LoRA fine-tuning gaps.</p>
+      </div>
+    </div>
+
+    <div class="metrics-bar">
+      <div class="mb"><span class="mb-val">20</span><span class="mb-lbl">Failure Modes</span></div>
+      <div class="mb"><span class="mb-val">30+</span><span class="mb-lbl">Versions Tested</span></div>
+      <div class="mb"><span class="mb-val">A100 80GB</span><span class="mb-lbl">Single GPU</span></div>
+      <div class="mb"><span class="mb-val">#1</span><span class="mb-lbl">Community Post</span></div>
+    </div>
+
+    <div class="stack">
+      <span class="pill">vLLM</span><span class="pill">Vertex AI</span><span class="pill">GCSFUSE</span>
+      <span class="pill">PagedAttention</span><span class="pill">Docker</span><span class="pill">Transformers</span>
+    </div>
+
+    <div class="proof">
+      <a href="https://github.com/Manzela/gemma4-vllm-deployment" class="proof-link" target="_blank">Forensic Runbook<span class="arrow">&rarr;</span></a>
+      <a href="https://huggingface.co/google/gemma-4-26B-A4B-it/discussions/19" class="proof-link" target="_blank">HuggingFace Post<span class="arrow">&rarr;</span></a>
+    </div>
+  </div>
+
+  <!-- Project 3: Antigravity-OS -->
+  <div class="project reveal">
+    <div class="proj-header">
+      <div class="proj-number">03</div>
+      <div>
+        <h2>Antigravity-OS — AI Governance Kernel</h2>
+        <p class="proj-role">Creator & Maintainer</p>
+      </div>
+    </div>
+
+    <div class="proj-grid">
+      <div class="proj-card">
+        <h4>Problem</h4>
+        <p>Autonomous agent fleets need cost enforcement, policy controls, and deterministic state tracking — but no lightweight governance kernel existed for multi-agent systems.</p>
+      </div>
+      <div class="proj-card">
+        <h4>Engineering Solution</h4>
+        <p>Policy-as-code via OPA integration. Cost enforcement with real-time GCP billing hooks. Deterministic state tracking across agent lifecycles. Self-healing CI with GitHub Actions.</p>
+      </div>
+      <div class="proj-card highlight">
+        <h4>Production Pattern</h4>
+        <p>MCP-native architecture for tool orchestration. Redis-backed long-term memory. Firestore event sourcing. Full governance docs: ADOPTERS, MAINTAINERS, SECURITY, CONTRIBUTING.</p>
+      </div>
+    </div>
+
+    <div class="metrics-bar">
+      <div class="mb"><span class="mb-val">4,550</span><span class="mb-lbl">Lines of Code</span></div>
+      <div class="mb"><span class="mb-val">v1.4.0</span><span class="mb-lbl">Current Release</span></div>
+      <div class="mb"><span class="mb-val">PyPI</span><span class="mb-lbl">Published</span></div>
+      <div class="mb"><span class="mb-val">100%</span><span class="mb-lbl">CI Green</span></div>
+    </div>
+
+    <div class="stack">
+      <span class="pill">Python</span><span class="pill">MCP</span><span class="pill">Redis</span>
+      <span class="pill">Firestore</span><span class="pill">Docker</span><span class="pill">PyPI</span>
+      <span class="pill">pytest</span><span class="pill">GitHub Actions</span>
+    </div>
+
+    <div class="proof">
+      <a href="https://github.com/Manzela/Antigravity-OS" class="proof-link" target="_blank">GitHub Repo<span class="arrow">&rarr;</span></a>
+      <a href="https://github.com/Manzela/Antigravity-OS/blob/main/GOVERNANCE.md" class="proof-link" target="_blank">Governance Model<span class="arrow">&rarr;</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ════ ENGINEERING PHILOSOPHY ════ -->
+<section id="engineering">
+  <div class="section-label">Engineering Philosophy</div>
+  <div class="philosophy reveal">
+    <div class="phil-card">
+      <div class="phil-icon" style="background:rgba(10,132,255,0.12);color:var(--accent)">01</div>
+      <h3>Eval-First Development</h3>
+      <p>Every pipeline node has acceptance criteria enforced in CI. O-R-A-V semantic scoring blocks deployments below threshold. The LLM is the <em>last</em> thing that runs — deterministic gates fire first.</p>
+    </div>
+    <div class="phil-card">
+      <div class="phil-icon" style="background:rgba(255,69,58,0.12);color:var(--red)">02</div>
+      <h3>Fail-Closed Safety</h3>
+      <p>If the system can't prove an output is safe, it rejects it. 68.9% pass rate by design — rejected outputs feed into the RL data flywheel for automatic prompt mutation and retraining.</p>
+    </div>
+    <div class="phil-card">
+      <div class="phil-icon" style="background:rgba(48,209,88,0.12);color:var(--green)">03</div>
+      <h3>Cost as a Constraint</h3>
+      <p>&lt;$0.00002 per pipeline run. Achieved through model routing, semantic caching, and treating every token as a budget line item. Cost telemetry via Langfuse on every trace.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════ SKILLS ════ -->
+<section id="skills">
+  <div class="section-label">Technical Stack</div>
+  <div class="skills-grid reveal">
+    <div class="skill-group">
+      <h4>AI & LLM Ops</h4>
+      <div class="skill-pills">
+        <span>Multi-Agent DAGs</span><span>LLM-as-Judge</span><span>RAG</span>
+        <span>Prompt Engineering</span><span>Fine-tuning (LoRA/PEFT)</span>
+        <span>MoE Inference</span><span>Guardrails</span><span>MCP</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h4>Engineering</h4>
+      <div class="skill-pills">
+        <span>Python</span><span>FastAPI</span><span>Node.js</span>
+        <span>Docker</span><span>Terraform</span><span>GitHub Actions</span>
+        <span>vLLM</span><span>Pydantic</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h4>Infrastructure</h4>
+      <div class="skill-pills">
+        <span>GCP</span><span>Vertex AI</span><span>BigQuery</span>
+        <span>Firestore</span><span>Redis</span><span>Cloud Run</span>
+        <span>GCSFUSE</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h4>Product & Observability</h4>
+      <div class="skill-pills">
+        <span>Langfuse</span><span>OpenTelemetry</span><span>Cost Telemetry</span>
+        <span>A/B Prompt Testing</span><span>Semantic Evals</span>
+        <span>0→1 Builder</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ CREDENTIALS ════ -->
+<section id="credentials">
+  <div class="section-label">Credentials & Recognition</div>
+
+  <div class="cred-row reveal">
+    <div class="cred-card award">
+      <img src="assets/top100-retailtech.png" alt="Re:Tech Top 100">
+      <div class="cred-info">
+        <h4>Top 100 Retail Tech 2025/6</h4>
+        <p>Re:Tech Innovation — TNG Shopper selected among the world's top 100 Retail Technology companies.</p>
+        <a href="assets/retailtech-2025-report.pdf" target="_blank">Full Report (PDF) →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="cert-grid reveal">
+    <div class="cert-card">
+      <img src="assets/cert-genai-leader.png" alt="Generative AI Leader">
+      <h4>Generative AI Leader</h4>
+      <span class="cert-status active">Active</span>
+    </div>
+    <div class="cert-card">
+      <img src="assets/cert-cloud-architect.png" alt="Cloud Architect">
+      <h4>Cloud Architect</h4>
+      <span class="cert-status prev">Previously Held</span>
+    </div>
+    <div class="cert-card">
+      <img src="assets/cert-ml-engineer.png" alt="ML Engineer">
+      <h4>ML Engineer</h4>
+      <span class="cert-status prog">In Progress</span>
+    </div>
+  </div>
+
+  <div class="edu-grid reveal">
+    <div class="edu-item">
+      <h4>Product Management</h4>
+      <p>Product Experts Certification (2024)</p>
+      <a href="assets/cert-product-experts.pdf" target="_blank">Certificate →</a>
+    </div>
+    <div class="edu-item">
+      <h4>Guest Lecturer</h4>
+      <p>Bar-Ilan University — Retail Technology & Commercial Real Estate</p>
+      <a href="https://www.linkedin.com/posts/manzela_retailtech-commercialrealestate-datadrivendecisions-activity-7332458476985651200-Yg-l" target="_blank">LinkedIn Post →</a>
+    </div>
+    <div class="edu-item">
+      <h4>Google Skills</h4>
+      <p>Diamond League — 40+ verified badges across AI, MLOps, and Cloud</p>
+      <a href="https://partner.skills.google/public_profiles/69fa3af8-3032-4a04-a818-f7277009c3a9" target="_blank">Public Profile →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════ WRITING ════ -->
+<section id="writing">
+  <div class="section-label">Writing & Community</div>
+  <div class="writing-grid reveal">
+    <a href="https://medium.com/@manzela" class="write-card" target="_blank">
+      <div class="wc-source">Medium</div>
+      <h4>The Physical Context Flywheel</h4>
+      <p>How city-level semantic context drives autonomous content generation at scale.</p>
+    </a>
+    <a href="https://huggingface.co/google/gemma-4-26B-A4B-it/discussions/19" class="write-card" target="_blank">
+      <div class="wc-source">HuggingFace</div>
+      <h4>Gemma 4 Deployment Guide</h4>
+      <p>20 failure modes, dependency matrix, and working config for Vertex AI + vLLM.</p>
+    </a>
+    <a href="https://www.loom.com/share/be8a97a64f80414eae11176843c559bb" class="write-card" target="_blank">
+      <div class="wc-source">Loom</div>
+      <h4>Pipeline Deep-Dive</h4>
+      <p>Technical walkthrough of the 7-node DAG, O-R-A-V scoring, and RL flywheel.</p>
+    </a>
+  </div>
+</section>
+
+<!-- ════ FOOTER ════ -->
+<footer class="ftr">
+  <div class="ftr-links">
+    <a href="https://github.com/Manzela" target="_blank">GitHub</a>
+    <a href="https://linkedin.com/in/manzela" target="_blank">LinkedIn</a>
+    <a href="https://medium.com/@manzela" target="_blank">Medium</a>
+    <a href="https://huggingface.co/Manzela-D" target="_blank">HuggingFace</a>
+    <a href="mailto:danielq1603@gmail.com">Email</a>
+  </div>
+  <p class="ftr-note">Every claim on this page is backed by public source code, third-party certifications, or video demonstrations.</p>
+  <p class="ftr-copy">Daniel Manzela · Israel (Relocating) · 2026</p>
+</footer>
+
+</div>
+
+<script>
+const obs = new IntersectionObserver(e => e.forEach(x => {
+  if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); }
+}), {threshold: 0.06});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
