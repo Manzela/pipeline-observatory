@@ -1,328 +1,374 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Case Studies — Daniel Manzela | Pipeline Observatory</title>
 <meta name="description" content="Production case studies with verified Google Search Console metrics, video demos, and open-source implementations.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    appleBg: '#000000',
+                    appleSurface: '#1d1d1f',
+                    appleBorder: '#424245',
+                    appleLight: '#f5f5f7',
+                    appleGray: '#86868b',
+                    appleBlue: '#2997ff',
+                    appleDarker: '#151516',
+                    appleGreen: '#34d399',
+                    appleRed: '#f87171',
+                    appleAmber: '#fbbf24',
+                    appleCyan: '#64d2ff',
+                    applePurple: '#bf5af2'
+                },
+                fontFamily: {
+                    sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
+                }
+            }
+        }
+    }
+</script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#060a12;--s1:rgba(13,17,23,0.6);--s2:rgba(255,255,255,0.04);--b:rgba(255,255,255,0.06);--t:rgba(255,255,255,0.92);--t2:rgba(255,255,255,0.55);--t3:rgba(255,255,255,0.3);--accent:#0A84FF;--green:#0AF5D0;--amber:#FFD60A;--red:#FF453A;--cyan:#64D2FF;--purple:#BF5AF2}
-.glass{background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(48,54,61,0.5)}
-.glow{text-shadow:0 0 10px rgba(10,245,208,0.5)}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6;letter-spacing:-0.01em}
-a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacity:.8}
-.w{max-width:960px;margin:0 auto;padding:0 24px}
+    body { background-color: #000000; color: #f5f5f7; -webkit-font-smoothing: antialiased; }
+    .card { background-color: #1d1d1f; border: 1px solid #424245; border-radius: 16px; transition: all 0.3s; }
+    .card:hover { border-color: rgba(41, 151, 255, 0.3); }
+    .glass-nav { background: rgba(0, 0, 0, 0.72); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid #424245; }
+    .reveal { opacity: 0; transform: translateY(20px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    ::selection { background: rgba(41, 151, 255, 0.3); color: #f5f5f7; }
 
-/* Nav */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(6,10,18,0.72);border-bottom:1px solid var(--b)}
-.nav-inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:52px}
-.nav-brand{font-size:13px;font-weight:600;letter-spacing:-0.3px;color:var(--t2)}.nav-brand strong{color:var(--t)}
-.nav-links{display:flex;gap:24px}.nav-links a{font-size:12px;color:var(--t3);letter-spacing:0.3px;transition:color .2s;text-transform:uppercase;letter-spacing:1px;font-weight:500}.nav-links a:hover{color:var(--t);opacity:1}.nav-links a.active{color:var(--green);border-bottom:2px solid var(--green);padding-bottom:2px;opacity:1}
-
-/* Hero */
-.hero{padding:120px 0 80px;text-align:center;border-bottom:1px solid var(--b);background:radial-gradient(ellipse at 50% 0%,rgba(191,90,242,0.03) 0%,transparent 50%)}
-.hero .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:3px;color:var(--purple);font-weight:500;margin-bottom:16px}
-.hero h1{font-size:42px;font-weight:700;letter-spacing:-1.5px;line-height:1.08;margin-bottom:16px}
-.hero .sub{font-size:16px;color:var(--t2);max-width:600px;margin:0 auto;line-height:1.7}
-
-/* Sections */
-.cs{padding:80px 0;border-bottom:1px solid var(--b)}.cs:last-of-type{border:none}
-.cs-label{font-size:11px;text-transform:uppercase;letter-spacing:3px;font-weight:500;margin-bottom:12px}
-.cs-label.blue{color:var(--accent)}.cs-label.green{color:var(--green)}.cs-label.purple{color:var(--purple)}
-.cs h2{font-size:28px;font-weight:700;letter-spacing:-0.8px;margin-bottom:8px}
-.cs .desc{font-size:14px;color:var(--t2);max-width:640px;margin-bottom:40px;line-height:1.8}
-.sec-title{font-size:13px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:40px 0 20px;font-weight:600}
-
-/* P-A-R Grid */
-.par{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--b);border:1px solid rgba(48,54,61,0.5);border-radius:16px;overflow:hidden;margin-bottom:32px}
-.par-item{background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:28px 24px}
-.par-item h4{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:12px}
-.par-item p{font-size:13px;color:var(--t2);line-height:1.7}
-.par-item .metric{font-size:32px;font-weight:700;letter-spacing:-1px;color:var(--green);margin-bottom:4px;font-family:'JetBrains Mono',monospace;text-shadow:0 0 20px rgba(10,245,208,0.4),0 0 40px rgba(10,245,208,0.15)}
-
-/* Video */
-.video-wrap{position:relative;width:100%;padding-bottom:56.25%;border-radius:16px;overflow:hidden;border:1px solid var(--b);margin-bottom:8px;background:var(--s1)}
-.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
-.video-caption{font-size:11px;color:var(--t3);text-align:center;margin-bottom:32px;letter-spacing:0.3px}
-
-/* Evidence Gallery */
-.evidence{margin-bottom:32px}
-.evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
-.evidence-card{background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(48,54,61,0.5);border-radius:16px;overflow:hidden;transition:all .3s}
-.evidence-card:hover{border-color:rgba(10,245,208,0.15);transform:translateY(-2px)}
-.evidence-card img{width:100%;display:block;opacity:0.92;transition:opacity .3s}
-.evidence-card:hover img{opacity:1}
-.evidence-card .caption{padding:16px 20px;border-top:1px solid var(--b)}
-.evidence-card .caption h4{font-size:12px;font-weight:600;margin-bottom:4px}
-.evidence-card .caption p{font-size:11px;color:var(--t3);line-height:1.5}
-.evidence-card .caption .val{font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:600;font-size:13px}
-.client-label{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--t3);font-weight:500;margin-bottom:12px;padding-top:24px;border-top:1px solid var(--b)}
-.client-label:first-child{border-top:none;padding-top:0}
-.agg{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:12px;overflow:hidden;margin-bottom:32px}
-.agg-item{background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:20px;text-align:center;transition:all .3s ease}
-.agg-item:hover{background:rgba(255,255,255,0.04)}
-.agg-item .agg-val{font-size:22px;font-weight:700;letter-spacing:-0.5px;color:var(--green);font-family:'JetBrains Mono',monospace;text-shadow:0 0 15px rgba(10,245,208,0.3);transition:color .3s ease}
-.agg-item:hover .agg-val{color:#fff}
-.agg-item .agg-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-top:4px;font-weight:500}
-
-/* Trade-off Cards — NO emojis, pure CSS indicators */
-.challenges{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
-.challenge{background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(48,54,61,0.5);border-radius:16px;padding:28px;transition:all .3s}
-.challenge:hover{border-color:rgba(10,245,208,0.15);transform:translateY(-2px)}
-.challenge h4{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:10px}
-.challenge .indicator{width:8px;height:8px;border-radius:2px;flex-shrink:0}
-.challenge .indicator.quality{background:var(--accent)}
-.challenge .indicator.safety{background:var(--red)}
-.challenge .indicator.flywheel{background:var(--green)}
-.challenge .indicator.scale{background:var(--cyan)}
-.challenge p{font-size:12px;color:var(--t2);line-height:1.7}
-.challenge .decision{font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;margin-top:10px;padding-top:10px;border-top:1px solid var(--b)}
-
-/* Stack */
-.stack{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:32px}
-.pill{font-size:11px;padding:5px 14px;border-radius:99px;border:1px solid rgba(48,54,61,0.5);color:var(--t2);background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:all .3s}.pill:hover{border-color:rgba(10,245,208,0.25);color:var(--t)}
-
-/* Proof */
-.proof{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:32px}
-.proof-link{display:flex;align-items:center;gap:10px;padding:16px;background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(48,54,61,0.5);border-radius:12px;font-size:12px;color:var(--t2);transition:all .3s ease}
-.proof-link:hover{border-color:rgba(10,245,208,0.25);color:var(--t);transform:translateY(-2px);box-shadow:0 4px 16px rgba(10,245,208,0.06)}
-.proof-link .arrow{margin-left:auto;color:var(--t3);font-size:14px}
-
-/* Timeline */
-.timeline{position:relative;padding-left:32px;margin-bottom:32px}
-.timeline::before{content:'';position:absolute;left:11px;top:4px;bottom:4px;width:1px;background:var(--b)}
-.tl-item{position:relative;padding-bottom:28px}.tl-item:last-child{padding-bottom:0}
-.tl-item::before{content:'';position:absolute;left:-25px;top:6px;width:9px;height:9px;border-radius:50%;border:2px solid var(--accent);background:var(--bg)}
-.tl-item.fail::before{border-color:var(--red)}.tl-item.success::before{border-color:var(--green);background:var(--green)}
-.tl-item .tl-date{font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-bottom:4px}
-.tl-item .tl-title{font-size:14px;font-weight:600;margin-bottom:4px}
-.tl-item .tl-desc{font-size:12px;color:var(--t2);line-height:1.6}
-
-/* Verification */
-.verify-banner{background:rgba(48,209,88,0.04);border:1px solid rgba(48,209,88,0.15);border-radius:16px;padding:40px;margin-top:60px;text-align:center}
-.verify-banner h3{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--green);letter-spacing:-0.3px}
-.verify-banner .links{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:20px}
-.verify-banner .vl{font-size:12px;color:var(--t2);padding:8px 20px;border:1px solid var(--b);border-radius:99px;transition:all .2s}.verify-banner .vl:hover{border-color:var(--green);color:var(--t)}
-
-/* Recognition */
-.recognition{margin:60px 0 32px;text-align:center}
-.recognition-badge{max-width:480px;margin:0 auto;border-radius:16px;overflow:hidden;border:1px solid var(--b)}
-.recognition-badge img{width:100%;display:block}
-.recognition-meta{padding:20px;background:var(--s1);border-top:1px solid var(--b)}
-.recognition-meta h4{font-size:13px;font-weight:600;margin-bottom:4px}
-.recognition-meta p{font-size:11px;color:var(--t3);line-height:1.5}
-.recognition-meta a{color:var(--accent)}
-
-/* Certifications */
-.certs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 32px}
-.cert-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:24px;text-align:center;transition:border-color .3s}
-.cert-card:hover{border-color:rgba(255,255,255,0.15)}
-.cert-card img{width:80px;height:80px;margin:0 auto 12px;display:block}
-.cert-card h4{font-size:12px;font-weight:600;margin-bottom:4px}
-.cert-card .cert-status{font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:3px 10px;border-radius:99px;display:inline-block;margin-top:8px}
-.cert-card .active{background:rgba(48,209,88,0.12);color:var(--green)}
-.cert-card .prev{background:rgba(255,214,10,0.12);color:#FFD60A}
-.cert-card .prog{background:rgba(10,132,255,0.12);color:var(--accent)}
-
-.ftr{padding:60px 0 40px;border-top:1px solid var(--b)}
-.ftr-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;max-width:960px;margin:0 auto;padding:0 24px}
-.ftr-brand{font-size:13px;font-weight:600;color:var(--t)}
-.ftr-links{display:flex;gap:24px;flex-wrap:wrap}
-.ftr-links a{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);text-decoration:none;transition:color 0.3s ease;font-weight:500}
-.ftr-links a:hover{color:var(--green)}
-@media(max-width:640px){.ftr-inner{flex-direction:column;text-align:center}}
-.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s}.reveal.visible{opacity:1;transform:none}
-
-@media(max-width:768px){
-  .hero h1{font-size:28px}.par,.evidence-grid{grid-template-columns:1fr}
-  .challenges,.proof{grid-template-columns:1fr}.nav-links{gap:12px}
-}
+    /* Timeline */
+    .timeline { position: relative; padding-left: 32px; }
+    .timeline::before { content: ''; position: absolute; left: 11px; top: 4px; bottom: 4px; width: 1px; background: #424245; }
+    .tl-item { position: relative; padding-bottom: 28px; }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-item::before { content: ''; position: absolute; left: -25px; top: 6px; width: 9px; height: 9px; border-radius: 50%; border: 2px solid #2997ff; background: #000000; }
+    .tl-item.fail::before { border-color: #f87171; }
+    .tl-item.success::before { border-color: #34d399; background: #34d399; }
 </style>
 </head>
-<body>
+<body class="bg-appleBg text-appleLight antialiased selection:bg-appleBlue/30">
 
-<div class="nav"><div class="nav-inner">
-  <div class="nav-brand"><strong>Pipeline</strong> Observatory</div>
-  <div class="nav-links">
-    <a href="https://manzela.github.io/Manzela/">Profile</a>
-    <a href="index.html">Telemetry</a>
-    <a href="architecture.html">Architecture</a>
-    <a href="case-studies.html" class="active">Case Studies</a>
-  </div>
-</div></div>
+<!-- Nav -->
+<nav class="fixed top-0 left-0 right-0 z-50 glass-nav">
+    <div class="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div class="text-sm font-semibold tracking-tight text-appleLight">
+            Pipeline <span class="text-appleGray font-medium ml-1">Observatory</span>
+        </div>
+        <div class="hidden md:flex gap-8">
+            <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Profile</a>
+            <a href="index.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Telemetry</a>
+            <a href="architecture.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Architecture</a>
+            <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-appleLight border-b-2 border-appleLight pb-1">Case Studies</a>
+        </div>
+    </div>
+</nav>
 
-<div class="w">
+<div class="max-w-4xl mx-auto px-6 pt-32 pb-20">
 
-<div class="hero">
-  <div class="eyebrow">Engineering Portfolio</div>
-  <h1>Case Studies<br>& Demos</h1>
-  <p class="sub">Production systems with verified metrics, video demonstrations, and open-source implementations. Every claim is backed by code, telemetry, or third-party certification.</p>
-</div>
-
-<!-- ═══════════ CASE STUDY 1 ═══════════ -->
-<div class="cs reveal" id="agent-dag">
-  <div class="cs-label blue">Case Study 01</div>
-  <h2>Autonomous Multi-Agent DAG Pipeline</h2>
-  <div class="desc">A 7-node Directed Acyclic Graph that generates localized product content for 11 enterprise clients across 5 countries — with zero human-in-the-loop. Each node enforces a dual-layer Gate-Agent pattern: deterministic validation fires first; the LLM activates only if the gate passes.</div>
-
-  <div class="par">
-    <div class="par-item"><h4>Problem</h4><p>Enterprise retail clients needed localized, SEO-compliant product pages across dozens of cities. Manual content creation was impossible at ~10.5M product-location combinations per cycle.</p></div>
-    <div class="par-item"><h4>Approach</h4><p>Designed a fail-closed 7-node DAG where 80% of compute is deterministic (gates, schemas, dedup) and only 20% is probabilistic (LLM). Every node boundary is audited by a JIT integrity layer.</p></div>
-    <div class="par-item"><h4>Result</h4><div class="metric">260K+ pages indexed</div><p>400K+ impressions across 3 client properties, 68.9% quality pass rate, &lt;$0.0001 per pipeline run. 234 managed websites across 5 countries.</p></div>
-  </div>
-
-  <!-- Aggregate Metrics -->
-  <div class="agg">
-    <div class="agg-item"><div class="agg-val">260K+</div><div class="agg-lbl">Pages Indexed</div></div>
-    <div class="agg-item"><div class="agg-val">400K+</div><div class="agg-lbl">Impressions</div></div>
-    <div class="agg-item"><div class="agg-val">5.1K+</div><div class="agg-lbl">Organic Clicks</div></div>
-    <div class="agg-item"><div class="agg-val">3</div><div class="agg-lbl">Client Properties</div></div>
-  </div>
-
-  <!-- Verified Evidence: Google Search Console — 3 Clients -->
-  <div class="evidence">
-    <div class="sec-title">Verified Evidence — Google Search Console</div>
-
-    <div class="client-label">Enterprise Client A — Major European DIY Chain (Spain)</div>
-    <div class="evidence-grid">
-      <div class="evidence-card">
-        <img src="assets/client-a-indexing.jpg" alt="GSC Page Indexing — Client A" loading="lazy">
-        <div class="caption"><h4>Page Indexing</h4><div class="val">99.9K pages indexed</div><p>Hockey-stick from 0 → 99.9K in ~60 days. Autonomous pipeline output.</p></div>
-      </div>
-      <div class="evidence-card">
-        <img src="assets/client-a-performance.jpg" alt="GSC Performance — Client A" loading="lazy">
-        <div class="caption"><h4>Search Performance</h4><div class="val">54.4K impressions · 614 clicks</div><p>1.1% CTR, Avg Position 10.9. Zero manual content creation.</p></div>
-      </div>
+    <!-- Hero -->
+    <div class="py-20 md:py-24 text-center border-b border-appleBorder relative">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mb-6">Engineering Portfolio</div>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6">Case Studies & Demos</h1>
+        <p class="text-appleGray text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
+            Production systems with verified metrics, video demonstrations, and open-source implementations. Every claim is backed by code, telemetry, or third-party certification.
+        </p>
     </div>
 
-    <div class="client-label">Enterprise Client B — Largest Supermarket Chain (Portugal)</div>
-    <div class="evidence-grid">
-      <div class="evidence-card">
-        <img src="assets/client-b-indexing.jpg" alt="GSC Page Indexing — Client B" loading="lazy">
-        <div class="caption"><h4>Page Indexing</h4><div class="val">130K pages indexed</div><p>Steep growth curve from 0 → 130K. Largest property by page volume.</p></div>
-      </div>
-      <div class="evidence-card">
-        <img src="assets/client-b-performance.jpg" alt="GSC Performance — Client B" loading="lazy">
-        <div class="caption"><h4>Search Performance</h4><div class="val">245K impressions · 2.19K clicks</div><p>0.9% CTR, Avg Position 8.7. Highest impression volume.</p></div>
-      </div>
+    <!-- ═══════════ CASE STUDY 1 ═══════════ -->
+    <div class="py-20 border-b border-appleBorder reveal" id="agent-dag">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mb-4">Case Study 01</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">Autonomous Multi-Agent DAG Pipeline</h2>
+        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+            A 7-node Directed Acyclic Graph that generates localized product content for 11 enterprise clients across 5 countries &mdash; with zero human-in-the-loop. Each node enforces a dual-layer Gate-Agent pattern: deterministic validation fires first; the LLM activates only if the gate passes.
+        </div>
+
+        <div class="card p-px bg-appleBorder grid md:grid-cols-3 gap-px mb-12 overflow-hidden">
+            <div class="bg-appleSurface p-8">
+                <h4 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Problem</h4>
+                <p class="text-xs text-appleGray leading-relaxed">Enterprise retail clients needed localized, SEO-compliant product pages across dozens of cities. Manual content creation was impossible at ~10.5M product-location combinations per cycle.</p>
+            </div>
+            <div class="bg-appleSurface p-8">
+                <h4 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Approach</h4>
+                <p class="text-xs text-appleGray leading-relaxed">Designed a fail-closed 7-node DAG where 80% of compute is deterministic (gates, schemas, dedup) and only 20% is probabilistic (LLM). Every node boundary is audited by a JIT integrity layer.</p>
+            </div>
+            <div class="bg-appleDarker p-8 border-t md:border-t-0 border-appleBorder">
+                <h4 class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Result</h4>
+                <div class="font-mono text-2xl font-bold text-appleBlue mb-2">260K+ pages</div>
+                <p class="text-xs text-appleGray leading-relaxed">400K+ impressions across 3 client properties, 68.9% quality pass rate, <$0.0001 per pipeline run. 234 managed websites across 5 countries.</p>
+            </div>
+        </div>
+
+        <!-- Aggregate Metrics -->
+        <div class="card p-px bg-appleBorder grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden mb-12">
+            <div class="bg-appleSurface p-6 text-center">
+                <div class="font-mono text-2xl font-semibold text-appleLight mb-1">260K+</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Pages Indexed</div>
+            </div>
+            <div class="bg-appleSurface p-6 text-center">
+                <div class="font-mono text-2xl font-semibold text-appleLight mb-1">400K+</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Impressions</div>
+            </div>
+            <div class="bg-appleSurface p-6 text-center">
+                <div class="font-mono text-2xl font-semibold text-appleLight mb-1">5.1K+</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Organic Clicks</div>
+            </div>
+            <div class="bg-appleSurface p-6 text-center">
+                <div class="font-mono text-2xl font-semibold text-appleLight mb-1">3</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Client Properties</div>
+            </div>
+        </div>
+
+        <!-- Verified Evidence -->
+        <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Verified Evidence &mdash; Google Search Console</div>
+
+        <div class="mb-10">
+            <div class="text-[10px] text-appleGray uppercase tracking-widest mb-4 font-medium border-b border-appleBorder pb-2">Enterprise Client A &mdash; Major European DIY Chain (Spain)</div>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="card overflow-hidden">
+                    <img src="assets/client-a-indexing.jpg" alt="GSC Page Indexing" class="w-full opacity-90 hover:opacity-100 transition-opacity">
+                    <div class="p-5 border-t border-appleBorder">
+                        <div class="font-semibold text-sm mb-1">Page Indexing</div>
+                        <div class="font-mono text-xs text-appleBlue mb-2">99.9K pages indexed</div>
+                        <p class="text-[10px] text-appleGray">Hockey-stick from 0 &rarr; 99.9K in ~60 days. Autonomous pipeline output.</p>
+                    </div>
+                </div>
+                <div class="card overflow-hidden">
+                    <img src="assets/client-a-performance.jpg" alt="GSC Performance" class="w-full opacity-90 hover:opacity-100 transition-opacity">
+                    <div class="p-5 border-t border-appleBorder">
+                        <div class="font-semibold text-sm mb-1">Search Performance</div>
+                        <div class="font-mono text-xs text-appleBlue mb-2">54.4K impressions &middot; 614 clicks</div>
+                        <p class="text-[10px] text-appleGray">1.1% CTR, Avg Position 10.9. Zero manual content creation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-10">
+            <div class="text-[10px] text-appleGray uppercase tracking-widest mb-4 font-medium border-b border-appleBorder pb-2">Enterprise Client B &mdash; Largest Supermarket Chain (Portugal)</div>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="card overflow-hidden">
+                    <img src="assets/client-b-indexing.jpg" alt="GSC Page Indexing" class="w-full opacity-90 hover:opacity-100 transition-opacity">
+                    <div class="p-5 border-t border-appleBorder">
+                        <div class="font-semibold text-sm mb-1">Page Indexing</div>
+                        <div class="font-mono text-xs text-appleBlue mb-2">130K pages indexed</div>
+                        <p class="text-[10px] text-appleGray">Steep growth curve from 0 &rarr; 130K. Largest property by page volume.</p>
+                    </div>
+                </div>
+                <div class="card overflow-hidden">
+                    <img src="assets/client-b-performance.jpg" alt="GSC Performance" class="w-full opacity-90 hover:opacity-100 transition-opacity">
+                    <div class="p-5 border-t border-appleBorder">
+                        <div class="font-semibold text-sm mb-1">Search Performance</div>
+                        <div class="font-mono text-xs text-appleBlue mb-2">245K impressions &middot; 2.19K clicks</div>
+                        <p class="text-[10px] text-appleGray">0.9% CTR, Avg Position 8.7. Highest impression volume.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-12">
+            <div class="text-[10px] text-appleGray uppercase tracking-widest mb-4 font-medium border-b border-appleBorder pb-2">Enterprise Client C &mdash; Leading Discount Retailer (Spain)</div>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="card overflow-hidden">
+                    <img src="assets/client-c-indexing.jpg" alt="GSC Page Indexing" class="w-full opacity-90 hover:opacity-100 transition-opacity">
+                    <div class="p-5 border-t border-appleBorder">
+                        <div class="font-semibold text-sm mb-1">Page Indexing</div>
+                        <div class="font-mono text-xs text-appleBlue mb-2">30.2K pages indexed</div>
+                        <p class="text-[10px] text-appleGray">Rapid ramp from 0 &rarr; 30.2K. Newest property in pipeline.</p>
+                    </div>
+                </div>
+                <div class="card overflow-hidden">
+                    <img src="assets/client-c-performance.jpg" alt="GSC Performance" class="w-full opacity-90 hover:opacity-100 transition-opacity">
+                    <div class="p-5 border-t border-appleBorder">
+                        <div class="font-semibold text-sm mb-1">Search Performance</div>
+                        <div class="font-mono text-xs text-appleBlue mb-2">101K impressions &middot; 2.33K clicks</div>
+                        <p class="text-[10px] text-appleGray">2.3% CTR, Avg Position 8.7. Highest-converting property.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Demo -->
+        <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Live Demo</div>
+        <div class="rounded-xl overflow-hidden border border-appleBorder mb-4 relative pt-[56.25%]">
+            <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/czZsPbylC1M" allowfullscreen></iframe>
+        </div>
+        <div class="text-center text-[10px] text-appleGray mb-12">Pipeline execution &mdash; autonomous content generation with zero human intervention</div>
+
+        <!-- Trade-offs -->
+        <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Engineering Trade-offs</div>
+        <div class="grid md:grid-cols-2 gap-4 mb-10">
+            <div class="card p-6">
+                <div class="flex items-center gap-2 mb-2"><div class="w-2 h-2 rounded-sm bg-appleBlue"></div><h4 class="font-semibold text-sm">Quality vs. Cost</h4></div>
+                <p class="text-xs text-appleGray mb-4">Multi-model O-R-A-V evaluation instead of a single LLM-as-judge. Each dimension uses a different model tier to balance accuracy with cost.</p>
+                <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: 4-tier scoring, 68.9% pass rate, $0.00002/run</div>
+            </div>
+            <div class="card p-6">
+                <div class="flex items-center gap-2 mb-2"><div class="w-2 h-2 rounded-sm bg-appleRed"></div><h4 class="font-semibold text-sm">Safety vs. Throughput</h4></div>
+                <p class="text-xs text-appleGray mb-4">Fail-closed design means ~31% of content is rejected. Intentional &mdash; no partial or low-quality content ever propagates downstream to production surfaces.</p>
+                <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: Fail-closed at every boundary, zero tolerance</div>
+            </div>
+            <div class="card p-6">
+                <div class="flex items-center gap-2 mb-2"><div class="w-2 h-2 rounded-sm bg-appleGreen"></div><h4 class="font-semibold text-sm">Self-Improvement</h4></div>
+                <p class="text-xs text-appleGray mb-4">3-tier RLAIF data flywheel. DPO preference pairs generated automatically for continuous alignment without human labeling.</p>
+                <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: Closed-loop flywheel, autonomous preference pairs</div>
+            </div>
+            <div class="card p-6">
+                <div class="flex items-center gap-2 mb-2"><div class="w-2 h-2 rounded-sm bg-appleCyan"></div><h4 class="font-semibold text-sm">Scale vs. Locality</h4></div>
+                <p class="text-xs text-appleGray mb-4">5 countries require different linguistic, cultural, and regulatory context. Node 1 injects locale-specific signals before any LLM invocation, ensuring adaptation without prompt bloat.</p>
+                <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: Context-first architecture, zero-shot locale adapt</div>
+            </div>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="flex flex-wrap gap-2 mb-8">
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Python</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">FastAPI</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Pydantic</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Google ADK</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Vertex AI</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Langfuse</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">OpenTelemetry</span>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+            <a href="https://github.com/Manzela/agent-dag-pipeline" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">GitHub Repository <span class="text-appleGray">&rarr;</span></a>
+            <a href="https://manzela.github.io/pipeline-observatory/" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">Live Telemetry <span class="text-appleGray">&rarr;</span></a>
+            <a href="https://manzela.github.io/pipeline-observatory/architecture.html" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">Architecture View <span class="text-appleGray">&rarr;</span></a>
+        </div>
     </div>
 
-    <div class="client-label">Enterprise Client C — Leading Discount Retailer (Spain)</div>
-    <div class="evidence-grid">
-      <div class="evidence-card">
-        <img src="assets/client-c-indexing.jpg" alt="GSC Page Indexing — Client C" loading="lazy">
-        <div class="caption"><h4>Page Indexing</h4><div class="val">30.2K pages indexed</div><p>Rapid ramp from 0 → 30.2K. Newest property in pipeline.</p></div>
-      </div>
-      <div class="evidence-card">
-        <img src="assets/client-c-performance.jpg" alt="GSC Performance — Client C" loading="lazy">
-        <div class="caption"><h4>Search Performance</h4><div class="val">101K impressions · 2.33K clicks</div><p>2.3% CTR, Avg Position 8.7. Highest-converting property.</p></div>
-      </div>
+    <!-- ═══════════ CASE STUDY 2 ═══════════ -->
+    <div class="py-20 border-b border-appleBorder reveal" id="gemma4">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mb-4">Case Study 02</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">Gemma 4 MoE — Vertex AI Deployment Forensics</h2>
+        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+            Deployed Google's Gemma 4 26B-A4B-it Mixture-of-Experts model on Vertex AI with vLLM. Documented 20 distinct failure modes across 30+ deployment iterations in a forensic runbook now used as community reference material.
+        </div>
+
+        <div class="card p-px bg-appleBorder grid md:grid-cols-3 gap-px mb-12 overflow-hidden">
+            <div class="bg-appleSurface p-8">
+                <h4 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Problem</h4>
+                <p class="text-xs text-appleGray leading-relaxed">Gemma 4 MoE was newly released with no production deployment guides. Required custom vLLM builds, GCSFUSE container configs, and careful chat template engineering.</p>
+            </div>
+            <div class="bg-appleSurface p-8 border-t md:border-t-0 border-appleBorder">
+                <h4 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Approach</h4>
+                <p class="text-xs text-appleGray leading-relaxed">Systematic forensic debugging across 2 deployment cycles (16+ hours, 30+ versions). Every crash, OOM, and dependency conflict documented with root cause analysis.</p>
+            </div>
+            <div class="bg-appleDarker p-8 border-t md:border-t-0 border-appleBorder">
+                <h4 class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Result</h4>
+                <div class="font-mono text-2xl font-bold text-appleBlue mb-2">20 failure modes</div>
+                <p class="text-xs text-appleGray leading-relaxed">documented. Stable base inference achieved. LoRA enablement identified as blocked by dependency triangle.</p>
+            </div>
+        </div>
+
+        <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Architecture Walk-through</div>
+        <div class="rounded-xl overflow-hidden border border-appleBorder mb-4 relative pt-[56.25%]">
+            <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.loom.com/embed/be8a97a64f80414eae11176843c559bb" allowfullscreen></iframe>
+        </div>
+        <div class="text-center text-[10px] text-appleGray mb-12">System topology and mechanistic interpretability deep-dive</div>
+
+        <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Deployment Timeline</div>
+        <div class="card p-8 mb-10">
+            <div class="timeline">
+                <div class="tl-item fail">
+                    <div class="font-mono text-[10px] text-appleGray mb-1">v1 – v10</div>
+                    <div class="text-sm font-semibold mb-1">Container Bootstrap Failures</div>
+                    <div class="text-xs text-appleGray leading-relaxed">GCSFUSE mount crashes, OOM on model loading, vLLM version incompatibilities. Root cause: custom Google vLLM build required specific CUDA/PyTorch matrix.</div>
+                </div>
+                <div class="tl-item fail">
+                    <div class="font-mono text-[10px] text-appleGray mb-1">v11 – v20</div>
+                    <div class="text-sm font-semibold mb-1">Chat Template & Tokenizer Issues</div>
+                    <div class="text-xs text-appleGray leading-relaxed">Jinja template rendering errors, special token misalignment, multi-turn conversation state corruption. Required custom chat_template.jinja authoring.</div>
+                </div>
+                <div class="tl-item success">
+                    <div class="font-mono text-[10px] text-appleGreen mb-1">v21 – v30</div>
+                    <div class="text-sm font-semibold mb-1 text-appleLight">Stable Base Inference</div>
+                    <div class="text-xs text-appleGray leading-relaxed">Working configuration locked: vLLM 0.17.2rc1.dev133 + PagedAttention + custom entrypoint.sh. Stable inference at production throughput.</div>
+                </div>
+                <div class="tl-item fail">
+                    <div class="font-mono text-[10px] text-appleGray mb-1">Cycle 2</div>
+                    <div class="text-sm font-semibold mb-1">LoRA Enablement &mdash; Blocked</div>
+                    <div class="text-xs text-appleGray leading-relaxed">Attempted Multi-LoRA serving. Identified unsolvable dependency triangle between vLLM custom build, PEFT, and model architecture. Documented as community call-to-action.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-8">
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">vLLM</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">PagedAttention</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">CUDA</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Vertex AI</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">GCSFUSE</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Docker</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Jinja2</span>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+            <a href="https://github.com/Manzela/gemma4-vllm-deployment" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">Forensic Runbook <span class="text-appleGray">&rarr;</span></a>
+            <a href="https://github.com/Manzela/agent-dag-pipeline" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">Consumer: DAG Pipeline <span class="text-appleGray">&rarr;</span></a>
+            <a href="https://youtu.be/czZsPbylC1M" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">Video Demo <span class="text-appleGray">&rarr;</span></a>
+        </div>
     </div>
-  </div>
 
-  <!-- Video Demo -->
-  <div class="sec-title">Live Demo</div>
-  <div class="video-wrap">
-    <iframe src="https://www.youtube.com/embed/czZsPbylC1M" title="Pipeline Operation Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-  </div>
-  <div class="video-caption">Pipeline execution — autonomous content generation with zero human intervention</div>
+    <!-- ═══════════ CASE STUDY 3 ═══════════ -->
+    <div class="py-20 border-b border-appleBorder reveal" id="antigravity">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mb-4">Case Study 03</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">Antigravity-OS — AI Agent Governance Kernel</h2>
+        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+            An open-source governance kernel for AI agents that enforces cost budgets, policy-as-code constraints, deterministic state tracking, and self-healing CI. The operational backbone for autonomous AI development environments.
+        </div>
 
-  <!-- Trade-offs (no emojis) -->
-  <div class="sec-title">Engineering Trade-offs</div>
-  <div class="challenges">
-    <div class="challenge">
-      <h4><span class="indicator quality"></span> Quality vs. Cost</h4>
-      <p>Multi-model O-R-A-V evaluation (Originality, Relevance, Accuracy, Value) instead of a single LLM-as-judge. Each dimension uses a different model tier to balance accuracy with cost.</p>
-      <div class="decision">Decision: 4-tier scoring, 68.9% pass rate, $0.00002/run</div>
+        <div class="card p-px bg-appleBorder grid md:grid-cols-3 gap-px mb-12 overflow-hidden">
+            <div class="bg-appleSurface p-8">
+                <h4 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Problem</h4>
+                <p class="text-xs text-appleGray leading-relaxed">AI-assisted coding agents operate without cost guardrails, state persistence, or policy enforcement. Runaway token costs and context window mismanagement are common failure modes.</p>
+            </div>
+            <div class="bg-appleSurface p-8 border-t md:border-t-0 border-appleBorder">
+                <h4 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Approach</h4>
+                <p class="text-xs text-appleGray leading-relaxed">Built a governance kernel with cost enforcement (per-session and cumulative budgets), policy-as-code rules, and deterministic state tracking. MCP integrations provide tool access for managed agents.</p>
+            </div>
+            <div class="bg-appleDarker p-8 border-t md:border-t-0 border-appleBorder">
+                <h4 class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Result</h4>
+                <div class="font-mono text-2xl font-bold text-appleBlue mb-2">4,550 LOC</div>
+                <p class="text-xs text-appleGray leading-relaxed">Open-source on GitHub. Full governance docs: ADOPTERS, MAINTAINERS, SECURITY, CONTRIBUTING, GOVERNANCE.</p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-8">
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Python</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">MCP</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Redis</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Firestore</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Docker</span>
+            <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">GitHub Actions</span>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+            <a href="https://github.com/Manzela/Antigravity-OS" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">GitHub Repository <span class="text-appleGray">&rarr;</span></a>
+            <a href="https://github.com/Manzela/Antigravity-OS/blob/main/ROADMAP.md" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">Roadmap <span class="text-appleGray">&rarr;</span></a>
+            <a href="https://github.com/Manzela/Antigravity-OS/blob/main/GOVERNANCE.md" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">Governance Model <span class="text-appleGray">&rarr;</span></a>
+        </div>
     </div>
-    <div class="challenge">
-      <h4><span class="indicator safety"></span> Safety vs. Throughput</h4>
-      <p>Fail-closed design means ~31% of content is rejected. Intentional — no partial or low-quality content ever propagates downstream to production surfaces.</p>
-      <div class="decision">Decision: Fail-closed at every boundary, zero tolerance</div>
+
+    <!-- CTA -->
+    <div class="py-16 text-center">
+        <a href="https://manzela.github.io/Manzela/" class="inline-flex items-center gap-2 px-8 py-3 border border-appleBorder rounded-full text-xs font-semibold hover:bg-appleSurface transition-colors">View Full Profile & Credentials &rarr;</a>
     </div>
-    <div class="challenge">
-      <h4><span class="indicator flywheel"></span> Self-Improvement</h4>
-      <p>3-tier RLAIF data flywheel: production baseline, quality-approved, failure-cases. DPO preference pairs generated automatically for continuous alignment without human labeling.</p>
-      <div class="decision">Decision: Closed-loop flywheel, autonomous preference pairs</div>
-    </div>
-    <div class="challenge">
-      <h4><span class="indicator scale"></span> Scale vs. Locality</h4>
-      <p>5 countries require different linguistic, cultural, and regulatory context. Node 1 injects locale-specific signals before any LLM invocation, ensuring adaptation without prompt bloat.</p>
-      <div class="decision">Decision: Context-first architecture, zero-shot locale adapt</div>
-    </div>
-  </div>
 
-  <div class="stack">
-    <span class="pill">Python</span><span class="pill">FastAPI</span><span class="pill">Pydantic</span>
-    <span class="pill">Google ADK</span><span class="pill">Vertex AI</span><span class="pill">GCP</span>
-    <span class="pill">Langfuse</span><span class="pill">OpenTelemetry</span><span class="pill">GitHub Actions</span>
-    <span class="pill">pytest</span><span class="pill">mypy</span><span class="pill">ruff</span>
-  </div>
-
-  <div class="proof">
-    <a href="https://github.com/Manzela/agent-dag-pipeline" class="proof-link" target="_blank">GitHub Repository<span class="arrow">&rarr;</span></a>
-    <a href="https://manzela.github.io/pipeline-observatory/" class="proof-link" target="_blank">Live Telemetry<span class="arrow">&rarr;</span></a>
-    <a href="https://manzela.github.io/pipeline-observatory/architecture.html" class="proof-link" target="_blank">Architecture View<span class="arrow">&rarr;</span></a>
-  </div>
-</div>
-
-<!-- ═══════════ CASE STUDY 2 ═══════════ -->
-<div class="cs reveal" id="gemma4">
-  <div class="cs-label purple">Case Study 02</div>
-  <h2>Gemma 4 MoE — Vertex AI Deployment Forensics</h2>
-  <div class="desc">Deployed Google's Gemma 4 26B-A4B-it Mixture-of-Experts model on Vertex AI with vLLM. Documented 20 distinct failure modes across 30+ deployment iterations in a forensic runbook now used as community reference material.</div>
-
-  <div class="par">
-    <div class="par-item"><h4>Problem</h4><p>Gemma 4 MoE was newly released with no production deployment guides. Required custom vLLM builds, GCSFUSE container configs, and careful chat template engineering.</p></div>
-    <div class="par-item"><h4>Approach</h4><p>Systematic forensic debugging across 2 deployment cycles (16+ hours, 30+ versions). Every crash, OOM, and dependency conflict documented with root cause analysis.</p></div>
-    <div class="par-item"><h4>Result</h4><div class="metric">20 failure modes</div><p>documented. Stable base inference achieved. LoRA enablement identified as blocked by dependency triangle (honestly documented).</p></div>
-  </div>
-
-
-
-  <div class="sec-title">Deployment Timeline</div>
-  <div class="timeline">
-    <div class="tl-item fail"><div class="tl-date">v1 – v10</div><div class="tl-title">Container Bootstrap Failures</div><div class="tl-desc">GCSFUSE mount crashes, OOM on model loading, vLLM version incompatibilities. Root cause: custom Google vLLM build required specific CUDA/PyTorch matrix.</div></div>
-    <div class="tl-item fail"><div class="tl-date">v11 – v20</div><div class="tl-title">Chat Template & Tokenizer Issues</div><div class="tl-desc">Jinja template rendering errors, special token misalignment, multi-turn conversation state corruption. Required custom chat_template.jinja authoring.</div></div>
-    <div class="tl-item success"><div class="tl-date">v21 – v30</div><div class="tl-title">Stable Base Inference</div><div class="tl-desc">Working configuration locked: vLLM 0.17.2rc1.dev133 + PagedAttention + custom entrypoint.sh. Stable inference at production throughput.</div></div>
-    <div class="tl-item fail"><div class="tl-date">Cycle 2</div><div class="tl-title">LoRA Enablement — Blocked</div><div class="tl-desc">Attempted Multi-LoRA serving. Identified unsolvable dependency triangle between vLLM custom build, PEFT, and model architecture. Documented as community call-to-action.</div></div>
-  </div>
-
-  <div class="stack">
-    <span class="pill">vLLM</span><span class="pill">PagedAttention</span><span class="pill">CUDA</span>
-    <span class="pill">Vertex AI</span><span class="pill">GCSFUSE</span><span class="pill">Docker</span>
-    <span class="pill">Jinja2</span><span class="pill">Python</span><span class="pill">Bash</span>
-  </div>
-
-  <div class="proof">
-    <a href="https://github.com/Manzela/gemma4-vllm-deployment" class="proof-link" target="_blank">Forensic Runbook<span class="arrow">&rarr;</span></a>
-    <a href="https://github.com/Manzela/agent-dag-pipeline" class="proof-link" target="_blank">Consumer: DAG Pipeline<span class="arrow">&rarr;</span></a>
-    <a href="https://youtu.be/czZsPbylC1M" class="proof-link" target="_blank">Video Demo<span class="arrow">&rarr;</span></a>
-  </div>
-</div>
-
-
-<!-- Cross-link to Profile for credentials -->
-<div style="text-align:center;padding:48px 0 16px">
-  <a href="https://manzela.github.io/Manzela/" style="font-size:13px;color:var(--t3);border:1px solid var(--b);padding:12px 32px;border-radius:10px;display:inline-block;transition:all .25s">View Full Profile &amp; Credentials &rarr;</a>
-</div>
-
-<div class="ftr">
-  <div class="ftr-inner">
-    <div class="ftr-brand">Case Studies &middot; Daniel Manzela</div>
-    <div class="ftr-links">
-      <a href="index.html">Observatory</a>
-      <a href="architecture.html">Architecture</a>
-      <a href="https://manzela.github.io/Manzela/">Profile</a>
-      <a href="https://github.com/Manzela" target="_blank">GitHub</a>
-      <a href="https://linkedin.com/in/manzela" target="_blank">LinkedIn</a>
-    </div>
-  </div>
-</div>
+    <!-- Footer -->
+    <footer class="pt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-appleBorder mt-8">
+        <div class="text-sm font-semibold text-appleLight">Case Studies &middot; Daniel Manzela</div>
+        <div class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-appleGray">
+            <a href="index.html" class="hover:text-appleLight transition-colors">Observatory</a>
+            <a href="architecture.html" class="hover:text-appleLight transition-colors">Architecture</a>
+            <a href="https://manzela.github.io/Manzela/" class="hover:text-appleLight transition-colors">Profile</a>
+            <a href="https://github.com/Manzela" target="_blank" class="hover:text-appleLight transition-colors">GitHub</a>
+            <a href="https://linkedin.com/in/manzela" target="_blank" class="hover:text-appleLight transition-colors">LinkedIn</a>
+        </div>
+    </footer>
 
 </div>
 

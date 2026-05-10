@@ -1,352 +1,350 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pipeline Observatory — Daniel Manzela</title>
-<meta name="description" content="Production execution telemetry for an autonomous multi-agent DAG pipeline operating at enterprise scale across 5 countries, 11 clients, and 234 managed websites.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#060a12;--s1:rgba(13,17,23,0.6);--s2:rgba(255,255,255,0.04);--b:rgba(255,255,255,0.06);--t:rgba(255,255,255,0.92);--t2:rgba(255,255,255,0.55);--t3:rgba(255,255,255,0.3);--accent:#0A84FF;--green:#0AF5D0;--amber:#FFD60A;--red:#FF453A;--cyan:#64D2FF}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline Observatory — Daniel Manzela</title>
+    <meta name="description" content="Production execution telemetry for an autonomous multi-agent DAG pipeline operating at enterprise scale across 5 countries, 11 clients, and 234 managed websites.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        appleBg: '#000000',
+                        appleSurface: '#1d1d1f',
+                        appleBorder: '#424245',
+                        appleLight: '#f5f5f7',
+                        appleGray: '#86868b',
+                        appleBlue: '#2997ff',
+                        appleDarker: '#151516',
+                        appleGreen: '#34d399',
+                        appleRed: '#f87171'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #000000; color: #f5f5f7; -webkit-font-smoothing: antialiased; }
+        .card { background-color: #1d1d1f; border: 1px solid #424245; border-radius: 16px; }
+        .reveal { opacity: 0; transform: translateY(20px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        ::selection { background: rgba(41, 151, 255, 0.3); color: #f5f5f7; }
+        
+        .live-dot::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: #34d399; animation: ping 2s cubic-bezier(0,0,0.2,1) infinite; opacity: 0.75; }
+        .live-dot::after { content: ''; position: absolute; inset: 1px; border-radius: 50%; background: #34d399; }
+        @keyframes ping { 75%, 100% { transform: scale(2.5); opacity: 0; } }
 
-/* Glassmorphic panels */
-.glass{background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(48,54,61,0.5)}
-
-/* Glow text */
-.glow{text-shadow:0 0 10px rgba(10,245,208,0.5)}
-
-/* Group hover — value shifts to white on card hover */
-.stat:hover .num,.dep-c:hover .val,.geo-c:hover .name{color:#fff!important;transition:color 0.3s ease}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6;letter-spacing:-0.01em}
-.w{max-width:960px;margin:0 auto;padding:0 24px}
-
-/* Hero */
-.hero{padding:120px 0 80px;text-align:center;border-bottom:1px solid var(--b);background:radial-gradient(ellipse at 50% 0%,rgba(10,132,255,0.025) 0%,transparent 50%)}
-.hero h1{font-size:42px;font-weight:700;letter-spacing:-1.5px;line-height:1.08;margin-bottom:16px}
-.hero .sub{font-size:16px;color:var(--t2);max-width:560px;margin:0 auto;line-height:1.7}
-.hero .meta{margin-top:28px;font-size:12px;color:var(--t3);letter-spacing:0.3px}
-.hero .meta a{color:var(--accent);text-decoration:none}
-.live-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--t3);background:rgba(10,245,208,0.05);border:1px solid rgba(10,245,208,0.15);padding:6px 16px;border-radius:99px;margin-top:16px;letter-spacing:0.3px}
-.live-dot{position:relative;width:8px;height:8px}
-.live-dot::before{content:'';position:absolute;inset:0;border-radius:50%;background:var(--green);animation:ping 2s cubic-bezier(0,0,0.2,1) infinite;opacity:0.75}
-.live-dot::after{content:'';position:absolute;inset:1px;border-radius:50%;background:var(--green)}
-@keyframes ping{75%,100%{transform:scale(2.5);opacity:0}}
-
-/* Stats Grid */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:16px;overflow:hidden;margin:80px 0}
-.stat{background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:32px 20px;text-align:center;transition:all 0.3s ease}
-.stat:hover{background:rgba(255,255,255,0.04);transform:scale(1.02)}
-.stat .num{font-size:28px;font-weight:700;letter-spacing:-0.5px;font-family:'JetBrains Mono',monospace;color:var(--green);transition:color 0.3s ease}
-.stat .lbl{font-size:10px;color:var(--t3);margin-top:6px;text-transform:uppercase;letter-spacing:1.5px;font-weight:500}
-
-/* Sections */
-.sec{padding:80px 0;border-bottom:1px solid var(--b)}
-.sec:last-of-type{border:none}
-.label{font-size:11px;text-transform:uppercase;letter-spacing:3px;color:var(--accent);font-weight:500;margin-bottom:12px}
-.sec h2{font-size:28px;font-weight:700;letter-spacing:-0.8px;margin-bottom:8px}
-.sec .desc{font-size:14px;color:var(--t2);max-width:640px;margin-bottom:40px;line-height:1.8}
-
-/* Cards */
-.card{background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(48,54,61,0.5);border-radius:16px;padding:32px;margin-bottom:16px;transition:all 0.3s ease}
-.card:hover{border-color:rgba(10,245,208,0.15)}
-.card h3{font-size:13px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:20px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-
-/* Scale Box */
-.scale-box{border:1px solid rgba(10,245,208,0.12);border-radius:16px;padding:40px;background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.scale-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center;margin-bottom:24px}
-.scale-nums .num{font-size:32px;font-weight:700;letter-spacing:-1px;font-family:'JetBrains Mono',monospace}
-.scale-nums .lbl{font-size:10px;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:1.5px;font-weight:500}
-.scale-math{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--t2);text-align:center;padding-top:20px;border-top:1px solid rgba(10,245,208,0.08);line-height:2}
-.scale-math em{color:var(--green);font-style:normal;font-weight:600}
-.scale-math strong{color:#fff;font-size:15px;text-shadow:0 0 10px rgba(10,245,208,0.5)}
-
-/* DAG */
-.dag-wrap{position:relative;padding:10px 0}
-.dag{display:flex;align-items:center;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px 0;justify-content:center;position:relative;z-index:2}
-.dag-n{border:1px solid var(--b);border-radius:12px;padding:14px 10px;text-align:center;min-width:100px;flex-shrink:0;position:relative;transition:all 0.3s ease}
-.dag-n:hover{transform:translateY(-2px);border-color:rgba(10,132,255,0.3)}
-.dag-n .nm{font-size:11px;font-weight:600}
-.dag-n .tp{font-size:9px;color:var(--t2)}
-.dag-n .ct{font-size:10px;color:var(--accent);margin-top:4px;font-weight:600}
-.dag-arr{color:var(--t3);font-size:12px;flex-shrink:0;user-select:none}
-.dag-n.n1{background:rgba(59,130,246,0.06)}.dag-n.n2{background:rgba(251,191,36,0.06)}
-.dag-n.n3{background:rgba(34,211,238,0.06)}.dag-n.n4{background:rgba(244,114,182,0.06)}
-.dag-n.n5{background:rgba(52,211,153,0.06)}.dag-n.n6{background:rgba(248,113,113,0.06)}
-.dag-n.n7{background:rgba(129,140,248,0.06)}
-.demas{margin-top:20px;text-align:center;padding:16px;border:1px dashed rgba(251,191,36,0.2);border-radius:12px;background:rgba(251,191,36,0.02)}
-
-/* Timeline */
-.tl-row{display:grid;grid-template-columns:100px 180px 1fr 60px;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--b);transition:background 0.2s ease}
-.tl-row:last-child{border:none}
-.tl-row:hover{background:rgba(255,255,255,0.02)}
-.tl-date{font-size:12px;color:var(--t3);font-family:'JetBrains Mono',monospace}
-.tl-model{font-size:12px;font-weight:600}
-.tl-bar{height:6px;border-radius:3px;background:var(--s2);overflow:hidden}
-.tl-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(0.25,0.46,0.45,0.94)}
-.tl-calls{font-size:11px;color:var(--t2);text-align:right;font-family:'JetBrains Mono',monospace}
-
-/* Geo */
-.geo{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.geo-c{display:flex;align-items:center;gap:12px;padding:16px;background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(48,54,61,0.5);border-radius:12px;transition:all 0.3s ease}
-.geo-c:hover{border-color:rgba(10,245,208,0.15);transform:translateY(-2px)}
-.geo-c .flag{font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--green);background:rgba(10,245,208,0.08);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.geo-c .name{font-size:13px;font-weight:600;transition:color 0.3s ease}
-.geo-c .det{font-size:10px;color:var(--t3);margin-top:2px;line-height:1.5}
-
-/* Deploy */
-.dep{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.dep-c{padding:20px;background:rgba(13,17,23,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(48,54,61,0.5);border-radius:12px;text-align:center;transition:all 0.3s ease}
-.dep-c:hover{border-color:rgba(10,245,208,0.15);transform:translateY(-2px)}
-.dep-c .val{font-size:18px;font-weight:700;letter-spacing:-0.5px;font-family:'JetBrains Mono',monospace;color:var(--green);transition:color 0.3s ease}
-.dep-c .lbl{font-size:10px;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:1.5px;font-weight:500}
-
-/* Traces */
-.trace{font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 12px;margin-bottom:2px;border-radius:6px;display:grid;grid-template-columns:140px 60px 1fr 50px;gap:12px;background:transparent;transition:background 0.2s ease}
-.trace:hover{background:rgba(255,255,255,0.03)}
-.trace .ts{color:var(--t3)}.trace .stage{color:var(--cyan)}.trace .event{color:var(--t2)}.trace .ok{color:var(--green);font-weight:600}.trace .fail{color:var(--red);font-weight:600}
-
-/* CTA */
-.cta{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border:1px solid var(--accent);border-radius:99px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:500;transition:all 0.3s ease;margin-top:32px}
-.cta:hover{background:rgba(10,132,255,0.1);transform:translateY(-1px)}
-
-/* Footer */
-.ftr{padding:60px 0 40px;border-top:1px solid var(--b)}
-.ftr-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px}
-.ftr-brand{font-size:13px;font-weight:600;color:var(--t)}
-.ftr-links{display:flex;gap:24px;flex-wrap:wrap}
-.ftr-links a{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);text-decoration:none;transition:color 0.3s ease;font-weight:500}
-.ftr-links a:hover{color:var(--green)}
-@media(max-width:640px){.ftr-inner{flex-direction:column;text-align:center}}
-
-/* Reveal */
-.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s}.reveal.visible{opacity:1;transform:none}
-
-/* Responsive */
-@media(max-width:768px){
-  .hero h1{font-size:28px}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .dep{grid-template-columns:repeat(2,1fr)}
-  .g2{grid-template-columns:1fr}
-  .trace{grid-template-columns:1fr;gap:4px}
-  .trace .ts{font-size:10px}
-  .tl-row{grid-template-columns:1fr;gap:6px}
-  .scale-nums{grid-template-columns:repeat(3,1fr)}
-}
-</style>
+        /* Custom scrollbar for horizontal DAG */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body>
-<div class="w">
+<body class="bg-appleBg text-appleLight antialiased selection:bg-appleBlue/30">
 
-<div class="hero">
-  <h1>Pipeline<br>Observatory</h1>
-  <p class="sub">Production execution telemetry for an autonomous multi-agent DAG pipeline — processing ~10.5M product pages per cycle across 5 countries with mechanistic interpretability and fail-closed safety.</p>
-  <div class="meta"><a href="architecture.html">Architecture Deep View</a> &middot; Daniel Manzela &middot; 2024–2026</div>
-  <div class="live-badge"><span class="live-dot"></span> Last execution: 2026-05-07T11:45:24Z</div>
-</div>
+<div class="max-w-4xl mx-auto px-6">
 
-<!-- Key Metrics -->
-<div class="stats reveal">
-  <div class="stat"><div class="num" id="ct1">—</div><div class="lbl">Agent Ops / Cycle</div></div>
-  <div class="stat"><div class="num" id="ct2">—</div><div class="lbl">PDPs / Cycle</div></div>
-  <div class="stat"><div class="num" id="ct3">—</div><div class="lbl">Managed Websites</div></div>
-  <div class="stat"><div class="num" id="ct4">—</div><div class="lbl">Countries</div></div>
-  <div class="stat"><div class="num" id="ct5">—</div><div class="lbl">Content Pass Rate</div></div>
-  <div class="stat"><div class="num" id="ct6">—</div><div class="lbl">Cost / Run</div></div>
-</div>
-
-<!-- Enterprise Scale -->
-<div class="sec reveal">
-  <div class="label">Production Scale</div>
-  <h2>Enterprise Throughput</h2>
-  <div class="desc">The pipeline processes product data for 11 commercial clients across 5 countries. Each cycle traverses all 7 DAG nodes per product, generating ~73.5M autonomous agent operations from ~10.5M product-page inputs.</div>
-
-  <div class="scale-box">
-    <div class="scale-nums">
-      <div><div class="num" style="color:var(--t)">11</div><div class="lbl">Clients</div></div>
-      <div><div class="num" style="color:var(--t)">~45K</div><div class="lbl">Avg Products / Client</div></div>
-      <div><div class="num" style="color:var(--t)">~21</div><div class="lbl">Locations / Client</div></div>
-      <div><div class="num" style="color:var(--green)">~10.5M</div><div class="lbl">PDPs / Cycle</div></div>
-      <div><div class="num" style="color:var(--green)">~73.5M</div><div class="lbl">Agent Ops / Cycle</div></div>
-      <div><div class="num" style="color:var(--accent)">~305M</div><div class="lbl">Monthly Agent Ops</div></div>
+    <!-- Hero -->
+    <div class="py-24 md:py-32 text-center border-b border-appleBorder">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6">Pipeline<br>Observatory</h1>
+        <p class="text-appleGray text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
+            Production execution telemetry for an autonomous multi-agent DAG pipeline &mdash; processing ~10.5M product pages per cycle across 5 countries with mechanistic interpretability and fail-closed safety.
+        </p>
+        <div class="text-xs text-appleGray tracking-wide mb-6">
+            <a href="architecture.html" class="text-appleLight hover:text-appleBlue transition-colors">Architecture Deep View</a> &middot; Daniel Manzela &middot; 2024–2026
+        </div>
+        <div class="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-4 py-2 rounded-full">
+            <span class="live-dot relative w-2 h-2 block"></span> Last execution: 2026-05-07T11:45:24Z
+        </div>
     </div>
-    <div class="scale-math"><em>11</em> clients &times; <em>~45K</em> avg products &times; <em>~21</em> locations = <strong>~10.5M PDPs</strong> per cycle &times; 7 agents = <strong>~73.5M ops</strong></div>
-  </div>
-</div>
 
-<!-- DAG Topology -->
-<div class="sec reveal">
-  <div class="label">Agent Topology</div>
-  <h2>7-Node Execution DAG</h2>
-  <div class="desc">Each pipeline run traverses a strict Directed Acyclic Graph. Deterministic gates fire at every agent boundary; the probabilistic LLM activates only when the gate passes. DEMAS audits every transition.</div>
-
-  <div class="card">
-    <div class="dag-wrap">
-      <div class="dag">
-        <div class="dag-n n1"><div class="nm">Node 1</div><div class="tp">City DNA</div><div class="ct">—</div></div><span class="dag-arr">&rarr;</span>
-        <div class="dag-n n2"><div class="nm">Node 2</div><div class="tp">Normalizer</div><div class="ct">22,760</div></div><span class="dag-arr">&rarr;</span>
-        <div class="dag-n n3"><div class="nm">Node 3</div><div class="tp">Synonyms</div><div class="ct">—</div></div><span class="dag-arr">&rarr;</span>
-        <div class="dag-n n4"><div class="nm">Node 4</div><div class="tp">SV Gate</div><div class="ct">—</div></div><span class="dag-arr">&rarr;</span>
-        <div class="dag-n n5"><div class="nm">Node 5</div><div class="tp">Writer</div><div class="ct">20,314</div></div><span class="dag-arr">&rarr;</span>
-        <div class="dag-n n6"><div class="nm">Node 6</div><div class="tp">Validator</div><div class="ct">O-R-A-V</div></div><span class="dag-arr">&rarr;</span>
-        <div class="dag-n n7"><div class="nm">Node 7</div><div class="tp">Features</div><div class="ct">—</div></div>
-      </div>
+    <!-- Key Metrics -->
+    <div class="card p-px bg-appleBorder grid grid-cols-2 md:grid-cols-3 gap-px my-16 reveal overflow-hidden">
+        <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
+            <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct1">—</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">Agent Ops / Cycle</div>
+        </div>
+        <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
+            <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct2">—</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">PDPs / Cycle</div>
+        </div>
+        <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
+            <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct3">—</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">Managed Websites</div>
+        </div>
+        <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
+            <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct4">—</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">Countries</div>
+        </div>
+        <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
+            <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct5">—</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">Content Pass Rate</div>
+        </div>
+        <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
+            <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct6">—</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">Cost / Run</div>
+        </div>
     </div>
-    <div class="demas"><span style="color:var(--amber);font-weight:600;font-size:12px">DEMAS</span><span style="color:var(--t3);font-size:11px"> — JIT Audit Layer &middot; 5,563 executions &middot; 68.9% pass rate &middot; Fail-Closed</span></div>
-  </div>
 
-  <a href="architecture.html" class="cta">Explore Node Anatomy &rarr;</a>
-</div>
+    <!-- Enterprise Scale -->
+    <div class="py-20 border-b border-appleBorder reveal">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Production Scale</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">Enterprise Throughput</h2>
+        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+            The pipeline processes product data for 11 commercial clients across 5 countries. Each cycle traverses all 7 DAG nodes per product, generating ~73.5M autonomous agent operations from ~10.5M product-page inputs.
+        </div>
 
-<!-- Model Timeline -->
-<div class="sec reveal">
-  <div class="label">Model Evolution</div>
-  <h2>3 Generations in Production</h2>
-  <div class="desc">The inference backbone has evolved through three distinct model generations — from on-premise Gemma to cloud-hosted Gemini — with each migration tracked through execution volume.</div>
-
-  <div class="card">
-    <h3>Execution Volume by Model</h3>
-    <div id="timeline"></div>
-  </div>
-</div>
-
-<!-- Geo -->
-<div class="sec reveal">
-  <div class="label">Geographic Coverage</div>
-  <h2>Multi-Country Execution</h2>
-  <div class="desc">The pipeline adapts content per locale — language, cultural signals, and timezone offsets are injected at Node 1 (City DNA) before any downstream LLM invocation.</div>
-
-  <div class="geo">
-    <div class="geo-c"><span class="flag">ES</span><div><div class="name">Spain</div><div class="det">Zaragoza &middot; Val&egrave;ncia &middot; Madrid &middot; Barcelona &middot; M&aacute;laga</div></div></div>
-    <div class="geo-c"><span class="flag">PT</span><div><div class="name">Portugal</div><div class="det">Odivelas &middot; Guilhufe</div></div></div>
-    <div class="geo-c"><span class="flag">IL</span><div><div class="name">Israel</div><div class="det">Tel Aviv-Yafo</div></div></div>
-    <div class="geo-c"><span class="flag">US</span><div><div class="name">United States</div><div class="det">Multi-region</div></div></div>
-    <div class="geo-c"><span class="flag">MX</span><div><div class="name">Mexico</div><div class="det">Multi-region</div></div></div>
-  </div>
-</div>
-
-<!-- Deployment -->
-<div class="sec reveal">
-  <div class="label">Deployment Matrix</div>
-  <h2>234 Websites &middot; 11 Domains</h2>
-  <div class="desc">Pipeline outputs are synced to 234 production e-commerce surfaces in real-time. Each tenant's content is isolated via adapter binding, scoped prompt caching, and per-location catalog management including price updates, stock inventory, and unique content generation.</div>
-
-  <div class="dep">
-    <div class="dep-c"><div class="val">234</div><div class="lbl">Managed Websites</div></div>
-    <div class="dep-c"><div class="val">11</div><div class="lbl">Domains</div></div>
-    <div class="dep-c"><div class="val">10M+</div><div class="lbl">End Users Reached</div></div>
-    <div class="dep-c"><div class="val">7d TTL</div><div class="lbl">Redis LTM Cache</div></div>
-  </div>
-</div>
-
-<!-- Traces -->
-<div class="sec reveal">
-  <div class="label">Execution Traces</div>
-  <h2>Live Stream</h2>
-  <div class="desc">Anonymized execution traces from the most recent pipeline runs. Each line represents a single node invocation with its audit status.</div>
-
-  <div class="card" style="padding:20px">
-    <div id="traces"></div>
-  </div>
-</div>
-
-<div class="ftr">
-  <div class="ftr-inner w">
-    <div class="ftr-brand">Pipeline Observatory &middot; Daniel Manzela</div>
-    <div class="ftr-links">
-      <a href="architecture.html">Architecture</a>
-      <a href="case-studies.html">Case Studies</a>
-      <a href="https://manzela.github.io/Manzela/">Profile</a>
-      <a href="https://github.com/Manzela" target="_blank">GitHub</a>
-      <a href="https://linkedin.com/in/manzela" target="_blank">LinkedIn</a>
+        <div class="card p-8 bg-appleDarker">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-8 text-center mb-8">
+                <div><div class="font-mono text-2xl font-semibold text-appleLight mb-1">11</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Clients</div></div>
+                <div><div class="font-mono text-2xl font-semibold text-appleLight mb-1">~45K</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Avg Products / Client</div></div>
+                <div><div class="font-mono text-2xl font-semibold text-appleLight mb-1">~21</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Locations / Client</div></div>
+                <div><div class="font-mono text-2xl font-semibold text-appleLight mb-1">~10.5M</div><div class="text-[9px] uppercase tracking-widest text-appleGray">PDPs / Cycle</div></div>
+                <div><div class="font-mono text-2xl font-semibold text-appleLight mb-1">~73.5M</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Agent Ops / Cycle</div></div>
+                <div><div class="font-mono text-2xl font-semibold text-appleBlue mb-1">~305M</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Monthly Agent Ops</div></div>
+            </div>
+            <div class="border-t border-appleBorder pt-6 text-center font-mono text-xs text-appleGray">
+                11 clients &times; ~45K avg products &times; ~21 locations = <strong class="text-appleLight font-semibold">~10.5M PDPs</strong> per cycle &times; 7 agents = <strong class="text-appleLight font-semibold">~73.5M ops</strong>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
+
+    <!-- DAG Topology -->
+    <div class="py-20 border-b border-appleBorder reveal">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Agent Topology</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">7-Node Execution DAG</h2>
+        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+            Each pipeline run traverses a strict Directed Acyclic Graph. Deterministic gates fire at every agent boundary; the probabilistic LLM activates only when the gate passes. DEMAS audits every transition.
+        </div>
+
+        <div class="card p-8 mb-8">
+            <div class="flex items-center gap-3 overflow-x-auto no-scrollbar pb-4">
+                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 1</div><div class="text-[9px] text-appleGray mb-2">City DNA</div><div class="text-[9px] font-mono text-appleBlue">&mdash;</div>
+                </div>
+                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
+                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 2</div><div class="text-[9px] text-appleGray mb-2">Normalizer</div><div class="text-[9px] font-mono text-appleBlue">22,760</div>
+                </div>
+                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
+                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 3</div><div class="text-[9px] text-appleGray mb-2">Synonyms</div><div class="text-[9px] font-mono text-appleBlue">&mdash;</div>
+                </div>
+                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
+                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 4</div><div class="text-[9px] text-appleGray mb-2">SV Gate</div><div class="text-[9px] font-mono text-appleBlue">&mdash;</div>
+                </div>
+                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
+                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 5</div><div class="text-[9px] text-appleGray mb-2">Writer</div><div class="text-[9px] font-mono text-appleBlue">20,314</div>
+                </div>
+                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
+                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 6</div><div class="text-[9px] text-appleGray mb-2">Validator</div><div class="text-[9px] font-mono text-appleBlue">O-R-A-V</div>
+                </div>
+                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
+                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 7</div><div class="text-[9px] text-appleGray mb-2">Features</div><div class="text-[9px] font-mono text-appleBlue">&mdash;</div>
+                </div>
+            </div>
+            <div class="mt-4 p-4 border border-dashed border-appleBorder bg-appleDarker/50 rounded-xl text-center">
+                <span class="text-xs font-semibold text-appleLight mr-2">DEMAS</span>
+                <span class="text-[10px] text-appleGray">JIT Audit Layer &middot; 5,563 executions &middot; 68.9% pass rate &middot; Fail-Closed</span>
+            </div>
+        </div>
+        <a href="architecture.html" class="inline-flex items-center gap-2 px-6 py-3 border border-appleBorder rounded-full text-xs font-medium text-appleLight hover:bg-appleSurface transition-colors">
+            Explore Node Anatomy &rarr;
+        </a>
+    </div>
+
+    <!-- Model Timeline -->
+    <div class="py-20 border-b border-appleBorder reveal">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Model Evolution</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">3 Generations in Production</h2>
+        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+            The inference backbone has evolved through three distinct model generations &mdash; from on-premise Gemma to cloud-hosted Gemini &mdash; with each migration tracked through execution volume.
+        </div>
+
+        <div class="card p-8">
+            <h3 class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Execution Volume by Model</h3>
+            <div id="timeline" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <!-- Geo -->
+    <div class="py-20 border-b border-appleBorder reveal">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Geographic Coverage</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">Multi-Country Execution</h2>
+        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+            The pipeline adapts content per locale &mdash; language, cultural signals, and timezone offsets are injected at Node 1 (City DNA) before any downstream LLM invocation.
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="card p-4 flex items-center gap-4 hover:bg-appleDarker transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-appleDarker border border-appleBorder flex items-center justify-center font-mono text-[10px] font-semibold text-appleLight shrink-0">ES</div>
+                <div><div class="text-sm font-semibold text-appleLight">Spain</div><div class="text-[10px] text-appleGray mt-1">Zaragoza &middot; Val&egrave;ncia &middot; Madrid &middot; Barcelona &middot; M&aacute;laga</div></div>
+            </div>
+            <div class="card p-4 flex items-center gap-4 hover:bg-appleDarker transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-appleDarker border border-appleBorder flex items-center justify-center font-mono text-[10px] font-semibold text-appleLight shrink-0">PT</div>
+                <div><div class="text-sm font-semibold text-appleLight">Portugal</div><div class="text-[10px] text-appleGray mt-1">Odivelas &middot; Guilhufe</div></div>
+            </div>
+            <div class="card p-4 flex items-center gap-4 hover:bg-appleDarker transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-appleDarker border border-appleBorder flex items-center justify-center font-mono text-[10px] font-semibold text-appleLight shrink-0">IL</div>
+                <div><div class="text-sm font-semibold text-appleLight">Israel</div><div class="text-[10px] text-appleGray mt-1">Tel Aviv-Yafo</div></div>
+            </div>
+            <div class="card p-4 flex items-center gap-4 hover:bg-appleDarker transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-appleDarker border border-appleBorder flex items-center justify-center font-mono text-[10px] font-semibold text-appleLight shrink-0">US</div>
+                <div><div class="text-sm font-semibold text-appleLight">United States</div><div class="text-[10px] text-appleGray mt-1">Multi-region</div></div>
+            </div>
+            <div class="card p-4 flex items-center gap-4 hover:bg-appleDarker transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-appleDarker border border-appleBorder flex items-center justify-center font-mono text-[10px] font-semibold text-appleLight shrink-0">MX</div>
+                <div><div class="text-sm font-semibold text-appleLight">Mexico</div><div class="text-[10px] text-appleGray mt-1">Multi-region</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deployment -->
+    <div class="py-20 border-b border-appleBorder reveal">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Deployment Matrix</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">234 Websites &middot; 11 Domains</h2>
+        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+            Pipeline outputs are synced to 234 production e-commerce surfaces in real-time. Each tenant's content is isolated via adapter binding, scoped prompt caching, and per-location catalog management including price updates, stock inventory, and unique content generation.
+        </div>
+
+        <div class="card p-px bg-appleBorder grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden">
+            <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xl font-semibold text-appleLight mb-2">234</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Managed Websites</div>
+            </div>
+            <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xl font-semibold text-appleLight mb-2">11</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Domains</div>
+            </div>
+            <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xl font-semibold text-appleLight mb-2">10M+</div><div class="text-[9px] uppercase tracking-widest text-appleGray">End Users Reached</div>
+            </div>
+            <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xl font-semibold text-appleLight mb-2">7d TTL</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Redis LTM Cache</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Traces -->
+    <div class="py-20 border-b border-appleBorder reveal">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Execution Traces</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">Live Stream</h2>
+        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+            Anonymized execution traces from the most recent pipeline runs. Each line represents a single node invocation with its audit status.
+        </div>
+
+        <div class="card p-6 bg-appleDarker overflow-hidden">
+            <div id="traces" class="space-y-1"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-appleBorder mt-12">
+        <div class="text-sm font-semibold text-appleLight">Pipeline Observatory &middot; Daniel Manzela</div>
+        <div class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-appleGray">
+            <a href="architecture.html" class="hover:text-appleLight transition-colors">Architecture</a>
+            <a href="case-studies.html" class="hover:text-appleLight transition-colors">Case Studies</a>
+            <a href="https://manzela.github.io/Manzela/" class="hover:text-appleLight transition-colors">Profile</a>
+            <a href="https://github.com/Manzela" target="_blank" class="hover:text-appleLight transition-colors">GitHub</a>
+            <a href="https://linkedin.com/in/manzela" target="_blank" class="hover:text-appleLight transition-colors">LinkedIn</a>
+        </div>
+    </footer>
+
 </div>
 
 <script>
 // Animated counters
 function animateCount(el, target, suffix) {
-  suffix = suffix || '';
-  let current = 0;
-  const step = Math.ceil(target / 40);
-  const interval = setInterval(() => {
-    current += step;
-    if (current >= target) { current = target; clearInterval(interval); }
-    el.textContent = current.toLocaleString() + suffix;
-  }, 35);
+    suffix = suffix || '';
+    let current = 0;
+    const step = Math.ceil(target / 40);
+    const interval = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(interval); }
+        el.textContent = current.toLocaleString() + suffix;
+    }, 35);
 }
 
-// Trigger counters on scroll
 const statsObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      animateCount(document.getElementById('ct1'), 73500000);
-      animateCount(document.getElementById('ct2'), 10500000);
-      animateCount(document.getElementById('ct3'), 234);
-      animateCount(document.getElementById('ct4'), 5);
-      animateCount(document.getElementById('ct5'), 68, '%');
-      document.getElementById('ct6').textContent = '<$0.0001';
-      statsObs.disconnect();
-    }
-  });
-}, {threshold: 0.3});
-const statsEl = document.querySelector('.stats');
-if (statsEl) statsObs.observe(statsEl);
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            animateCount(document.getElementById('ct1'), 73500000);
+            animateCount(document.getElementById('ct2'), 10500000);
+            animateCount(document.getElementById('ct3'), 234);
+            animateCount(document.getElementById('ct4'), 5);
+            animateCount(document.getElementById('ct5'), 68, '%');
+            document.getElementById('ct6').textContent = '<$0.0001';
+            statsObs.disconnect();
+        }
+    });
+}, {threshold: 0.1});
+const statsEl = document.getElementById('ct1');
+if (statsEl) statsObs.observe(statsEl.parentElement.parentElement);
 
 // Model timeline
 const tl = [
-  {d:'Mar 24–31', m:'gemma-3-4b-it', c:25847, col:'#818cf8'},
-  {d:'Apr 5–15', m:'gemma-4-26b-a4b', c:24120, col:'#a78bfa'},
-  {d:'Apr 13–30', m:'gemini-2.5-flash-lite', c:5595, col:'#34d399'},
-  {d:'May 7+', m:'gemini-3.1-flash-lite', c:164, col:'#64D2FF'}
+    {d:'Mar 24–31', m:'gemma-3-4b-it', c:25847, col:'#424245'},
+    {d:'Apr 5–15', m:'gemma-4-26b-a4b', c:24120, col:'#6b7280'},
+    {d:'Apr 13–30', m:'gemini-2.5-flash-lite', c:5595, col:'#9ca3af'},
+    {d:'May 7+', m:'gemini-3.1-flash-lite', c:164, col:'#f5f5f7'}
 ];
 const te = document.getElementById('timeline');
 tl.forEach((t, i) => {
-  const r = document.createElement('div');
-  r.className = 'tl-row';
-  const pct = Math.max((t.c / 25847) * 100, 4);
-  r.innerHTML = `<div class="tl-date">${t.d}</div><div class="tl-model">${t.m}</div><div class="tl-bar"><div class="tl-fill" style="width:0;background:${t.col}"></div></div><div class="tl-calls">${t.c.toLocaleString()}</div>`;
-  te.appendChild(r);
-  setTimeout(() => r.querySelector('.tl-fill').style.width = pct + '%', 400 + i * 200);
+    const r = document.createElement('div');
+    r.className = 'flex items-center gap-4 text-xs py-2 border-b border-appleBorder/50 last:border-0 hover:bg-appleSurface/50 transition-colors px-2 rounded-lg';
+    const pct = Math.max((t.c / 25847) * 100, 4);
+    r.innerHTML = `<div class="font-mono text-appleGray w-24">${t.d}</div>
+                   <div class="font-semibold text-appleLight w-40 truncate">${t.m}</div>
+                   <div class="flex-1 h-1.5 bg-appleBorder rounded-full overflow-hidden"><div class="h-full rounded-full transition-all duration-1000 ease-out" style="width:0;background:${t.col}"></div></div>
+                   <div class="font-mono text-appleGray text-right w-16">${t.c.toLocaleString()}</div>`;
+    te.appendChild(r);
+    setTimeout(() => r.querySelector('.transition-all').style.width = pct + '%', 400 + i * 200);
 });
 
 // Execution traces
 const traces = [
-  {ts:'11:45:24Z', st:'demas', ev:'jit_audit', s:'pass'},
-  {ts:'11:45:22Z', st:'node5', ev:'content_generation', s:'ok'},
-  {ts:'11:45:20Z', st:'node5', ev:'content_generation', s:'ok'},
-  {ts:'11:45:18Z', st:'demas', ev:'jit_audit', s:'pass'},
-  {ts:'11:45:16Z', st:'node5', ev:'content_generation', s:'ok'},
-  {ts:'11:45:15Z', st:'node2', ev:'vision_extraction', s:'ok'},
-  {ts:'11:45:14Z', st:'demas', ev:'jit_audit', s:'pass'},
-  {ts:'11:45:12Z', st:'node2', ev:'taxonomy_classify', s:'ok'},
-  {ts:'11:45:10Z', st:'demas', ev:'jit_audit', s:'fail'},
-  {ts:'11:45:09Z', st:'node5', ev:'content_generation', s:'ok'},
-  {ts:'11:44:55Z', st:'node5', ev:'content_generation', s:'ok'},
-  {ts:'11:44:42Z', st:'node2', ev:'vision_extraction', s:'ok'}
+    {ts:'11:45:24Z', st:'demas', ev:'jit_audit', s:'pass'},
+    {ts:'11:45:22Z', st:'node5', ev:'content_generation', s:'ok'},
+    {ts:'11:45:20Z', st:'node5', ev:'content_generation', s:'ok'},
+    {ts:'11:45:18Z', st:'demas', ev:'jit_audit', s:'pass'},
+    {ts:'11:45:16Z', st:'node5', ev:'content_generation', s:'ok'},
+    {ts:'11:45:15Z', st:'node2', ev:'vision_extraction', s:'ok'},
+    {ts:'11:45:14Z', st:'demas', ev:'jit_audit', s:'pass'},
+    {ts:'11:45:12Z', st:'node2', ev:'taxonomy_classify', s:'ok'},
+    {ts:'11:45:10Z', st:'demas', ev:'jit_audit', s:'fail'},
+    {ts:'11:45:09Z', st:'node5', ev:'content_generation', s:'ok'},
+    {ts:'11:44:55Z', st:'node5', ev:'content_generation', s:'ok'},
+    {ts:'11:44:42Z', st:'node2', ev:'vision_extraction', s:'ok'}
 ];
 const tEl = document.getElementById('traces');
 traces.forEach((t, i) => {
-  setTimeout(() => {
-    const l = document.createElement('div');
-    l.className = 'trace';
-    l.style.opacity = '0';
-    l.style.transition = 'opacity 0.3s ease';
-    const sc = (t.s === 'ok' || t.s === 'pass') ? 'ok' : 'fail';
-    l.innerHTML = `<span class="ts">${t.ts}</span><span class="stage">${t.st}</span><span class="event">${t.ev}</span><span class="${sc}">${t.s.toUpperCase()}</span>`;
-    tEl.appendChild(l);
-    requestAnimationFrame(() => l.style.opacity = '1');
-  }, 800 + i * 100);
+    setTimeout(() => {
+        const l = document.createElement('div');
+        l.className = 'font-mono text-[10px] md:text-xs py-2 px-3 flex gap-2 md:gap-4 items-center rounded hover:bg-appleSurface transition-colors opacity-0 duration-300';
+        const sc = (t.s === 'ok' || t.s === 'pass') ? 'text-appleLight font-semibold' : 'text-appleRed font-semibold';
+        const stCol = 'text-appleBlue';
+        l.innerHTML = `<span class="text-appleGray w-20 md:w-24 shrink-0">${t.ts}</span>
+                       <span class="${stCol} w-16 md:w-20 shrink-0">${t.st}</span>
+                       <span class="text-appleGray flex-1 truncate">${t.ev}</span>
+                       <span class="${sc} w-12 text-right">${t.s.toUpperCase()}</span>`;
+        tEl.appendChild(l);
+        requestAnimationFrame(() => l.style.opacity = '1');
+    }, 800 + i * 100);
 });
 
 // Reveal on scroll
 const obs = new IntersectionObserver(e => e.forEach(x => {
-  if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); }
-}), {threshold: 0.08});
+    if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); }
+}), {threshold: 0.1});
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 </script>
 </body>
