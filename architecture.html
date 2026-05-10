@@ -88,8 +88,8 @@
         </div>
     </div>
 
-    <!-- 0. Inference Layer (MoE Sparse Activation) -->
-    <div class="py-20 border-b border-appleBorder reveal" id="s0">
+    <!-- Inference Layer (MoE Sparse Activation) -->
+    <div class="py-20 border-b border-appleBorder reveal" id="s2">
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Sparse Activation & Routing</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Multi-LoRA Serving Engine</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
@@ -127,7 +127,7 @@
         </div>
     </div>
 
-    <!-- 1. Node Anatomy -->
+    <!-- Node Anatomy -->
     <div class="py-20 border-b border-appleBorder reveal" id="s1">
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Node-Level Architecture</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Sub-Agent Node Anatomy</h2>
@@ -143,8 +143,8 @@
         <div class="flex flex-col gap-8" id="nodeSeq"></div>
     </div>
 
-    <!-- 2. DAG Topology -->
-    <div class="py-20 border-b border-appleBorder reveal" id="s2">
+    <!-- DAG Topology -->
+    <div class="py-20 border-b border-appleBorder reveal" id="s0">
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Execution Topology</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Execution DAG</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
@@ -221,7 +221,7 @@
                 <div class="bg-appleDarker border border-appleAmber/50 rounded-xl p-4 text-center relative overflow-hidden">
                     <div class="w-6 h-6 rounded-full border border-appleAmber text-appleAmber font-mono text-[10px] flex items-center justify-center mx-auto mb-3">4</div>
                     <div class="text-xs font-semibold mb-1">Score</div><div class="text-[9px] text-appleGray">Calculate Loss</div>
-                    <div class="rl-spark"></div>
+                    <div class="rl-spark" title="RL signal propagating to adapter weights"></div>
                 </div>
                 <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center">
                     <div class="w-6 h-6 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">5</div>
@@ -233,6 +233,10 @@
                 </div>
             </div>
         </div>
+
+        <div class="mt-6 p-4 border border-appleBorder bg-appleDarker/50 rounded-xl">
+            <div class="text-[10px] text-appleGray leading-relaxed text-center">This loop feeds the <a href="#s4" class="text-appleBlue hover:underline">O-R-A-V Scoring Engine</a>, which classifies outputs into Golden and Rejected datasets for the <a href="#s5" class="text-appleBlue hover:underline">3-Tier Dataset Flywheel</a>.</div>
+        </div>
     </div>
 
     <!-- 4. Evaluation Engine -->
@@ -243,7 +247,7 @@
             Four scoring dimensions determine content quality. Node 6 computes deterministic metrics. Node 7 orchestrates multi-model consensus. Outputs above threshold become Golden datasets for training; failures become Rejected datasets for DPO preference pairs.
         </div>
 
-        <div class="grid md:grid-cols-2 gap-4 mb-6">
+        <div class="mb-6">
             <div class="card p-6">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleBorder hover:scale-105 transition-transform">
@@ -260,7 +264,6 @@
                     </div>
                 </div>
             </div>
-        </div>
         </div>
 
         <div class="p-4 border border-appleRed/30 bg-appleRed/5 rounded-xl text-center">
@@ -299,6 +302,10 @@
                 <strong class="text-appleAmber font-mono text-[10px] tracking-widest uppercase block mb-2">DPO Preference Pairs &rarr; LoRA Fine-Tuning &rarr; Model Update</strong>
                 <div class="text-[10px] text-appleGray">Margin-maximized (chosen, rejected) pairs with score gap &ge; 0.15 feed curriculum-based LoRA training</div>
             </div>
+        </div>
+
+        <div class="mt-6 p-4 border border-appleBorder bg-appleDarker/50 rounded-xl">
+            <div class="text-[10px] text-appleGray leading-relaxed text-center">Curated preference pairs feed back into the <a href="#s3" class="text-appleBlue hover:underline">RL Feedback Loop</a>. Scoring thresholds are set by the <a href="#s4" class="text-appleBlue hover:underline">O-R-A-V Engine</a>.</div>
         </div>
     </div>
 
@@ -367,13 +374,29 @@
 
 <!-- Sticky Nav -->
 <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 nav-glass rounded-full px-4 py-3 flex gap-3 md:gap-5 text-[10px] uppercase tracking-widest font-medium text-appleGray z-50 hidden md:flex">
-    <a href="#s0" class="hover:text-appleLight transition-colors">MoE</a>
+    <a href="#s0" class="hover:text-appleLight transition-colors">DAG</a>
     <a href="#s1" class="hover:text-appleLight transition-colors">Nodes</a>
-    <a href="#s2" class="hover:text-appleLight transition-colors">DAG</a>
+    <a href="#s2" class="hover:text-appleLight transition-colors">MoE</a>
     <a href="#s3" class="hover:text-appleLight transition-colors">Loop</a>
     <a href="#s4" class="hover:text-appleLight transition-colors">Eval</a>
     <a href="#s5" class="hover:text-appleLight transition-colors">Data</a>
     <a href="#s6" class="hover:text-appleLight transition-colors">Tenants</a>
+</nav>
+
+<!-- Mobile Nav -->
+<nav class="fixed bottom-4 right-4 md:hidden z-50">
+    <details class="relative">
+        <summary class="w-12 h-12 rounded-full nav-glass flex items-center justify-center cursor-pointer text-appleLight text-lg">☰</summary>
+        <div class="absolute bottom-14 right-0 nav-glass rounded-xl p-3 flex flex-col gap-2 min-w-[120px]">
+            <a href="#s0" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">DAG</a>
+            <a href="#s1" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">Nodes</a>
+            <a href="#s2" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">MoE</a>
+            <a href="#s3" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">Loop</a>
+            <a href="#s4" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">Eval</a>
+            <a href="#s5" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">Data</a>
+            <a href="#s6" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">Tenants</a>
+        </div>
+    </details>
 </nav>
 
 <script>
