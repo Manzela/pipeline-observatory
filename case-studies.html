@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Case Studies — Daniel Manzela | Pipeline Observatory</title>
-<meta name="description" content="Production case studies: autonomous multi-agent DAG pipeline, Gemma 4 MoE deployment, and Antigravity-OS governance kernel. Video demos, architecture deep-dives, and verified metrics.">
+<meta name="description" content="Production case studies with verified Google Search Console metrics, video demos, and open-source implementations.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
@@ -15,14 +15,11 @@ body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,-apple-sy
 a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacity:.8}
 .w{max-width:960px;margin:0 auto;padding:0 24px}
 
-/* Navigation */
+/* Nav */
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(0,0,0,0.72);border-bottom:1px solid var(--b)}
 .nav-inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:52px}
-.nav-brand{font-size:13px;font-weight:600;letter-spacing:-0.3px;color:var(--t2)}
-.nav-brand strong{color:var(--t)}
-.nav-links{display:flex;gap:24px}
-.nav-links a{font-size:12px;color:var(--t3);letter-spacing:0.3px;transition:color .2s}
-.nav-links a:hover,.nav-links a.active{color:var(--t);opacity:1}
+.nav-brand{font-size:13px;font-weight:600;letter-spacing:-0.3px;color:var(--t2)}.nav-brand strong{color:var(--t)}
+.nav-links{display:flex;gap:24px}.nav-links a{font-size:12px;color:var(--t3);letter-spacing:0.3px;transition:color .2s}.nav-links a:hover,.nav-links a.active{color:var(--t);opacity:1}
 
 /* Hero */
 .hero{padding:120px 0 80px;text-align:center;border-bottom:1px solid var(--b);background:radial-gradient(ellipse at 50% 0%,rgba(191,90,242,0.03) 0%,transparent 50%)}
@@ -30,41 +27,56 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
 .hero h1{font-size:42px;font-weight:700;letter-spacing:-1.5px;line-height:1.08;margin-bottom:16px}
 .hero .sub{font-size:16px;color:var(--t2);max-width:600px;margin:0 auto;line-height:1.7}
 
-/* Case Study Card */
-.cs{padding:80px 0;border-bottom:1px solid var(--b)}
-.cs:last-of-type{border:none}
+/* Sections */
+.cs{padding:80px 0;border-bottom:1px solid var(--b)}.cs:last-of-type{border:none}
 .cs-label{font-size:11px;text-transform:uppercase;letter-spacing:3px;font-weight:500;margin-bottom:12px}
-.cs-label.blue{color:var(--accent)}.cs-label.green{color:var(--green)}.cs-label.purple{color:var(--purple)}.cs-label.amber{color:var(--amber)}
+.cs-label.blue{color:var(--accent)}.cs-label.green{color:var(--green)}.cs-label.purple{color:var(--purple)}
 .cs h2{font-size:28px;font-weight:700;letter-spacing:-0.8px;margin-bottom:8px}
 .cs .desc{font-size:14px;color:var(--t2);max-width:640px;margin-bottom:40px;line-height:1.8}
+.sec-title{font-size:13px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:40px 0 20px;font-weight:600}
 
-/* Problem/Approach/Result grid */
+/* P-A-R Grid */
 .par{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--b);border:1px solid var(--b);border-radius:16px;overflow:hidden;margin-bottom:32px}
 .par-item{background:var(--s1);padding:28px 24px}
 .par-item h4{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:12px}
 .par-item p{font-size:13px;color:var(--t2);line-height:1.7}
 .par-item .metric{font-size:24px;font-weight:700;letter-spacing:-0.5px;color:var(--t);margin-bottom:4px}
 
-/* Video Embed */
-.video-wrap{position:relative;width:100%;padding-bottom:56.25%;border-radius:16px;overflow:hidden;border:1px solid var(--b);margin-bottom:32px;background:var(--s1)}
+/* Video */
+.video-wrap{position:relative;width:100%;padding-bottom:56.25%;border-radius:16px;overflow:hidden;border:1px solid var(--b);margin-bottom:8px;background:var(--s1)}
 .video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
-.video-caption{font-size:11px;color:var(--t3);text-align:center;margin-top:12px;letter-spacing:0.3px}
+.video-caption{font-size:11px;color:var(--t3);text-align:center;margin-bottom:32px;letter-spacing:0.3px}
 
-/* Challenges Grid */
+/* Evidence Gallery */
+.evidence{margin-bottom:32px}
+.evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.evidence-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;overflow:hidden;transition:border-color .3s}
+.evidence-card:hover{border-color:rgba(255,255,255,0.15)}
+.evidence-card img{width:100%;display:block;opacity:0.92;transition:opacity .3s}
+.evidence-card:hover img{opacity:1}
+.evidence-card .caption{padding:16px 20px;border-top:1px solid var(--b)}
+.evidence-card .caption h4{font-size:12px;font-weight:600;margin-bottom:4px}
+.evidence-card .caption p{font-size:11px;color:var(--t3);line-height:1.5}
+.evidence-card .caption .val{font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:600;font-size:13px}
+
+/* Trade-off Cards — NO emojis, pure CSS indicators */
 .challenges{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
 .challenge{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:28px;transition:border-color .3s}
 .challenge:hover{border-color:rgba(255,255,255,0.12)}
-.challenge h4{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.challenge h4 .icon{font-size:16px}
+.challenge h4{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.challenge .indicator{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.challenge .indicator.quality{background:var(--accent)}
+.challenge .indicator.safety{background:var(--red)}
+.challenge .indicator.flywheel{background:var(--green)}
+.challenge .indicator.scale{background:var(--cyan)}
 .challenge p{font-size:12px;color:var(--t2);line-height:1.7}
 .challenge .decision{font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;margin-top:10px;padding-top:10px;border-top:1px solid var(--b)}
 
-/* Stack pills */
+/* Stack */
 .stack{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:32px}
-.pill{font-size:11px;padding:5px 14px;border-radius:99px;border:1px solid var(--b);color:var(--t2);background:var(--s1);transition:all .2s}
-.pill:hover{border-color:var(--accent);color:var(--t)}
+.pill{font-size:11px;padding:5px 14px;border-radius:99px;border:1px solid var(--b);color:var(--t2);background:var(--s1);transition:all .2s}.pill:hover{border-color:var(--accent);color:var(--t)}
 
-/* Proof links */
+/* Proof */
 .proof{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:32px}
 .proof-link{display:flex;align-items:center;gap:10px;padding:16px;background:var(--s1);border:1px solid var(--b);border-radius:12px;font-size:12px;color:var(--t2);transition:all .2s}
 .proof-link:hover{border-color:var(--accent);color:var(--t);transform:translateY(-1px)}
@@ -73,50 +85,38 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
 /* Timeline */
 .timeline{position:relative;padding-left:32px;margin-bottom:32px}
 .timeline::before{content:'';position:absolute;left:11px;top:4px;bottom:4px;width:1px;background:var(--b)}
-.tl-item{position:relative;padding-bottom:28px}
-.tl-item:last-child{padding-bottom:0}
+.tl-item{position:relative;padding-bottom:28px}.tl-item:last-child{padding-bottom:0}
 .tl-item::before{content:'';position:absolute;left:-25px;top:6px;width:9px;height:9px;border-radius:50%;border:2px solid var(--accent);background:var(--bg)}
-.tl-item.fail::before{border-color:var(--red)}
-.tl-item.success::before{border-color:var(--green);background:var(--green)}
+.tl-item.fail::before{border-color:var(--red)}.tl-item.success::before{border-color:var(--green);background:var(--green)}
 .tl-item .tl-date{font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-bottom:4px}
 .tl-item .tl-title{font-size:14px;font-weight:600;margin-bottom:4px}
 .tl-item .tl-desc{font-size:12px;color:var(--t2);line-height:1.6}
 
-/* Verification Banner */
-.verify-banner{background:rgba(48,209,88,0.04);border:1px solid rgba(48,209,88,0.15);border-radius:16px;padding:32px;margin-top:60px;text-align:center}
-.verify-banner h3{font-size:16px;font-weight:600;margin-bottom:12px;color:var(--green)}
-.verify-banner .links{display:flex;justify-content:center;flex-wrap:wrap;gap:16px;margin-top:16px}
-.verify-banner .vl{font-size:12px;color:var(--t2);padding:8px 20px;border:1px solid var(--b);border-radius:99px;transition:all .2s}
-.verify-banner .vl:hover{border-color:var(--green);color:var(--t)}
+/* Verification */
+.verify-banner{background:rgba(48,209,88,0.04);border:1px solid rgba(48,209,88,0.15);border-radius:16px;padding:40px;margin-top:60px;text-align:center}
+.verify-banner h3{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--green);letter-spacing:-0.3px}
+.verify-banner .links{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:20px}
+.verify-banner .vl{font-size:12px;color:var(--t2);padding:8px 20px;border:1px solid var(--b);border-radius:99px;transition:all .2s}.verify-banner .vl:hover{border-color:var(--green);color:var(--t)}
 
-/* Footer */
-.ftr{padding:60px 0 40px;text-align:center;font-size:11px;color:var(--t3)}
-.ftr a{color:var(--accent)}
-
-/* Reveal */
+.ftr{padding:60px 0 40px;text-align:center;font-size:11px;color:var(--t3)}.ftr a{color:var(--accent)}
 .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s}.reveal.visible{opacity:1;transform:none}
 
 @media(max-width:768px){
-  .hero h1{font-size:28px}
-  .par{grid-template-columns:1fr}
-  .challenges{grid-template-columns:1fr}
-  .proof{grid-template-columns:1fr}
-  .nav-links{gap:12px}
+  .hero h1{font-size:28px}.par,.evidence-grid{grid-template-columns:1fr}
+  .challenges,.proof{grid-template-columns:1fr}.nav-links{gap:12px}
 }
 </style>
 </head>
 <body>
 
-<div class="nav">
-  <div class="nav-inner">
-    <div class="nav-brand"><strong>Pipeline</strong> Observatory</div>
-    <div class="nav-links">
-      <a href="index.html">Telemetry</a>
-      <a href="architecture.html">Architecture</a>
-      <a href="case-studies.html" class="active">Case Studies</a>
-    </div>
+<div class="nav"><div class="nav-inner">
+  <div class="nav-brand"><strong>Pipeline</strong> Observatory</div>
+  <div class="nav-links">
+    <a href="index.html">Telemetry</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="case-studies.html" class="active">Case Studies</a>
   </div>
-</div>
+</div></div>
 
 <div class="w">
 
@@ -126,62 +126,73 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
   <p class="sub">Production systems with verified metrics, video demonstrations, and open-source implementations. Every claim is backed by code, telemetry, or third-party certification.</p>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<!-- CASE STUDY 1: Agent DAG Pipeline                              -->
-<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════ CASE STUDY 1 ═══════════ -->
 <div class="cs reveal" id="agent-dag">
   <div class="cs-label blue">Case Study 01</div>
   <h2>Autonomous Multi-Agent DAG Pipeline</h2>
   <div class="desc">A 7-node Directed Acyclic Graph that generates localized product content for 11 enterprise clients across 4 countries — with zero human-in-the-loop. Each node enforces a dual-layer Gate-Agent pattern: deterministic validation fires first; the LLM activates only if the gate passes.</div>
 
   <div class="par">
-    <div class="par-item">
-      <h4>Problem</h4>
-      <p>Enterprise retail clients needed localized, SEO-compliant product pages across dozens of cities. Manual content creation was impossible at ~7.9M product-location combinations per cycle.</p>
-    </div>
-    <div class="par-item">
-      <h4>Approach</h4>
-      <p>Designed a fail-closed 7-node DAG where 80% of compute is deterministic (gates, schemas, dedup) and only 20% is probabilistic (LLM). Every node boundary is audited by a JIT integrity layer (DEMAS).</p>
-    </div>
-    <div class="par-item">
-      <h4>Result</h4>
-      <div class="metric">142K+ pages</div>
-      <p>indexed in 60 days, 68.9% quality pass rate by design, &lt;$0.00002 per pipeline run.</p>
+    <div class="par-item"><h4>Problem</h4><p>Enterprise retail clients needed localized, SEO-compliant product pages across dozens of cities. Manual content creation was impossible at ~7.9M product-location combinations per cycle.</p></div>
+    <div class="par-item"><h4>Approach</h4><p>Designed a fail-closed 7-node DAG where 80% of compute is deterministic (gates, schemas, dedup) and only 20% is probabilistic (LLM). Every node boundary is audited by a JIT integrity layer.</p></div>
+    <div class="par-item"><h4>Result</h4><div class="metric">142K pages indexed</div><p>54.4K impressions, 68.9% quality pass rate by design, &lt;$0.00002 per pipeline run.</p></div>
+  </div>
+
+  <!-- Verified Evidence: Google Search Console -->
+  <div class="evidence">
+    <div class="sec-title">Verified Evidence — Google Search Console</div>
+    <div class="evidence-grid">
+      <div class="evidence-card">
+        <img src="assets/gsc-indexing-142k.png" alt="Google Search Console — 142K pages indexed" loading="lazy">
+        <div class="caption">
+          <h4>Page Indexing</h4>
+          <div class="val">142,000 pages indexed</div>
+          <p>Hockey-stick growth from 0 → 142K indexed pages in ~60 days. Source: Google Search Console, bricodepot.directory</p>
+        </div>
+      </div>
+      <div class="evidence-card">
+        <img src="assets/gsc-performance-54k.png" alt="Google Search Console — 54.4K impressions, 614 clicks" loading="lazy">
+        <div class="caption">
+          <h4>Search Performance</h4>
+          <div class="val">54.4K impressions · 614 clicks</div>
+          <p>1.1% CTR, Avg Position 10.9. All pages autonomously generated by the pipeline with zero manual content creation.</p>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Video Demo -->
+  <div class="sec-title">Live Demo</div>
   <div class="video-wrap">
     <iframe src="https://www.youtube.com/embed/czZsPbylC1M" title="Pipeline Operation Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
   </div>
-  <div class="video-caption">Live pipeline execution — autonomous content generation with zero human intervention</div>
+  <div class="video-caption">Pipeline execution — autonomous content generation with zero human intervention</div>
 
-  <!-- Engineering Challenges -->
-  <h3 style="font-size:13px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:40px 0 20px">Engineering Trade-offs</h3>
+  <!-- Trade-offs (no emojis) -->
+  <div class="sec-title">Engineering Trade-offs</div>
   <div class="challenges">
     <div class="challenge">
-      <h4><span class="icon">⚖️</span> Quality vs. Cost</h4>
-      <p>Using a multi-model O-R-A-V evaluation (Originality, Relevance, Accuracy, Value) instead of a single LLM-as-judge. Each dimension uses a different model tier to balance accuracy with cost.</p>
-      <div class="decision">→ Decision: 4-tier scoring, 68.9% pass rate, $0.00002/run</div>
+      <h4><span class="indicator quality"></span> Quality vs. Cost</h4>
+      <p>Multi-model O-R-A-V evaluation (Originality, Relevance, Accuracy, Value) instead of a single LLM-as-judge. Each dimension uses a different model tier to balance accuracy with cost.</p>
+      <div class="decision">Decision: 4-tier scoring, 68.9% pass rate, $0.00002/run</div>
     </div>
     <div class="challenge">
-      <h4><span class="icon">🔒</span> Safety vs. Throughput</h4>
-      <p>Fail-closed design means ~31% of content is rejected. This is intentional — no partial or low-quality content ever propagates downstream to production surfaces.</p>
-      <div class="decision">→ Decision: Fail-closed at every boundary, zero tolerance</div>
+      <h4><span class="indicator safety"></span> Safety vs. Throughput</h4>
+      <p>Fail-closed design means ~31% of content is rejected. Intentional — no partial or low-quality content ever propagates downstream to production surfaces.</p>
+      <div class="decision">Decision: Fail-closed at every boundary, zero tolerance</div>
     </div>
     <div class="challenge">
-      <h4><span class="icon">🔄</span> Self-Improvement</h4>
-      <p>Built a 3-tier RLAIF data flywheel: production baseline → quality-approved → failure-cases. DPO preference pairs are generated automatically for continuous alignment without human labeling.</p>
-      <div class="decision">→ Decision: Closed-loop flywheel, autonomous preference generation</div>
+      <h4><span class="indicator flywheel"></span> Self-Improvement</h4>
+      <p>3-tier RLAIF data flywheel: production baseline, quality-approved, failure-cases. DPO preference pairs generated automatically for continuous alignment without human labeling.</p>
+      <div class="decision">Decision: Closed-loop flywheel, autonomous preference pairs</div>
     </div>
     <div class="challenge">
-      <h4><span class="icon">🌍</span> Scale vs. Locality</h4>
-      <p>Each of the 4 countries requires different linguistic, cultural, and regulatory context. Node 1 (City DNA) injects locale-specific signals before any LLM invocation, ensuring content adaptation without prompt bloat.</p>
-      <div class="decision">→ Decision: Context-first architecture, zero-shot locale adaptation</div>
+      <h4><span class="indicator scale"></span> Scale vs. Locality</h4>
+      <p>4 countries require different linguistic, cultural, and regulatory context. Node 1 injects locale-specific signals before any LLM invocation, ensuring adaptation without prompt bloat.</p>
+      <div class="decision">Decision: Context-first architecture, zero-shot locale adapt</div>
     </div>
   </div>
 
-  <!-- Stack -->
   <div class="stack">
     <span class="pill">Python</span><span class="pill">FastAPI</span><span class="pill">Pydantic</span>
     <span class="pill">Google ADK</span><span class="pill">Vertex AI</span><span class="pill">GCP</span>
@@ -189,67 +200,37 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
     <span class="pill">pytest</span><span class="pill">mypy</span><span class="pill">ruff</span>
   </div>
 
-  <!-- Proof Links -->
   <div class="proof">
-    <a href="https://github.com/Manzela/agent-dag-pipeline" class="proof-link" target="_blank">GitHub Repository<span class="arrow">→</span></a>
-    <a href="https://manzela.github.io/pipeline-observatory/" class="proof-link" target="_blank">Live Telemetry<span class="arrow">→</span></a>
-    <a href="https://manzela.github.io/pipeline-observatory/architecture.html" class="proof-link" target="_blank">Architecture View<span class="arrow">→</span></a>
+    <a href="https://github.com/Manzela/agent-dag-pipeline" class="proof-link" target="_blank">GitHub Repository<span class="arrow">&rarr;</span></a>
+    <a href="https://manzela.github.io/pipeline-observatory/" class="proof-link" target="_blank">Live Telemetry<span class="arrow">&rarr;</span></a>
+    <a href="https://manzela.github.io/pipeline-observatory/architecture.html" class="proof-link" target="_blank">Architecture View<span class="arrow">&rarr;</span></a>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<!-- CASE STUDY 2: Gemma 4 Deployment                              -->
-<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════ CASE STUDY 2 ═══════════ -->
 <div class="cs reveal" id="gemma4">
   <div class="cs-label purple">Case Study 02</div>
   <h2>Gemma 4 MoE — Vertex AI Deployment Forensics</h2>
   <div class="desc">Deployed Google's Gemma 4 26B-A4B-it Mixture-of-Experts model on Vertex AI with vLLM. Documented 20 distinct failure modes across 30+ deployment iterations in a forensic runbook now used as community reference material.</div>
 
   <div class="par">
-    <div class="par-item">
-      <h4>Problem</h4>
-      <p>Gemma 4 MoE was newly released with no production deployment guides. The model required custom vLLM builds, GCSFUSE container configs, and careful chat template engineering.</p>
-    </div>
-    <div class="par-item">
-      <h4>Approach</h4>
-      <p>Systematic forensic debugging across 2 deployment cycles (16+ hours, 30+ versions). Every crash, OOM, and dependency conflict was documented with root cause analysis and resolution.</p>
-    </div>
-    <div class="par-item">
-      <h4>Result</h4>
-      <div class="metric">20 failure modes</div>
-      <p>documented. Stable base inference achieved. LoRA enablement identified as blocked by dependency triangle (honestly documented).</p>
-    </div>
+    <div class="par-item"><h4>Problem</h4><p>Gemma 4 MoE was newly released with no production deployment guides. Required custom vLLM builds, GCSFUSE container configs, and careful chat template engineering.</p></div>
+    <div class="par-item"><h4>Approach</h4><p>Systematic forensic debugging across 2 deployment cycles (16+ hours, 30+ versions). Every crash, OOM, and dependency conflict documented with root cause analysis.</p></div>
+    <div class="par-item"><h4>Result</h4><div class="metric">20 failure modes</div><p>documented. Stable base inference achieved. LoRA enablement identified as blocked by dependency triangle (honestly documented).</p></div>
   </div>
 
-  <!-- Architecture Deep-Dive (Loom) -->
+  <div class="sec-title">Architecture Walk-through</div>
   <div class="video-wrap">
     <iframe src="https://www.loom.com/embed/be8a97a64f80414eae11176843c559bb" title="Architecture Deep-Dive" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>
   </div>
-  <div class="video-caption">Architecture walk-through — system topology and mechanistic interpretability</div>
+  <div class="video-caption">System topology and mechanistic interpretability deep-dive</div>
 
-  <!-- Deployment Timeline -->
-  <h3 style="font-size:13px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:40px 0 20px">Deployment Timeline</h3>
+  <div class="sec-title">Deployment Timeline</div>
   <div class="timeline">
-    <div class="tl-item fail">
-      <div class="tl-date">v1–v10</div>
-      <div class="tl-title">Container Bootstrap Failures</div>
-      <div class="tl-desc">GCSFUSE mount crashes, OOM on model loading, vLLM version incompatibilities. Root cause: custom Google vLLM build required specific CUDA/PyTorch matrix.</div>
-    </div>
-    <div class="tl-item fail">
-      <div class="tl-date">v11–v20</div>
-      <div class="tl-title">Chat Template & Tokenizer Issues</div>
-      <div class="tl-desc">Jinja template rendering errors, special token misalignment, multi-turn conversation state corruption. Required custom chat_template.jinja authoring.</div>
-    </div>
-    <div class="tl-item success">
-      <div class="tl-date">v21–v30</div>
-      <div class="tl-title">Stable Base Inference</div>
-      <div class="tl-desc">Working configuration locked: vLLM 0.17.2rc1.dev133 + PagedAttention + custom entrypoint.sh. Stable inference at production throughput.</div>
-    </div>
-    <div class="tl-item fail">
-      <div class="tl-date">Cycle 2</div>
-      <div class="tl-title">LoRA Enablement (Blocked)</div>
-      <div class="tl-desc">Attempted Multi-LoRA serving. Identified unsolvable dependency triangle between vLLM custom build, PEFT, and model architecture. Documented as community call-to-action.</div>
-    </div>
+    <div class="tl-item fail"><div class="tl-date">v1 – v10</div><div class="tl-title">Container Bootstrap Failures</div><div class="tl-desc">GCSFUSE mount crashes, OOM on model loading, vLLM version incompatibilities. Root cause: custom Google vLLM build required specific CUDA/PyTorch matrix.</div></div>
+    <div class="tl-item fail"><div class="tl-date">v11 – v20</div><div class="tl-title">Chat Template & Tokenizer Issues</div><div class="tl-desc">Jinja template rendering errors, special token misalignment, multi-turn conversation state corruption. Required custom chat_template.jinja authoring.</div></div>
+    <div class="tl-item success"><div class="tl-date">v21 – v30</div><div class="tl-title">Stable Base Inference</div><div class="tl-desc">Working configuration locked: vLLM 0.17.2rc1.dev133 + PagedAttention + custom entrypoint.sh. Stable inference at production throughput.</div></div>
+    <div class="tl-item fail"><div class="tl-date">Cycle 2</div><div class="tl-title">LoRA Enablement — Blocked</div><div class="tl-desc">Attempted Multi-LoRA serving. Identified unsolvable dependency triangle between vLLM custom build, PEFT, and model architecture. Documented as community call-to-action.</div></div>
   </div>
 
   <div class="stack">
@@ -259,34 +240,22 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
   </div>
 
   <div class="proof">
-    <a href="https://github.com/Manzela/gemma4-vllm-deployment" class="proof-link" target="_blank">Forensic Runbook<span class="arrow">→</span></a>
-    <a href="https://github.com/Manzela/agent-dag-pipeline" class="proof-link" target="_blank">Consumer: DAG Pipeline<span class="arrow">→</span></a>
-    <a href="https://youtu.be/czZsPbylC1M" class="proof-link" target="_blank">Video Demo<span class="arrow">→</span></a>
+    <a href="https://github.com/Manzela/gemma4-vllm-deployment" class="proof-link" target="_blank">Forensic Runbook<span class="arrow">&rarr;</span></a>
+    <a href="https://github.com/Manzela/agent-dag-pipeline" class="proof-link" target="_blank">Consumer: DAG Pipeline<span class="arrow">&rarr;</span></a>
+    <a href="https://youtu.be/czZsPbylC1M" class="proof-link" target="_blank">Video Demo<span class="arrow">&rarr;</span></a>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<!-- CASE STUDY 3: Antigravity-OS                                  -->
-<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════ CASE STUDY 3 ═══════════ -->
 <div class="cs reveal" id="antigravity">
   <div class="cs-label green">Case Study 03</div>
   <h2>Antigravity-OS — AI Agent Governance Kernel</h2>
-  <div class="desc">An open-source governance kernel for AI agents that enforces cost budgets, policy-as-code constraints, deterministic state tracking, and self-healing CI. Designed to be the operational backbone for autonomous AI development environments.</div>
+  <div class="desc">An open-source governance kernel for AI agents that enforces cost budgets, policy-as-code constraints, deterministic state tracking, and self-healing CI. The operational backbone for autonomous AI development environments.</div>
 
   <div class="par">
-    <div class="par-item">
-      <h4>Problem</h4>
-      <p>AI-assisted coding agents (Claude Code, Cursor, etc.) operate without cost guardrails, state persistence, or policy enforcement. Runaway token costs and context window mismanagement are common failure modes.</p>
-    </div>
-    <div class="par-item">
-      <h4>Approach</h4>
-      <p>Built a governance kernel with cost enforcement (per-session and cumulative budgets), policy-as-code rules, and deterministic state tracking. MCP integrations provide tool access for managed agents.</p>
-    </div>
-    <div class="par-item">
-      <h4>Result</h4>
-      <div class="metric">4,550 LOC</div>
-      <p>Open-source on GitHub with full governance documentation (ADOPTERS, MAINTAINERS, SECURITY, CONTRIBUTING).</p>
-    </div>
+    <div class="par-item"><h4>Problem</h4><p>AI-assisted coding agents operate without cost guardrails, state persistence, or policy enforcement. Runaway token costs and context window mismanagement are common failure modes.</p></div>
+    <div class="par-item"><h4>Approach</h4><p>Built a governance kernel with cost enforcement (per-session and cumulative budgets), policy-as-code rules, and deterministic state tracking. MCP integrations provide tool access for managed agents.</p></div>
+    <div class="par-item"><h4>Result</h4><div class="metric">4,550 LOC</div><p>Open-source on GitHub. Full governance docs: ADOPTERS, MAINTAINERS, SECURITY, CONTRIBUTING, GOVERNANCE.</p></div>
   </div>
 
   <div class="stack">
@@ -296,21 +265,19 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
   </div>
 
   <div class="proof">
-    <a href="https://github.com/Manzela/Antigravity-OS" class="proof-link" target="_blank">GitHub Repository<span class="arrow">→</span></a>
-    <a href="https://github.com/Manzela/Antigravity-OS/blob/main/ROADMAP.md" class="proof-link" target="_blank">Roadmap<span class="arrow">→</span></a>
-    <a href="https://github.com/Manzela/Antigravity-OS/blob/main/GOVERNANCE.md" class="proof-link" target="_blank">Governance Model<span class="arrow">→</span></a>
+    <a href="https://github.com/Manzela/Antigravity-OS" class="proof-link" target="_blank">GitHub Repository<span class="arrow">&rarr;</span></a>
+    <a href="https://github.com/Manzela/Antigravity-OS/blob/main/ROADMAP.md" class="proof-link" target="_blank">Roadmap<span class="arrow">&rarr;</span></a>
+    <a href="https://github.com/Manzela/Antigravity-OS/blob/main/GOVERNANCE.md" class="proof-link" target="_blank">Governance Model<span class="arrow">&rarr;</span></a>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<!-- VERIFICATION BANNER                                           -->
-<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════ VERIFICATION ═══════════ -->
 <div class="verify-banner reveal">
-  <h3>✓ Independently Verifiable</h3>
-  <p style="font-size:13px;color:var(--t2);max-width:520px;margin:0 auto">Every claim on this page is backed by public source code, third-party certifications, or video demonstrations. Click any link to verify.</p>
+  <h3>Independently Verifiable</h3>
+  <p style="font-size:13px;color:var(--t2);max-width:520px;margin:0 auto">Every claim on this page is backed by public source code, third-party certifications, or video demonstrations.</p>
   <div class="links">
-    <a href="https://github.com/Manzela" class="vl" target="_blank">GitHub Profile (5 repos)</a>
-    <a href="https://partner.skills.google/public_profiles/69fa3af8-3032-4a04-a818-f7277009c3a9" class="vl" target="_blank">Google Skills (40+ badges)</a>
+    <a href="https://github.com/Manzela" class="vl" target="_blank">GitHub &middot; 5 repos</a>
+    <a href="https://partner.skills.google/public_profiles/69fa3af8-3032-4a04-a818-f7277009c3a9" class="vl" target="_blank">Google Skills &middot; 40+ badges</a>
     <a href="https://www.credly.com/users/daniel-manzela/badges" class="vl" target="_blank">Credly Certifications</a>
     <a href="https://huggingface.co/Manzela-D" class="vl" target="_blank">HuggingFace</a>
     <a href="https://youtu.be/czZsPbylC1M" class="vl" target="_blank">YouTube Demo</a>
@@ -318,14 +285,11 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
   </div>
 </div>
 
-<div class="ftr">
-  <p>Daniel Manzela · <a href="index.html">Pipeline Observatory</a> · <a href="architecture.html">Architecture</a> · <a href="https://github.com/Manzela">github.com/Manzela</a></p>
-</div>
+<div class="ftr"><p>Daniel Manzela &middot; <a href="index.html">Telemetry</a> &middot; <a href="architecture.html">Architecture</a> &middot; <a href="https://github.com/Manzela">github.com/Manzela</a></p></div>
 
 </div>
 
 <script>
-// Reveal on scroll
 const obs = new IntersectionObserver(e => e.forEach(x => {
   if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); }
 }), {threshold: 0.08});
