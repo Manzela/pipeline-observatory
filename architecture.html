@@ -179,7 +179,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 <div class="sec reveal" id="s0">
   <div class="label">Sparse Activation & Routing</div>
   <h2>Multi-LoRA Serving Engine</h2>
-  <div class="desc">A single Gemma 4 MoE instance routes tokens sparsely across 128 experts. Each client request dynamically binds to a fluid LoRA adapter membrane in &lt;50ms, achieving massive multi-tenant scale with minimal VRAM overhead.</div>
+  <div class="desc">Production inference routes through a multi-LoRA architecture serving 18 prompt-specific adapters per tenant. LoRA fine-tuning on Gemma 3 operated with evolving golden datasets under continuous SDLC evaluation. Gemma 4 MoE (128 experts, 4 active per token) is currently in an active R&D cycle to resolve adapter compatibility.</div>
 
   <div class="card" style="text-align:center;overflow:hidden">
     <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--t3);margin-bottom:12px;letter-spacing:1px">BASE MODEL: GEMMA 4 26B-A4B MoE</div>
@@ -191,7 +191,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
     
     <div style="width:1px;height:40px;margin:12px auto;background:linear-gradient(to bottom,rgba(10,132,255,0.3),rgba(10,132,255,0.08))"></div>
 
-    <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:16px;letter-spacing:1px">FLUID LORA MEMBRANES (PAGED ATTENTION)</div>
+    <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--accent);margin-bottom:16px;letter-spacing:1px">LORA ADAPTERS (18 PROMPTS &times; N TENANTS)</div>
     
     <div class="lora-fan" id="lora-fan">
       <!-- Generated via JS -->
@@ -380,8 +380,8 @@ code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);b
 
   <div class="scale-grid" style="margin-bottom:24px">
     <div class="scale-stat"><div class="num" style="color:var(--t)">11</div><div class="lbl">Clients</div></div>
-    <div class="scale-stat"><div class="num" style="color:var(--t)">~7.9M</div><div class="lbl">PDPs / Cycle</div></div>
-    <div class="scale-stat"><div class="num" style="color:var(--accent)">~116M</div><div class="lbl">Executions</div></div>
+    <div class="scale-stat"><div class="num" style="color:var(--t)">~10.5M</div><div class="lbl">PDPs / Cycle</div></div>
+    <div class="scale-stat"><div class="num" style="color:var(--accent)">~73.5M</div><div class="lbl">Agent Ops / Cycle</div></div>
   </div>
 
   <div class="card">
@@ -430,7 +430,7 @@ setInterval(() => {
 }, 1200);
 
 // LoRA fan-out with Fluid Membranes
-const tenants=[{id:'adapter_1',nm:'Alpha (ES)'},{id:'adapter_2',nm:'Beta (ES)'},{id:'adapter_3',nm:'Gamma (PT)'},{id:'adapter_4',nm:'Delta (IL)'},{id:'adapter_5',nm:'Epsilon (GB)'},{id:'adapter_6',nm:'Zeta (ES)'},{id:'adapter_7',nm:'Eta (ES)'}];
+const tenants=[{id:'adapter_1',nm:'Tenant A (ES)'},{id:'adapter_2',nm:'Tenant B (ES)'},{id:'adapter_3',nm:'Tenant C (PT)'},{id:'adapter_4',nm:'Tenant D (IL)'},{id:'adapter_5',nm:'Tenant E (US)'},{id:'adapter_6',nm:'Tenant F (MX)'},{id:'adapter_7',nm:'Tenant G (ES)'},{id:'adapter_8',nm:'Tenant H (ES)'},{id:'adapter_9',nm:'Tenant I (ES)'}];
 const lf=document.getElementById('lora-fan');
 tenants.forEach(t=>{
   const d=document.createElement('div');
@@ -446,7 +446,7 @@ setInterval(() => {
 }, 2500);
 
 // Parallel lanes
-const cls=[{nm:'Alpha',f:'ES',st:'run',p:5},{nm:'Beta',f:'ES',st:'run',p:4},{nm:'Gamma',f:'PT',st:'run',p:6},{nm:'Delta',f:'IL',st:'q',p:0},{nm:'Epsilon',f:'GB',st:'q',p:1},{nm:'Zeta',f:'ES',st:'sc',p:2},{nm:'Eta',f:'ES',st:'run',p:3}];
+const cls=[{nm:'Tenant A',f:'ES',st:'run',p:5},{nm:'Tenant B',f:'ES',st:'run',p:4},{nm:'Tenant C',f:'PT',st:'run',p:6},{nm:'Tenant D',f:'IL',st:'q',p:0},{nm:'Tenant E',f:'US',st:'q',p:1},{nm:'Tenant F',f:'MX',st:'sc',p:2},{nm:'Tenant G',f:'ES',st:'run',p:3},{nm:'Tenant H',f:'ES',st:'run',p:5},{nm:'Tenant I',f:'ES',st:'q',p:2}];
 const nl=['1','2','3','4','5','6','7'];
 const le=document.getElementById('lanes');
 cls.forEach(c=>{const l=document.createElement('div');l.className='lane';let dots='';nl.forEach((n,j)=>{const on=c.st==='run'&&j<=c.p;dots+=`<div class="lane-dot ${on?'on':'off'}">${n}</div>`;if(j<6)dots+='<span class="la">→</span>'});const stl={run:'RUNNING',q:'QUEUED',sc:'SCALING'};l.innerHTML=`<div class="lane-client"><span style="color:var(--t3);font-family:monospace">${c.f}</span>${c.nm}</div><div class="lane-flow">${dots}</div><div class="lane-st ${c.st}">${stl[c.st]}</div>`;le.appendChild(l)});

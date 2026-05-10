@@ -157,12 +157,12 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
 <div class="cs reveal" id="agent-dag">
   <div class="cs-label blue">Case Study 01</div>
   <h2>Autonomous Multi-Agent DAG Pipeline</h2>
-  <div class="desc">A 7-node Directed Acyclic Graph that generates localized product content for 11 enterprise clients across 4 countries — with zero human-in-the-loop. Each node enforces a dual-layer Gate-Agent pattern: deterministic validation fires first; the LLM activates only if the gate passes.</div>
+  <div class="desc">A 7-node Directed Acyclic Graph that generates localized product content for 11 enterprise clients across 5 countries — with zero human-in-the-loop. Each node enforces a dual-layer Gate-Agent pattern: deterministic validation fires first; the LLM activates only if the gate passes.</div></div>
 
   <div class="par">
-    <div class="par-item"><h4>Problem</h4><p>Enterprise retail clients needed localized, SEO-compliant product pages across dozens of cities. Manual content creation was impossible at ~7.9M product-location combinations per cycle.</p></div>
+    <div class="par-item"><h4>Problem</h4><p>Enterprise retail clients needed localized, SEO-compliant product pages across dozens of cities. Manual content creation was impossible at ~10.5M product-location combinations per cycle.</p></div>
     <div class="par-item"><h4>Approach</h4><p>Designed a fail-closed 7-node DAG where 80% of compute is deterministic (gates, schemas, dedup) and only 20% is probabilistic (LLM). Every node boundary is audited by a JIT integrity layer.</p></div>
-    <div class="par-item"><h4>Result</h4><div class="metric">260K+ pages indexed</div><p>400K+ impressions across 3 client properties, 68.9% quality pass rate, &lt;$0.00002 per pipeline run.</p></div>
+    <div class="par-item"><h4>Result</h4><div class="metric">260K+ pages indexed</div><p>400K+ impressions across 3 client properties, 68.9% quality pass rate, &lt;$0.0001 per pipeline run. 234 managed websites across 5 countries.</p></div>
   </div>
 
   <!-- Aggregate Metrics -->
@@ -241,7 +241,7 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
     </div>
     <div class="challenge">
       <h4><span class="indicator scale"></span> Scale vs. Locality</h4>
-      <p>4 countries require different linguistic, cultural, and regulatory context. Node 1 injects locale-specific signals before any LLM invocation, ensuring adaptation without prompt bloat.</p>
+      <p>5 countries require different linguistic, cultural, and regulatory context. Node 1 injects locale-specific signals before any LLM invocation, ensuring adaptation without prompt bloat.</p>
       <div class="decision">Decision: Context-first architecture, zero-shot locale adapt</div>
     </div>
   </div>

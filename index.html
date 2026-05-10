@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pipeline Observatory — Daniel Manzela</title>
-<meta name="description" content="Live execution telemetry for an autonomous multi-agent DAG pipeline operating at enterprise scale across 5 countries and 11 clients.">
+<meta name="description" content="Production execution telemetry for an autonomous multi-agent DAG pipeline operating at enterprise scale across 5 countries, 11 clients, and 234 managed websites.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
@@ -127,37 +127,37 @@ body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,-apple-sy
 
 <div class="hero">
   <h1>Pipeline<br>Observatory</h1>
-  <p class="sub">Live execution telemetry for an autonomous multi-agent DAG pipeline — processing millions of product pages across 5 countries with mechanistic interpretability and fail-closed safety.</p>
+  <p class="sub">Production execution telemetry for an autonomous multi-agent DAG pipeline — processing ~10.5M product pages per cycle across 5 countries with mechanistic interpretability and fail-closed safety.</p>
   <div class="meta"><a href="architecture.html">Architecture Deep View</a> &middot; Daniel Manzela &middot; 2024–2026</div>
   <div class="live-badge"><span class="live-dot"></span> Last execution: 2026-05-07T11:45:24Z</div>
 </div>
 
 <!-- Key Metrics -->
 <div class="stats reveal">
-  <div class="stat"><div class="num" id="ct1">—</div><div class="lbl">Node Executions</div></div>
-  <div class="stat"><div class="num" id="ct2">—</div><div class="lbl">Pipeline Runs</div></div>
-  <div class="stat"><div class="num" id="ct3">—</div><div class="lbl">Active Endpoints</div></div>
-  <div class="stat"><div class="num" id="ct4">—</div><div class="lbl">Model Generations</div></div>
-  <div class="stat"><div class="num" id="ct5">—</div><div class="lbl">Countries</div></div>
-  <div class="stat"><div class="num" id="ct6">—</div><div class="lbl">Success Rate</div></div>
+  <div class="stat"><div class="num" id="ct1">—</div><div class="lbl">Agent Ops / Cycle</div></div>
+  <div class="stat"><div class="num" id="ct2">—</div><div class="lbl">PDPs / Cycle</div></div>
+  <div class="stat"><div class="num" id="ct3">—</div><div class="lbl">Managed Websites</div></div>
+  <div class="stat"><div class="num" id="ct4">—</div><div class="lbl">Countries</div></div>
+  <div class="stat"><div class="num" id="ct5">—</div><div class="lbl">Content Pass Rate</div></div>
+  <div class="stat"><div class="num" id="ct6">—</div><div class="lbl">Cost / Run</div></div>
 </div>
 
 <!-- Enterprise Scale -->
 <div class="sec reveal">
   <div class="label">Production Scale</div>
   <h2>Enterprise Throughput</h2>
-  <div class="desc">The pipeline processes product data for 11 commercial clients across 5 countries. Each cycle traverses all 7 DAG nodes per product, generating ~55M node operations from ~7.9M product-page inputs.</div>
+  <div class="desc">The pipeline processes product data for 11 commercial clients across 5 countries. Each cycle traverses all 7 DAG nodes per product, generating ~73.5M autonomous agent operations from ~10.5M product-page inputs.</div>
 
   <div class="scale-box">
     <div class="scale-nums">
       <div><div class="num" style="color:var(--t)">11</div><div class="lbl">Clients</div></div>
-      <div><div class="num" style="color:var(--t)">~45K</div><div class="lbl">Products / Client</div></div>
-      <div><div class="num" style="color:var(--t)">~16</div><div class="lbl">Locations / Client</div></div>
-      <div><div class="num" style="color:var(--green)">~7.9M</div><div class="lbl">PDPs / Cycle</div></div>
-      <div><div class="num" style="color:var(--green)">~55M</div><div class="lbl">Node Ops / Cycle</div></div>
-      <div><div class="num" style="color:var(--accent)">~305M</div><div class="lbl">Monthly Node Ops</div></div>
+      <div><div class="num" style="color:var(--t)">~45K</div><div class="lbl">Avg Products / Client</div></div>
+      <div><div class="num" style="color:var(--t)">~21</div><div class="lbl">Locations / Client</div></div>
+      <div><div class="num" style="color:var(--green)">~10.5M</div><div class="lbl">PDPs / Cycle</div></div>
+      <div><div class="num" style="color:var(--green)">~73.5M</div><div class="lbl">Agent Ops / Cycle</div></div>
+      <div><div class="num" style="color:var(--accent)">~305M</div><div class="lbl">Monthly Agent Ops</div></div>
     </div>
-    <div class="scale-math"><em>11</em> clients &times; <em>~45K</em> products &times; <em>~16</em> locations = <strong>~7.9M PDPs</strong> per cycle &times; 7 nodes = <strong>~55M ops</strong></div>
+    <div class="scale-math"><em>11</em> clients &times; <em>~45K</em> avg products &times; <em>~21</em> locations = <strong>~10.5M PDPs</strong> per cycle &times; 7 agents = <strong>~73.5M ops</strong></div>
   </div>
 </div>
 
@@ -165,7 +165,7 @@ body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,-apple-sy
 <div class="sec reveal">
   <div class="label">Agent Topology</div>
   <h2>7-Node Execution DAG</h2>
-  <div class="desc">Each pipeline run traverses a strict Directed Acyclic Graph. Deterministic gates fire at every node boundary; the probabilistic LLM activates only when the gate passes. DEMAS audits every transition.</div>
+  <div class="desc">Each pipeline run traverses a strict Directed Acyclic Graph. Deterministic gates fire at every agent boundary; the probabilistic LLM activates only when the gate passes. DEMAS audits every transition.</div>
 
   <div class="card">
     <div class="dag-wrap">
@@ -207,21 +207,22 @@ body{background:var(--bg);color:var(--t);font-family:'Inter',system-ui,-apple-sy
     <div class="geo-c"><span class="flag">ES</span><div><div class="name">Spain</div><div class="det">Zaragoza &middot; Val&egrave;ncia &middot; Madrid &middot; Barcelona &middot; M&aacute;laga</div></div></div>
     <div class="geo-c"><span class="flag">PT</span><div><div class="name">Portugal</div><div class="det">Odivelas &middot; Guilhufe</div></div></div>
     <div class="geo-c"><span class="flag">IL</span><div><div class="name">Israel</div><div class="det">Tel Aviv-Yafo</div></div></div>
-    <div class="geo-c"><span class="flag">GB</span><div><div class="name">United Kingdom</div><div class="det">Birmingham</div></div></div>
+    <div class="geo-c"><span class="flag">US</span><div><div class="name">United States</div><div class="det">Multi-region</div></div></div>
+    <div class="geo-c"><span class="flag">MX</span><div><div class="name">Mexico</div><div class="det">Multi-region</div></div></div>
   </div>
 </div>
 
 <!-- Deployment -->
 <div class="sec reveal">
   <div class="label">Deployment Matrix</div>
-  <h2>131 Endpoints &middot; 21 Domains</h2>
-  <div class="desc">Pipeline outputs are synced to production e-commerce surfaces in real-time. Each tenant's content is isolated via adapter binding and scoped prompt caching.</div>
+  <h2>234 Websites &middot; 11 Domains</h2>
+  <div class="desc">Pipeline outputs are synced to 234 production e-commerce surfaces in real-time. Each tenant's content is isolated via adapter binding, scoped prompt caching, and per-location catalog management including price updates, stock inventory, and unique content generation.</div>
 
   <div class="dep">
-    <div class="dep-c"><div class="val">99</div><div class="lbl">Microsites</div></div>
-    <div class="dep-c"><div class="val">109</div><div class="lbl">Stores</div></div>
-    <div class="dep-c"><div class="val">128,295</div><div class="lbl">Synced Records</div></div>
-    <div class="dep-c"><div class="val">8,454</div><div class="lbl">Redis LTM Cache</div></div>
+    <div class="dep-c"><div class="val">234</div><div class="lbl">Managed Websites</div></div>
+    <div class="dep-c"><div class="val">11</div><div class="lbl">Domains</div></div>
+    <div class="dep-c"><div class="val">10M+</div><div class="lbl">End Users Reached</div></div>
+    <div class="dep-c"><div class="val">7d TTL</div><div class="lbl">Redis LTM Cache</div></div>
   </div>
 </div>
 
@@ -258,12 +259,12 @@ function animateCount(el, target, suffix) {
 const statsObs = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
-      animateCount(document.getElementById('ct1'), 48637);
-      animateCount(document.getElementById('ct2'), 2009);
-      animateCount(document.getElementById('ct3'), 131);
-      animateCount(document.getElementById('ct4'), 3);
-      animateCount(document.getElementById('ct5'), 5);
-      animateCount(document.getElementById('ct6'), 100, '%');
+      animateCount(document.getElementById('ct1'), 73500000);
+      animateCount(document.getElementById('ct2'), 10500000);
+      animateCount(document.getElementById('ct3'), 234);
+      animateCount(document.getElementById('ct4'), 5);
+      animateCount(document.getElementById('ct5'), 68, '%');
+      document.getElementById('ct6').textContent = '<$0.0001';
       statsObs.disconnect();
     }
   });
@@ -274,9 +275,9 @@ if (statsEl) statsObs.observe(statsEl);
 // Model timeline
 const tl = [
   {d:'Mar 24–31', m:'gemma-3-4b-it', c:25847, col:'#818cf8'},
-  {d:'Apr 5–6', m:'gemma-4-26b-a4b', c:1438, col:'#a78bfa'},
-  {d:'Apr 13–14', m:'gemini-2.5-flash-lite', c:5595, col:'#34d399'},
-  {d:'May 7', m:'gemini-3.1-flash-lite', c:164, col:'#64D2FF'}
+  {d:'Apr 5–15', m:'gemma-4-26b-a4b', c:24120, col:'#a78bfa'},
+  {d:'Apr 13–30', m:'gemini-2.5-flash-lite', c:5595, col:'#34d399'},
+  {d:'May 7+', m:'gemini-3.1-flash-lite', c:164, col:'#64D2FF'}
 ];
 const te = document.getElementById('timeline');
 tl.forEach((t, i) => {
