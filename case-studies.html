@@ -104,6 +104,26 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
 .verify-banner .links{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:20px}
 .verify-banner .vl{font-size:12px;color:var(--t2);padding:8px 20px;border:1px solid var(--b);border-radius:99px;transition:all .2s}.verify-banner .vl:hover{border-color:var(--green);color:var(--t)}
 
+/* Recognition */
+.recognition{margin:60px 0 32px;text-align:center}
+.recognition-badge{max-width:480px;margin:0 auto;border-radius:16px;overflow:hidden;border:1px solid var(--b)}
+.recognition-badge img{width:100%;display:block}
+.recognition-meta{padding:20px;background:var(--s1);border-top:1px solid var(--b)}
+.recognition-meta h4{font-size:13px;font-weight:600;margin-bottom:4px}
+.recognition-meta p{font-size:11px;color:var(--t3);line-height:1.5}
+.recognition-meta a{color:var(--accent)}
+
+/* Certifications */
+.certs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 32px}
+.cert-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:24px;text-align:center;transition:border-color .3s}
+.cert-card:hover{border-color:rgba(255,255,255,0.15)}
+.cert-card img{width:80px;height:80px;margin:0 auto 12px;display:block}
+.cert-card h4{font-size:12px;font-weight:600;margin-bottom:4px}
+.cert-card .cert-status{font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:3px 10px;border-radius:99px;display:inline-block;margin-top:8px}
+.cert-card .active{background:rgba(48,209,88,0.12);color:var(--green)}
+.cert-card .prev{background:rgba(255,214,10,0.12);color:#FFD60A}
+.cert-card .prog{background:rgba(10,132,255,0.12);color:var(--accent)}
+
 .ftr{padding:60px 0 40px;text-align:center;font-size:11px;color:var(--t3)}.ftr a{color:var(--accent)}
 .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s}.reveal.visible{opacity:1;transform:none}
 
@@ -303,6 +323,40 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
   </div>
 </div>
 
+<!-- ═══════════ RECOGNITION ═══════════ -->
+<div class="recognition reveal">
+  <div class="sec-title">Industry Recognition</div>
+  <div class="recognition-badge">
+    <img src="assets/top100-retailtech.png" alt="Re:Tech Top 100 Retail Tech 2025/6" loading="lazy">
+    <div class="recognition-meta">
+      <h4>Re:Tech Top 100 Retail Tech 2025/6</h4>
+      <p>TNG Shopper (The Next Generation Shopper) selected among the world's top 100 Retail Technology companies. <a href="assets/retailtech-2025-report.pdf" target="_blank">Full Report (PDF) →</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CERTIFICATIONS ═══════════ -->
+<div class="reveal">
+  <div class="sec-title">Google Cloud Certifications</div>
+  <div class="certs">
+    <div class="cert-card">
+      <img src="assets/cert-genai-leader.png" alt="Google Cloud Certified — Generative AI Leader">
+      <h4>Generative AI Leader</h4>
+      <span class="cert-status active">Active</span>
+    </div>
+    <div class="cert-card">
+      <img src="assets/cert-cloud-architect.png" alt="Google Cloud Certified — Professional Cloud Architect">
+      <h4>Professional Cloud Architect</h4>
+      <span class="cert-status prev">Previously Held</span>
+    </div>
+    <div class="cert-card">
+      <img src="assets/cert-ml-engineer.png" alt="Google Cloud Certified — Professional Machine Learning Engineer">
+      <h4>Professional ML Engineer</h4>
+      <span class="cert-status prog">In Progress</span>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════ VERIFICATION ═══════════ -->
 <div class="verify-banner reveal">
   <h3>Independently Verifiable</h3>
@@ -312,8 +366,11 @@ a{color:var(--accent);text-decoration:none;transition:opacity .2s}a:hover{opacit
     <a href="https://partner.skills.google/public_profiles/69fa3af8-3032-4a04-a818-f7277009c3a9" class="vl" target="_blank">Google Skills &middot; 40+ badges</a>
     <a href="https://www.credly.com/users/daniel-manzela/badges" class="vl" target="_blank">Credly Certifications</a>
     <a href="https://huggingface.co/Manzela-D" class="vl" target="_blank">HuggingFace</a>
+    <a href="https://medium.com/@manzela" class="vl" target="_blank">Medium Blog</a>
+    <a href="https://linkedin.com/in/manzela" class="vl" target="_blank">LinkedIn</a>
     <a href="https://youtu.be/czZsPbylC1M" class="vl" target="_blank">YouTube Demo</a>
     <a href="https://www.loom.com/share/be8a97a64f80414eae11176843c559bb" class="vl" target="_blank">Loom Deep-Dive</a>
+    <a href="assets/cert-product-experts.pdf" class="vl" target="_blank">Product Experts Cert (PDF)</a>
   </div>
 </div>
 
