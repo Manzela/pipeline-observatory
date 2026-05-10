@@ -93,7 +93,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Sparse Activation & Routing</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Multi-LoRA Serving Engine</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            18 prompt-specific adapters per tenant. Fast context switching via multi-LoRA. Base model: Gemma 4 MoE (128 experts, 4 active per token). No prompt bloat, just isolated task performance.
+            18 prompt-specific adapters per tenant. Fast context switching via multi-LoRA. Base model: Gemma 4 MoE (128 experts, 4 active per token). Only 4B parameters fire per forward pass despite 26B total — cost-efficient inference without sacrificing capacity.
         </div>
 
         <div class="card p-8 text-center overflow-hidden">
@@ -103,18 +103,41 @@
             
             <div class="w-px h-10 mx-auto bg-gradient-to-b from-appleBlue/50 to-transparent my-4"></div>
 
-            <div class="font-mono text-[10px] text-appleBlue mb-6 tracking-widest uppercase">LoRA Adapters (18 Prompts &times; N Tenants)</div>
+            <div class="font-mono text-[10px] text-appleBlue mb-6 tracking-widest uppercase">LoRA Adapters &middot; 18 Prompts per Tenant &middot; 8 of 11 Tenants Shown</div>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full" id="lora-fan"></div>
+
+            <div class="mt-8 pt-6 border-t border-appleBorder">
+                <h3 class="text-sm font-semibold mb-4">Isolation Stack</h3>
+                <div class="grid md:grid-cols-4 gap-3">
+                    <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
+                        <div class="font-semibold mb-1">Tenant</div><div class="font-mono text-[10px] text-appleGray">adapter_id binding</div>
+                    </div>
+                    <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
+                        <div class="font-semibold mb-1">Prompt</div><div class="font-mono text-[10px] text-appleGray">scoped system cache</div>
+                    </div>
+                    <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
+                        <div class="font-semibold mb-1">Task</div><div class="font-mono text-[10px] text-appleGray">DAG node boundaries</div>
+                    </div>
+                    <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
+                        <div class="font-semibold mb-1">KV Cache</div><div class="font-mono text-[10px] text-appleGray">PagedAttention</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- 1. Node Anatomy -->
     <div class="py-20 border-b border-appleBorder reveal" id="s1">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Semantic Zoom L2</div>
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Node-Level Architecture</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Sub-Agent Node Anatomy</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Each of the 7 pipeline nodes is a bounded ecosystem of sub-agents. A deterministic gate fires first; the probabilistic LLM activates only if the gate passes.
+            Each node is a bounded ecosystem of sub-agents. A deterministic gate fires first; the probabilistic LLM activates only if the gate passes. Nodes 4 and 6 are fully deterministic — no LLM invoked.
+        </div>
+
+        <div class="card p-6 bg-appleDarker mb-8">
+            <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-3 font-medium">Model Routing Strategy</div>
+            <div class="text-xs text-appleGray leading-relaxed">Not every node needs an LLM. <strong class="text-appleLight">Nodes 4 and 6</strong> are purely deterministic — Python code, APIs, and math algorithms. <strong class="text-appleLight">Nodes 2 and 3</strong> use text classification and vision models for structured extraction. <strong class="text-appleLight">Node 5</strong> uses self-hosted Gemma 4 MoE with per-tenant LoRA adapters. <strong class="text-appleLight">Node 7</strong> orchestrates multi-model consensus for final quality judging. <strong class="text-appleLight">Node 1</strong> uses Gemini for grounded web search against verified sources.</div>
         </div>
 
         <div class="flex flex-col gap-8" id="nodeSeq"></div>
@@ -123,7 +146,7 @@
     <!-- 2. DAG Topology -->
     <div class="py-20 border-b border-appleBorder reveal" id="s2">
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Execution Topology</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">Causal DAG Tracing</h2>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">Execution DAG</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
             The 7-node pipeline operates as a Directed Acyclic Graph. DEMAS intercepts at every boundary for JIT validation.
         </div>
@@ -157,18 +180,18 @@
                 <span class="dag-arr">&rarr;</span>
                 <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
                     <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">6</div>
-                    <div class="text-xs font-semibold mb-1">Validator</div><div class="text-[10px] font-mono text-appleGray">O-R-A-V</div>
+                    <div class="text-xs font-semibold mb-1">Scorer</div><div class="text-[10px] font-mono text-appleGray">Deterministic</div>
                 </div>
                 <span class="dag-arr">&rarr;</span>
                 <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
                     <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">7</div>
-                    <div class="text-xs font-semibold mb-1">Features</div><div class="text-[10px] font-mono text-appleGray">Vectorize</div>
+                    <div class="text-xs font-semibold mb-1">Judge</div><div class="text-[10px] font-mono text-appleGray">Multi-Model</div>
                 </div>
             </div>
 
             <div class="bg-appleDarker border border-appleBorder p-4 rounded-xl mt-8 inline-block text-left">
-                <div class="font-mono text-[10px] text-appleLight font-bold mb-1 tracking-widest">DEMAS &mdash; PARALLEL AUDIT LAYER</div>
-                <div class="text-[10px] text-appleGray">Intercepts at every node boundary &middot; 68.9% pass rate &middot; Fail-closed policy</div>
+                <div class="font-mono text-[10px] text-appleLight font-bold mb-1 tracking-widest">DEMAS &mdash; JIT AUDIT LAYER</div>
+                <div class="text-[10px] text-appleGray">Deterministic audit system intercepting at every node boundary. Validates data integrity, schema compliance, and output quality in real-time. 68.9% pass rate &middot; Fail-closed &mdash; rejected outputs never propagate downstream.</div>
             </div>
         </div>
     </div>
@@ -214,10 +237,10 @@
 
     <!-- 4. Evaluation Engine -->
     <div class="py-20 border-b border-appleBorder reveal" id="s4">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Uncertainty Visualization</div>
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Quality Scoring Engine</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">O-R-A-V Multi-Model Scoring</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Solid lines indicate high confidence; dashed lines indicate probabilistic uncertainty. Any dimension scoring below its threshold halts the pipeline instantly.
+            Four scoring dimensions determine content quality. Node 6 computes deterministic metrics. Node 7 orchestrates multi-model consensus. Outputs above threshold become Golden datasets for training; failures become Rejected datasets for DPO preference pairs.
         </div>
 
         <div class="grid md:grid-cols-2 gap-4 mb-6">
@@ -237,21 +260,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card p-6">
-                <h3 class="text-sm font-semibold mb-6">Isolation Stack</h3>
-                <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 mb-2 flex justify-between items-center text-xs hover:border-appleLight/20 transition-colors">
-                    <span class="font-semibold">Tenant Isolation</span><span class="font-mono text-[10px] text-appleGray">adapter_id binding</span>
-                </div>
-                <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 mb-2 flex justify-between items-center text-xs hover:border-appleLight/20 transition-colors">
-                    <span class="font-semibold">Prompt Isolation</span><span class="font-mono text-[10px] text-appleGray">scoped system cache</span>
-                </div>
-                <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 mb-2 flex justify-between items-center text-xs hover:border-appleLight/20 transition-colors">
-                    <span class="font-semibold">Task Isolation</span><span class="font-mono text-[10px] text-appleGray">DAG node boundaries</span>
-                </div>
-                <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 flex justify-between items-center text-xs hover:border-appleLight/20 transition-colors">
-                    <span class="font-semibold">KV Cache Isolation</span><span class="font-mono text-[10px] text-appleGray">PagedAttention</span>
-                </div>
-            </div>
+        </div>
         </div>
 
         <div class="p-4 border border-appleRed/30 bg-appleRed/5 rounded-xl text-center">
@@ -272,7 +281,7 @@
             <div class="flex flex-col gap-6">
                 <div class="flex items-center gap-4 p-4 border border-appleGreen/20 bg-appleGreen/5 rounded-xl">
                     <div class="w-10 h-10 shrink-0 bg-appleGreen/10 text-appleGreen font-mono font-bold flex items-center justify-center rounded-lg">T1</div>
-                    <div><div class="text-sm font-semibold">production-baseline</div><div class="text-[10px] text-appleGray mt-1">All production runs ingested. Raw I/O pairs across 17 prompt-specific partitions.</div></div>
+                    <div><div class="text-sm font-semibold">production-baseline</div><div class="text-[10px] text-appleGray mt-1">All production runs ingested. Raw I/O pairs across 18 prompt-specific partitions.</div></div>
                 </div>
                 <div class="text-center text-appleGray font-mono text-[10px]">&darr; O-R-A-V &ge; 0.7 && DEMAS PASS</div>
                 <div class="flex items-center gap-4 p-4 border border-appleBlue/20 bg-appleBlue/5 rounded-xl">
@@ -293,37 +302,57 @@
         </div>
     </div>
 
-    <!-- Scale & Topology -->
+    <!-- Multi-Tenant Execution Architecture -->
     <div class="py-20 border-b border-appleBorder reveal" id="s6">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">High-Dimensional Projection</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">Enterprise Fleet Telemetry</h2>
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Execution Model</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">Multi-Tenant Pipeline Architecture</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Live visualization of autonomous execution scaling across clients, languages, and geographic regions with deterministic tracking.
+            Each tenant runs an independent, auto-scaling pipeline with dedicated compute. 18 prompts auto-bind with LoRA adapters per client_id. Previous successful runs serve as tuned few-shot context for every sub-agent execution.
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="card p-8 text-center hover:bg-appleDarker transition-colors">
-                <div class="font-mono text-3xl font-bold text-appleLight mb-2">11</div>
-                <div class="text-[10px] uppercase tracking-widest text-appleGray font-medium">Clients</div>
+        <div class="grid md:grid-cols-3 gap-4 mb-8">
+            <div class="card p-6">
+                <div class="text-[9px] uppercase tracking-widest text-appleGreen font-bold mb-3">Compute Isolation</div>
+                <div class="text-sm font-semibold mb-2">Auto-Scaling Pipeline</div>
+                <div class="text-xs text-appleGray leading-relaxed">Each tenant gets a parallel, independent pipeline with dedicated GPU/CPU. Resources auto-configure based on data volume, epoch count, batch count, and batch size.</div>
             </div>
-            <div class="card p-8 text-center hover:bg-appleDarker transition-colors">
-                <div class="font-mono text-3xl font-bold text-appleLight mb-2">~10.5M</div>
-                <div class="text-[10px] uppercase tracking-widest text-appleGray font-medium">PDPs / Cycle</div>
+            <div class="card p-6">
+                <div class="text-[9px] uppercase tracking-widest text-appleBlue font-bold mb-3">Adapter Binding</div>
+                <div class="text-sm font-semibold mb-2">18 Prompts &times; client_id</div>
+                <div class="text-xs text-appleGray leading-relaxed">Each of 18 pipeline prompts auto-binds with a tenant-specific LoRA adapter at inference time. No cross-tenant contamination. Previous successful runs feed tuned few-shot context per prompt.</div>
             </div>
-            <div class="card p-8 text-center hover:bg-appleDarker transition-colors">
-                <div class="font-mono text-3xl font-bold text-appleBlue mb-2">~73.5M</div>
-                <div class="text-[10px] uppercase tracking-widest text-appleGray font-medium">Agent Ops / Cycle</div>
+            <div class="card p-6">
+                <div class="text-[9px] uppercase tracking-widest text-appleAmber font-bold mb-3">Hybrid Execution</div>
+                <div class="text-sm font-semibold mb-2">Deterministic + Agentic</div>
+                <div class="text-xs text-appleGray leading-relaxed">Each tenant pipeline mixes deterministic Python logic (Nodes 4, 6) with agentic inference (Gemma 4 MoE, Gemini). The split is ~80% deterministic, ~20% probabilistic.</div>
             </div>
         </div>
 
         <div class="card p-6">
-            <div class="text-[10px] uppercase tracking-widest text-appleGray mb-6">Parallel Client Execution Lanes</div>
-            <div class="flex flex-col gap-2" id="lanes"></div>
+            <div class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Tenant Pipeline Lifecycle</div>
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
+                    <div class="w-8 h-8 shrink-0 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] font-bold flex items-center justify-center">1</div>
+                    <div><div class="text-xs font-semibold">Pipeline Initialization</div><div class="text-[10px] text-appleGray">Tenant data volume determines compute allocation. GPU/CPU auto-scaled per batch size and epoch count.</div></div>
+                </div>
+                <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
+                    <div class="w-8 h-8 shrink-0 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] font-bold flex items-center justify-center">2</div>
+                    <div><div class="text-xs font-semibold">Adapter Binding</div><div class="text-[10px] text-appleGray">18 LoRA adapters auto-bind per client_id. Each adapter carries tuned weights from previous successful runs.</div></div>
+                </div>
+                <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
+                    <div class="w-8 h-8 shrink-0 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] font-bold flex items-center justify-center">3</div>
+                    <div><div class="text-xs font-semibold">Few-Shot Context Injection</div><div class="text-[10px] text-appleGray">Previous high-scoring outputs serve as few-shot examples per prompt, per task, per sub-agent. Context is tenant-scoped.</div></div>
+                </div>
+                <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
+                    <div class="w-8 h-8 shrink-0 rounded-full border border-appleGreen text-appleGreen font-mono text-[10px] font-bold flex items-center justify-center">4</div>
+                    <div><div class="text-xs font-semibold">DAG Execution</div><div class="text-[10px] text-appleGray">7-node pipeline runs autonomously. Deterministic gates and agentic nodes execute in sequence. DEMAS audits every boundary.</div></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="pt-12 flex flex-col md:flex-row justify-between items-center gap-6">
+    <footer class="pt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-appleBorder mt-8">
         <div class="text-sm font-semibold text-appleLight">Architecture Deep View &middot; Daniel Manzela</div>
         <div class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-appleGray">
             <a href="index.html" class="hover:text-appleLight transition-colors">Observatory</a>
@@ -337,13 +366,14 @@
 </div>
 
 <!-- Sticky Nav -->
-<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 nav-glass rounded-full px-6 py-3 flex gap-4 md:gap-6 text-[10px] uppercase tracking-widest font-medium text-appleGray z-50 hidden md:flex">
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 nav-glass rounded-full px-4 py-3 flex gap-3 md:gap-5 text-[10px] uppercase tracking-widest font-medium text-appleGray z-50 hidden md:flex">
     <a href="#s0" class="hover:text-appleLight transition-colors">MoE</a>
-    <a href="#s1" class="hover:text-appleLight transition-colors">Node</a>
+    <a href="#s1" class="hover:text-appleLight transition-colors">Nodes</a>
     <a href="#s2" class="hover:text-appleLight transition-colors">DAG</a>
     <a href="#s3" class="hover:text-appleLight transition-colors">Loop</a>
     <a href="#s4" class="hover:text-appleLight transition-colors">Eval</a>
-    <a href="#s6" class="hover:text-appleLight transition-colors">Telemetry</a>
+    <a href="#s5" class="hover:text-appleLight transition-colors">Data</a>
+    <a href="#s6" class="hover:text-appleLight transition-colors">Tenants</a>
 </nav>
 
 <script>
@@ -361,14 +391,12 @@ for(let i=0; i<128; i++) {
   experts.push(ex);
 }
 
-// Simulate Sparse Routing
+// Simulate Sparse Routing (4 active per token)
 setInterval(() => {
   experts.forEach(e => e.classList.remove('active'));
-  const r1 = Math.floor(Math.random() * 128);
-  let r2 = Math.floor(Math.random() * 128);
-  while(r2 === r1) r2 = Math.floor(Math.random() * 128);
-  experts[r1].classList.add('active');
-  experts[r2].classList.add('active');
+  const active = new Set();
+  while(active.size < 4) active.add(Math.floor(Math.random() * 128));
+  active.forEach(i => experts[i].classList.add('active'));
 }, 1200);
 
 // LoRA fan-out
@@ -388,40 +416,42 @@ setInterval(() => {
 
 // 7-Node Sequence
 const nodeData = [
-  {id:1,nm:'City DNA',role:'Context Injection',
+  {id:1,nm:'City DNA',role:'Context Injection',det:false,
    gate:{nm:'Locale Resolver',desc:'Validates ISO locale codes and timezone offsets. Rejects malformed location data.',tools:['ISO-3166','Timezone DB']},
-   agent:{nm:'Cultural Agent',desc:'Enriches context with city-level cultural signals.',tools:['Gemini Pro','Redis']},
-   trace:'Locale \u2192 Gate \u2192 Enrichment \u2192 Context'},
-  {id:2,nm:'Normalizer',role:'Data Cleansing',
-   gate:{nm:'Schema Validator',desc:'Enforces strict JSON schema. Fails instantly on schema mismatch.',tools:['Pydantic','AST']},
-   agent:{nm:'Semantic Extractor',desc:'Extracts nuanced attributes and taxonomy mappings.',tools:['Gemini Vision','Cached']},
-   trace:'Input \u2192 Schema \u2192 Extraction \u2192 Record'},
-  {id:3,nm:'Synonyms',role:'Expansion',
-   gate:{nm:'Dedup Filter',desc:'Exact-match and fuzzy deduplication.',tools:['SimHash','Levenshtein']},
-   agent:{nm:'Synonym Generator',desc:'Generates locale-aware semantic variants.',tools:['Gemini Flash','Tenant Dict']},
-   trace:'Terms \u2192 Dedup \u2192 Expansion \u2192 Set'},
-  {id:4,nm:'SV Gate',role:'Volume Filter',
-   gate:{nm:'Threshold Comparator',desc:'Mathematical filtering against search volume.',tools:['NumPy','BigQuery']},
-   agent:{nm:'Trend Analyst',desc:'Identifies emerging terms passing threshold trajectory.',tools:['Gemini Flash Lite']},
-   trace:'Set \u2192 Volume \u2192 Threshold \u2192 Qualified'},
-  {id:5,nm:'Writer',role:'Generation',
-   gate:{nm:'Template Selector',desc:'Enforces structural constraints (length, heading count).',tools:['Jinja2','Constraints']},
-   agent:{nm:'Content Generator',desc:'Produces SEO-optimized, locale-aware content.',tools:['Gemma 4 MoE','LoRA']},
-   trace:'Qualified \u2192 Template \u2192 LoRA \u2192 Draft'},
-  {id:6,nm:'Validator',role:'O-R-A-V Eval',
-   gate:{nm:'Compliance Check',desc:'Validates format, word count, blocks forbidden patterns.',tools:['Regex','Blocklist']},
-   agent:{nm:'Multi-Model Judge',desc:'Orchestrates O-R-A-V scoring across models.',tools:['Flash','Pro','Vote']},
-   trace:'Draft \u2192 Format \u2192 Scoring \u2192 Accept/Reject'},
-  {id:7,nm:'Features',role:'Vectorization',
-   gate:{nm:'Dimension Check',desc:'Validates dimensionality, detects NaNs.',tools:['NumPy','Guard']},
-   agent:{nm:'Feature Extractor',desc:'Generates dense vector representations.',tools:['Text Embeddings']},
-   trace:'Validated \u2192 Dim Gate \u2192 Embedding \u2192 Vector'}
+   agent:{nm:'Grounded Search',desc:'Fetches factual, up-to-date data from verified .gov sources per locale.',tools:['Gemini','Gov Sources']},
+   trace:'Locale \u2192 Gate \u2192 Web Search \u2192 Context'},
+  {id:2,nm:'Normalizer',role:'Data Cleansing',det:false,
+   gate:{nm:'Schema Validator',desc:'Enforces strict JSON schema. Fails on mismatch.',tools:['Pydantic','AST']},
+   agent:{nm:'Vision + Classifier',desc:'Text classification for taxonomy mapping. Vision model extracts context from product images.',tools:['Classification','Vision']},
+   trace:'Input \u2192 Schema \u2192 Classification \u2192 Record'},
+  {id:3,nm:'Synonyms',role:'Expansion',det:false,
+   gate:{nm:'Dedup Filter',desc:'Exact-match and fuzzy deduplication across the synonym set.',tools:['SimHash','Levenshtein']},
+   agent:{nm:'LPN Generator',desc:'Text classification model generating locale-aware synonyms and landing page name variants.',tools:['Classification','Tenant Dict']},
+   trace:'Terms \u2192 Dedup \u2192 Classification \u2192 Set'},
+  {id:4,nm:'SV Gate',role:'Volume Filter',det:true,
+   gate:{nm:'Volume Fetcher',desc:'Queries Google Ads API for keyword search volume per synonym per location.',tools:['Google Ads API','BigQuery']},
+   agent:{nm:'Keyword Ranker',desc:'Algorithmic scoring ranks keywords by commercial value per city. No LLM invoked.',tools:['NumPy','Custom Math']},
+   trace:'Set \u2192 API Query \u2192 Math Ranking \u2192 Qualified'},
+  {id:5,nm:'Writer',role:'Generation',det:false,
+   gate:{nm:'Template Selector',desc:'Enforces structural constraints: length, heading count, content block schema.',tools:['Jinja2','Constraints']},
+   agent:{nm:'Content Generator',desc:'Generates 10 SEO-optimized content blocks per product-location pair.',tools:['Gemma 4 MoE','LoRA']},
+   trace:'Qualified \u2192 Template \u2192 LoRA \u2192 10 Blocks'},
+  {id:6,nm:'Scorer',role:'Deterministic Eval',det:true,
+   gate:{nm:'Format Check',desc:'Validates format, word count, blocks forbidden patterns.',tools:['Regex','Blocklist']},
+   agent:{nm:'Metric Calculator',desc:'Computes O-R-A-V scores with Python and math algorithms. Closed-loop scoring engine.',tools:['Python','NumPy']},
+   trace:'Draft \u2192 Format \u2192 Math Scoring \u2192 Metrics'},
+  {id:7,nm:'Judge',role:'Multi-Model Eval',det:false,
+   gate:{nm:'Score Threshold',desc:'Validates minimum metric thresholds before judge invocation.',tools:['Threshold DB','Guard']},
+   agent:{nm:'LLM-as-Judge',desc:'Multiple models sample and evaluate content. Cross-model consensus determines accept/reject.',tools:['Multi-Model','Vote']},
+   trace:'Metrics \u2192 Threshold \u2192 Consensus \u2192 Accept/Reject'}
 ];
 
 const nodeSeq = document.getElementById('nodeSeq');
 nodeData.forEach((n, i) => {
   const item = document.createElement('div');
   item.className = 'card p-8 node-item';
+  const agentLabel = n.det ? 'Deterministic Logic' : 'Probabilistic Agent';
+  const agentColor = n.det ? 'appleGreen' : 'appleBlue';
   item.innerHTML = `
     <div class="flex items-center gap-4 mb-6 pb-4 border-b border-appleBorder">
       <div class="w-8 h-8 rounded-full border-2 border-appleBlue text-appleBlue flex items-center justify-center font-mono text-xs font-bold">${n.id}</div>
@@ -429,15 +459,15 @@ nodeData.forEach((n, i) => {
       <div class="ml-auto text-[9px] uppercase tracking-widest font-semibold bg-appleGreen/10 text-appleGreen border border-appleGreen/20 px-3 py-1 rounded-full">${n.role}</div>
     </div>
     <div class="grid md:grid-cols-2 gap-6 relative">
-      <div class="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-appleGreen/30 to-appleBlue/30 hidden md:block"></div>
+      <div class="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-appleGreen/30 to-${agentColor}/30 hidden md:block"></div>
       <div class="bg-appleBg border border-appleBorder rounded-xl p-6 relative z-10 hover:border-appleGreen/50 transition-colors">
         <div class="text-[9px] uppercase tracking-widest font-bold text-appleGreen bg-appleGreen/10 border border-appleGreen/20 inline-block px-2 py-0.5 rounded mb-3">Deterministic Gate</div>
         <div class="font-bold text-sm mb-2">${n.gate.nm}</div>
         <div class="text-xs text-appleGray mb-4">${n.gate.desc}</div>
         <div class="flex gap-2 flex-wrap">${n.gate.tools.map(t => '<span class="text-[10px] px-2 py-1 rounded border border-appleBorder bg-appleSurface text-appleGray">' + t + '</span>').join('')}</div>
       </div>
-      <div class="bg-appleBg border border-appleBorder rounded-xl p-6 relative z-10 hover:border-appleBlue/50 transition-colors">
-        <div class="text-[9px] uppercase tracking-widest font-bold text-appleBlue bg-appleBlue/10 border border-appleBlue/20 inline-block px-2 py-0.5 rounded mb-3">Probabilistic Agent</div>
+      <div class="bg-appleBg border border-appleBorder rounded-xl p-6 relative z-10 hover:border-${agentColor}/50 transition-colors">
+        <div class="text-[9px] uppercase tracking-widest font-bold text-${agentColor} bg-${agentColor}/10 border border-${agentColor}/20 inline-block px-2 py-0.5 rounded mb-3">${agentLabel}</div>
         <div class="font-bold text-sm mb-2">${n.agent.nm}</div>
         <div class="text-xs text-appleGray mb-4">${n.agent.desc}</div>
         <div class="flex gap-2 flex-wrap">${n.agent.tools.map(t => '<span class="text-[10px] px-2 py-1 rounded border border-appleBorder bg-appleSurface text-appleGray">' + t + '</span>').join('')}</div>
@@ -463,29 +493,7 @@ const nodeObs = new IntersectionObserver(entries => {
 }, {threshold: 0.15});
 document.querySelectorAll('.node-item, .node-arrow').forEach(el => nodeObs.observe(el));
 
-// Parallel lanes
-const cls=[{nm:'Tenant A',f:'ES',st:'run',p:5},{nm:'Tenant B',f:'ES',st:'run',p:4},{nm:'Tenant C',f:'PT',st:'run',p:6},{nm:'Tenant D',f:'IL',st:'q',p:0},{nm:'Tenant E',f:'US',st:'q',p:1},{nm:'Tenant F',f:'MX',st:'sc',p:2}];
-const nl=['1','2','3','4','5','6','7'];
-const le=document.getElementById('lanes');
-cls.forEach(c=>{
-  const l=document.createElement('div');
-  l.className='flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-3 hover:bg-appleSurface transition-colors';
-  let dots='';
-  nl.forEach((n,j)=>{
-    const on=c.st==='run'&&j<=c.p;
-    const bgClass = on ? 'bg-appleBlue/20 border-appleBlue/50 text-appleLight' : 'bg-appleBg border-appleBorder text-appleGray';
-    dots+=`<div class="w-5 h-5 flex shrink-0 items-center justify-center rounded text-[9px] font-bold border ${bgClass}">${n}</div>`;
-    if(j<6) dots+='<span class="text-appleGray shrink-0 text-[8px]">&rarr;</span>';
-  });
-  const stl={run:'RUNNING',q:'QUEUED',sc:'SCALING'};
-  const stCol={run:'text-appleBlue',q:'text-appleGray',sc:'text-appleGreen'};
-  l.innerHTML=`
-    <div class="text-xs font-semibold w-24 shrink-0"><span class="font-mono text-[10px] text-appleGray mr-2">${c.f}</span>${c.nm}</div>
-    <div class="flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar">${dots}</div>
-    <div class="text-[9px] font-mono font-bold w-16 text-right shrink-0 ${stCol[c.st]}">${stl[c.st]}</div>
-  `;
-  le.appendChild(l);
-});
+
 
 // Active nav linking
 const navLinks = document.querySelectorAll('.nav-glass a');
