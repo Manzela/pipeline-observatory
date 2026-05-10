@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Autonomous Pipeline Architecture — Daniel Manzela</title>
-<meta name="description" content="Mechanistic interpretability visualization of a production multi-agent DAG pipeline with MoE sparse routing, LoRA serving, and O-R-A-V evaluation.">
+<meta name="description" content="Architecture deep-dive: 7-node DAG pipeline with MoE sparse routing, per-tenant LoRA adapters, O-R-A-V scoring, and closed-loop dataset curation.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -56,7 +56,7 @@
 
     /* DAG Arrows */
     .dag-arr { color: #86868b; font-size: 14px; flex-shrink: 0; user-select: none; }
-    .dag { display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 12px; }
+    .dag { display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; padding: 8px 4px 16px 4px; }
     .dag::-webkit-scrollbar { display: none; }
 
     /* RL Spark */
@@ -81,7 +81,7 @@
     <div class="py-24 md:py-32 text-center border-b border-appleBorder">
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6">Autonomous Pipeline<br>Architecture</h1>
         <p class="text-appleGray text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-            A production-grade multi-agent system with mechanistic interpretability, closed-loop autonomy, and self-improving state &mdash; operating at enterprise scale.
+            7-node DAG with deterministic gates, MoE sparse routing, per-tenant LoRA adapters, and closed-loop dataset curation. 80% deterministic compute. 11 tenants. Zero humans in the loop.
         </p>
         <div class="text-xs text-appleGray tracking-wide mb-6">
             <a href="index.html" class="text-appleLight hover:text-appleBlue transition-colors">Pipeline Observatory</a> &middot; Daniel Manzela &middot; 2024–2026
@@ -132,7 +132,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Node-Level Architecture</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Sub-Agent Node Anatomy</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Each node is a bounded ecosystem of sub-agents. A deterministic gate fires first; the probabilistic LLM activates only if the gate passes. Nodes 4 and 6 are fully deterministic — no LLM invoked.
+            Each node pairs a deterministic gate with an execution agent. The gate fires first; the agent activates only if the gate passes. Nodes 4 and 6 are fully deterministic — no LLM invoked.
         </div>
 
         <div class="card p-6 bg-appleDarker mb-8">
@@ -151,8 +151,8 @@
             The 7-node pipeline operates as a Directed Acyclic Graph. DEMAS intercepts at every boundary for JIT validation.
         </div>
 
-        <div class="card p-8 md:p-16 text-center">
-            <div class="dag mb-8 flex justify-center">
+        <div class="card p-6 md:p-8 text-center">
+            <div class="dag mb-8">
                 <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
                     <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">1</div>
                     <div class="text-xs font-semibold mb-1">City DNA</div><div class="text-[10px] font-mono text-appleGray">Context</div>
@@ -189,7 +189,7 @@
                 </div>
             </div>
 
-            <div class="bg-appleDarker border border-appleBorder p-4 rounded-xl mt-8 inline-block text-left">
+            <div class="bg-appleDarker border border-appleBorder p-4 rounded-xl mt-8 text-left">
                 <div class="font-mono text-[10px] text-appleLight font-bold mb-1 tracking-widest">DEMAS &mdash; JIT AUDIT LAYER</div>
                 <div class="text-[10px] text-appleGray">Deterministic audit system intercepting at every node boundary. Validates data integrity, schema compliance, and output quality in real-time. 68.9% pass rate &middot; Fail-closed &mdash; rejected outputs never propagate downstream.</div>
             </div>
@@ -201,7 +201,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Closed-Loop Autonomy</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Self-Improving RL Feedback</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Execution generates output. DEMAS scores generate signals. Failure cases feed the RLAIF dataset. Quality rises monotonically.
+            Execution produces output. DEMAS scores it. Failures feed the RLAIF dataset. Each cycle produces better training data than the last.
         </div>
 
         <div class="card p-8">
@@ -247,9 +247,8 @@
             Four scoring dimensions determine content quality. Node 6 computes deterministic metrics. Node 7 orchestrates multi-model consensus. Outputs above threshold become Golden datasets for training; failures become Rejected datasets for DPO preference pairs.
         </div>
 
-        <div class="mb-6">
-            <div class="card p-6">
-                <div class="grid grid-cols-2 gap-4">
+        <div class="card p-6 mb-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleBorder hover:scale-105 transition-transform">
                         <div class="text-3xl font-bold mb-2">O</div><div class="text-xs font-semibold mb-1">Originality</div><div class="font-mono text-[9px] text-appleGray">gemini-2.5-flash-lite</div>
                     </div>
@@ -262,7 +261,6 @@
                     <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleBorder border-dashed hover:scale-105 transition-transform">
                         <div class="text-3xl font-bold mb-2">V</div><div class="text-xs font-semibold mb-1">Value</div><div class="font-mono text-[9px] text-appleGray">cross-model consensus</div>
                     </div>
-                </div>
             </div>
         </div>
 
@@ -277,7 +275,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Self-Improving Data Loop</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">3-Tier Dataset Flywheel</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Every pipeline run feeds a closed-loop data flywheel. RLAIF preference optimization automatically curates datasets for the next fine-tuning run.
+            Every pipeline run writes to a 3-tier dataset. O-R-A-V scores and DEMAS verdicts determine which tier. DPO preference pairs are assembled automatically from the spread between tiers.
         </div>
 
         <div class="card p-8">
