@@ -93,7 +93,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Sparse Activation & Routing</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Multi-LoRA Serving Engine</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Production inference routes through a multi-LoRA architecture serving 18 prompt-specific adapters per tenant. LoRA fine-tuning on Gemma 3 operated with evolving golden datasets under continuous SDLC evaluation. Gemma 4 MoE (128 experts, 4 active per token) is currently in an active R&D cycle to resolve adapter compatibility.
+            18 prompt-specific adapters per tenant. Fast context switching via multi-LoRA. Base model: Gemma 4 MoE (128 experts, 4 active per token). No prompt bloat, just isolated task performance.
         </div>
 
         <div class="card p-8 text-center overflow-hidden">
@@ -178,7 +178,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Closed-Loop Autonomy</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Self-Improving RL Feedback</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Intelligence is recursive. Forward execution generates outputs; backward evaluation signals (sparks) mutate the per-tenant prompt cache, mimicking Hebbian learning.
+            Execution generates output. DEMAS scores generate signals. Failure cases feed the RLAIF dataset. Quality rises monotonically.
         </div>
 
         <div class="card p-8">
@@ -265,7 +265,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Self-Improving Data Loop</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">3-Tier Dataset Flywheel</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Every pipeline execution &mdash; success or failure &mdash; feeds a closed-loop data flywheel that continuously improves model quality through RLAIF-grade preference optimization.
+            Every pipeline run feeds a closed-loop data flywheel. RLAIF preference optimization automatically curates datasets for the next fine-tuning run.
         </div>
 
         <div class="card p-8">

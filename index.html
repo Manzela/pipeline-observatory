@@ -98,7 +98,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Production Scale</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Enterprise Throughput</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            The pipeline processes product data for 11 commercial clients across 5 countries. Each cycle traverses all 7 DAG nodes per product, generating ~73.5M autonomous agent operations from ~10.5M product-page inputs.
+            11 commercial clients. 5 countries. 7 DAG nodes per product. ~73.5M autonomous operations per cycle.
         </div>
 
         <div class="card p-8 bg-appleDarker">
@@ -121,7 +121,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Agent Topology</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">7-Node Execution DAG</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Each pipeline run traverses a strict Directed Acyclic Graph. Deterministic gates fire at every agent boundary; the probabilistic LLM activates only when the gate passes. DEMAS audits every transition.
+            Execution follows a strict Directed Acyclic Graph. Deterministic gates block stochastic outputs. If the gate fails, the LLM never fires. DEMAS audits the boundary.
         </div>
 
         <div class="card p-8 mb-8">
@@ -183,7 +183,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Geographic Coverage</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Multi-Country Execution</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            The pipeline adapts content per locale &mdash; language, cultural signals, and timezone offsets are injected at Node 1 (City DNA) before any downstream LLM invocation.
+            Language, cultural signals, and timezone offsets are injected at Node 1 before any LLM invocation. Zero-shot adaptation without prompt bloat.
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
