@@ -86,7 +86,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mb-4">Case Study 01</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Autonomous Multi-Agent DAG Pipeline</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            A 7-node Directed Acyclic Graph generating localized product content for 11 enterprise clients across 5 countries. Zero humans in the loop. Deterministic validation fires first; the LLM activates only if the gate passes.
+            A 7-node Directed Acyclic Graph generating localized product content for 11 enterprise clients across 5 countries. Human-supervised autonomous execution. Deterministic validation fires first; the LLM activates only if the gate passes.
         </div>
 
         <div class="card p-px bg-appleBorder grid md:grid-cols-3 gap-px mb-12 overflow-hidden">
@@ -195,15 +195,15 @@
         <div class="rounded-xl overflow-hidden border border-appleBorder mb-4 relative pt-[56.25%]">
             <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/czZsPbylC1M" allowfullscreen></iframe>
         </div>
-        <div class="text-center text-[10px] text-appleGray mb-12">Pipeline execution &mdash; autonomous content generation with zero human intervention</div>
+        <div class="text-center text-[10px] text-appleGray mb-12">Pipeline execution &mdash; autonomous content generation with human-supervised quality gates</div>
 
         <!-- Trade-offs -->
         <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Engineering Trade-offs</div>
         <div class="grid md:grid-cols-2 gap-4 mb-10">
             <div class="card p-6">
                 <div class="flex items-center gap-2 mb-2"><div class="w-2 h-2 rounded-sm bg-appleBlue"></div><h4 class="font-semibold text-sm">Quality vs. Cost</h4></div>
-                <p class="text-xs text-appleGray mb-4">Multi-model O-R-A-V evaluation instead of a single LLM-as-judge. Each dimension uses a different model tier to balance accuracy with cost.</p>
-                <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: 4-tier scoring, 68.9% pass rate, $0.00002/run</div>
+                <p class="text-xs text-appleGray mb-4">O-R-A-V (Observe→Reason→Act→Validate) deterministic validation engine. Node 6 runs zero-LLM rule-based checks; Node 7 (DEMAS JIT) runs SLM-as-judge evaluation inline within content generation.</p>
+                <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: Deterministic + SLM validation, 68.9% compound pass rate</div>
             </div>
             <div class="card p-6">
                 <div class="flex items-center gap-2 mb-2"><div class="w-2 h-2 rounded-sm bg-appleRed"></div><h4 class="font-semibold text-sm">Safety vs. Throughput</h4></div>

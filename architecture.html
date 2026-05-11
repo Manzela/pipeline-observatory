@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Autonomous Pipeline Architecture — Daniel Manzela</title>
-<meta name="description" content="Architecture deep-dive: 7-node DAG pipeline with MoE sparse routing, per-tenant LoRA adapters, O-R-A-V deterministic scoring, DEMAS JIT audit layer, and closed-loop DPO dataset curation.">
+<meta name="description" content="Architecture deep-dive: 7-node DAG pipeline with MoE sparse routing, per-tenant LoRA adapters, O-R-A-V deterministic validation, DEMAS JIT audit layer, and closed-loop DPO dataset curation.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -106,7 +106,7 @@
     <div class="py-24 md:py-32 text-center border-b border-appleBorder">
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6">Autonomous Pipeline<br>Architecture</h1>
         <p class="text-appleGray text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-            7-node DAG with deterministic gates, MoE sparse routing, per-tenant LoRA adapters, and closed-loop dataset curation. Majority deterministic compute — only Nodes 1, 2, 3, 5 invoke LLM inference; Nodes 4 and 6 are pure Python and math. 11 tenants. Zero humans in the loop.
+            7-node DAG with deterministic gates, MoE sparse routing, per-tenant LoRA adapters, and closed-loop dataset curation. Majority deterministic compute — only Nodes 1, 2, 3, 5 invoke LLM inference; Nodes 4 and 6 are pure Python and math. 11 tenants. Human-supervised autonomous execution.
         </p>
         <div class="text-xs text-appleGray tracking-wide mb-6">
             <a href="index.html" class="text-appleLight hover:text-appleBlue transition-colors">Pipeline Observatory</a> &middot; <a href="case-studies.html" class="text-appleGray hover:text-appleBlue transition-colors">Case Studies</a> &middot; Daniel Manzela &middot; 2024–2026
@@ -150,12 +150,12 @@
                 <span class="dag-arr">&rarr;</span>
                 <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
                     <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">6</div>
-                    <div class="text-xs font-semibold mb-1">Scorer</div><div class="text-[10px] font-mono text-appleGray">Deterministic</div>
+                    <div class="text-xs font-semibold mb-1">Validator</div><div class="text-[10px] font-mono text-appleGray">Deterministic</div>
                 </div>
                 <span class="dag-arr">&rarr;</span>
                 <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
                     <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">7</div>
-                    <div class="text-xs font-semibold mb-1">Judge</div><div class="text-[10px] font-mono text-appleGray">Multi-Model</div>
+                    <div class="text-xs font-semibold mb-1">Evaluator</div><div class="text-[10px] font-mono text-appleGray">DEMAS JIT</div>
                 </div>
             </div>
 
@@ -171,12 +171,12 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Node-Level Architecture</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Sub-Agent Node Anatomy</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Each node pairs a deterministic gate with an execution agent. The gate fires first; the agent activates only if the gate passes. Nodes 4 and 6 are fully deterministic — no LLM invoked.
+            Each node pairs a deterministic gate with an execution agent. The gate fires first; the agent activates only if the gate passes.
         </div>
 
         <div class="card p-6 bg-appleDarker mb-8">
             <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-3 font-medium">Model Routing Strategy</div>
-            <div class="text-xs text-appleGray leading-relaxed">Not every node needs an LLM. <strong class="text-appleLight">Nodes 4 and 6</strong> are purely deterministic — Python code, APIs, and math algorithms. <strong class="text-appleLight">Nodes 2 and 3</strong> use text classification and vision models for structured extraction. <strong class="text-appleLight">Node 5</strong> uses self-hosted Gemma 4 MoE with per-tenant LoRA adapters. <strong class="text-appleLight">Node 7</strong> orchestrates multi-model consensus for final quality judging. <strong class="text-appleLight">Node 1</strong> uses Gemini for grounded web search against verified sources.</div>
+            <div class="text-xs text-appleGray leading-relaxed">Most nodes use specialized, self-hosted SLMs. <strong class="text-appleLight">Nodes 4 and 6</strong> are fully deterministic (Python/Math). <strong class="text-appleLight">Node 5</strong> leverages a MoE (Mixture-of-Experts) base model with per-tenant LoRA adapters for domain-specific generation. <strong class="text-appleLight">Node 7</strong> runs the DEMAS JIT auditor (SLM-as-judge) to ensure output parity with human quality benchmarks.</div>
         </div>
 
         <div class="flex flex-col gap-8" id="nodeSeq"></div>
@@ -223,32 +223,44 @@
 
     <!-- Node Anatomy -->
     <div class="py-20 border-b border-appleBorder reveal" id="s4">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Quality Scoring Engine</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">O-R-A-V Multi-Model Scoring</h2>
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Deterministic Quality Gate</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">O-R-A-V Validation Engine</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Four scoring dimensions determine content quality. Node 6 computes deterministic metrics. Node 7 orchestrates multi-model consensus. Outputs above threshold become Golden datasets for training; failures become Rejected datasets for DPO preference pairs.
+            O-R-A-V is a control-flow pattern. Node 6 executes deterministic validation across every content block: Observe diagnostics, Reason about severity, Act with corrections, Validate the final output. Zero LLM calls — pure rule-based defense-in-depth.
         </div>
 
         <div class="card p-6 mb-6">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleBlue hover:scale-105 transition-transform">
-                        <div class="text-3xl font-bold mb-2">O</div><div class="text-xs font-semibold mb-1">Originality</div><div class="font-mono text-[9px] text-appleGray">gemini-2.5-flash-lite</div>
+                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen hover:scale-105 transition-transform">
+                        <div class="text-3xl font-bold mb-2">O</div><div class="text-xs font-semibold mb-1">Observe</div><div class="font-mono text-[9px] text-appleGray">scan diagnostics</div>
                     </div>
-                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleBlue hover:scale-105 transition-transform">
-                        <div class="text-3xl font-bold mb-2">R</div><div class="text-xs font-semibold mb-1">Relevance</div><div class="font-mono text-[9px] text-appleGray">gemini-2.5-flash</div>
+                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen hover:scale-105 transition-transform">
+                        <div class="text-3xl font-bold mb-2">R</div><div class="text-xs font-semibold mb-1">Reason</div><div class="font-mono text-[9px] text-appleGray">assess severity</div>
                     </div>
-                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleBlue hover:scale-105 transition-transform">
-                        <div class="text-3xl font-bold mb-2">A</div><div class="text-xs font-semibold mb-1">Accuracy</div><div class="font-mono text-[9px] text-appleGray">deterministic + LLM</div>
+                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen hover:scale-105 transition-transform">
+                        <div class="text-3xl font-bold mb-2">A</div><div class="text-xs font-semibold mb-1">Act</div><div class="font-mono text-[9px] text-appleGray">apply corrections</div>
                     </div>
-                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleBlue hover:scale-105 transition-transform">
-                        <div class="text-3xl font-bold mb-2">V</div><div class="text-xs font-semibold mb-1">Value</div><div class="font-mono text-[9px] text-appleGray">cross-model consensus</div>
+                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen hover:scale-105 transition-transform">
+                        <div class="text-3xl font-bold mb-2">V</div><div class="text-xs font-semibold mb-1">Validate</div><div class="font-mono text-[9px] text-appleGray">final gate decision</div>
                     </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-appleBorder">
+                <div class="text-[10px] uppercase tracking-widest text-appleGray mb-3 font-medium">Deterministic Checks (Node 6)</div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Template variable leak detection</div>
+                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Transactional language blocklist</div>
+                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Character length bounds</div>
+                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Internal label leak detection</div>
+                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Empty field validation</div>
+                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Schema compliance enforcement</div>
+                </div>
             </div>
         </div>
 
         <div class="p-4 border border-appleRed/30 bg-appleRed/5 rounded-xl text-center">
             <strong class="text-appleRed font-mono text-xs tracking-widest block mb-2">FAIL-CLOSED POLICY</strong>
-            <div class="text-[10px] text-appleGray">Below threshold &rarr; halt &rarr; Firestore trace &rarr; downstream block &rarr; mutate prompt</div>
+            <div class="text-[10px] text-appleGray">Below threshold &rarr; halt &rarr; Firestore trace &rarr; downstream block &rarr; retry with corrected prompt</div>
         </div>
     </div>
 
@@ -257,7 +269,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Self-Improving Data Loop</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">3-Tier Dataset Flywheel</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Every pipeline run writes to a 3-tier dataset. O-R-A-V scores and DEMAS verdicts determine which tier. DPO preference pairs are assembled automatically from the spread between tiers.
+            Every pipeline run writes to a 3-tier dataset. O-R-A-V patterns and DEMAS verdicts determine which tier. DPO preference pairs are assembled automatically from the spread between tiers.
         </div>
 
         <div class="card p-8">
@@ -285,7 +297,7 @@
         </div>
 
         <div class="mt-6 p-4 border border-appleBorder bg-appleDarker/50 rounded-xl">
-            <div class="text-[10px] text-appleGray leading-relaxed text-center">Curated preference pairs feed back into the <a href="#s3" class="text-appleBlue hover:underline">RL Feedback Loop</a>. Scoring thresholds are set by the <a href="#s4" class="text-appleBlue hover:underline">O-R-A-V Engine</a>.</div>
+            <div class="text-[10px] text-appleGray leading-relaxed text-center">Curated preference pairs feed back into the <a href="#s3" class="text-appleBlue hover:underline">RL Feedback Loop</a>. Thresholds are set by the <a href="#s4" class="text-appleBlue hover:underline">O-R-A-V Engine</a>.</div>
         </div>
     </div>
 
@@ -294,7 +306,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Offline Model Improvement</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">DPO Fine-Tuning Loop</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Every run produces labeled data. O-R-A-V scores classify outputs into chosen and rejected tiers. DPO preference pairs are assembled automatically and queued for offline LoRA fine-tuning.
+            Every run produces labeled data. O-R-A-V patterns classify outputs into chosen and rejected tiers. DPO preference pairs are assembled automatically and queued for offline LoRA fine-tuning.
         </div>
 
         <div class="card p-8">
@@ -328,7 +340,7 @@
         </div>
 
         <div class="mt-6 p-4 border border-appleBorder bg-appleDarker/50 rounded-xl">
-            <div class="text-[10px] text-appleGray leading-relaxed text-center">This loop is fed by the <a href="#s4" class="text-appleBlue hover:underline">O-R-A-V Scoring Engine</a>, which classifies outputs, and the <a href="#s5" class="text-appleBlue hover:underline">3-Tier Dataset Flywheel</a>.</div>
+            <div class="text-[10px] text-appleGray leading-relaxed text-center">This loop is fed by the <a href="#s4" class="text-appleBlue hover:underline">O-R-A-V Engine</a>, which classifies outputs, and the <a href="#s5" class="text-appleBlue hover:underline">3-Tier Dataset Flywheel</a>.</div>
         </div>
     </div>
 
@@ -354,7 +366,7 @@
             <div class="card p-6">
                 <div class="text-[9px] uppercase tracking-widest text-appleAmber font-bold mb-3">Hybrid Execution</div>
                 <div class="text-sm font-semibold mb-2">Deterministic + Agentic</div>
-                <div class="text-xs text-appleGray leading-relaxed">Each tenant pipeline mixes deterministic Python logic (Nodes 4, 6) with agentic inference (Gemma 4 MoE, Gemini). Nodes 4 and 6 are fully deterministic. Nodes 1, 2, 3 use cached LLM calls. Node 5 is the primary inference node.</div>
+                <div class="text-xs text-appleGray leading-relaxed">Each tenant pipeline mixes deterministic Python logic (Nodes 4, 6) with agentic inference (Gemma 4 MoE, Gemini). Nodes 4 and 6 are fully deterministic.</div>
             </div>
         </div>
 
@@ -483,14 +495,14 @@ const nodeData = [
    gate:{nm:'Template Selector',desc:'Enforces structural constraints: length, heading count, content block schema.',tools:['Jinja2','Constraints']},
    agent:{nm:'Content Generator',desc:'Generates 10 SEO-optimized content blocks per product-location pair.',tools:['Gemma 4 MoE','LoRA']},
    trace:'Qualified \u2192 Template \u2192 LoRA \u2192 10 Blocks'},
-  {id:6,nm:'Scorer',role:'Deterministic Eval',det:true,
-   gate:{nm:'Format Check',desc:'Validates format, word count, blocks forbidden patterns.',tools:['Regex','Blocklist']},
-   agent:{nm:'Metric Calculator',desc:'Computes O-R-A-V scores with Python and math algorithms. Closed-loop scoring engine.',tools:['Python','NumPy']},
-   trace:'Draft \u2192 Format \u2192 Math Scoring \u2192 Metrics'},
-  {id:7,nm:'Judge',role:'Multi-Model Eval',det:false,
-   gate:{nm:'Score Threshold',desc:'Validates minimum metric thresholds before judge invocation.',tools:['Threshold DB','Guard']},
-   agent:{nm:'LLM-as-Judge',desc:'Multiple models sample and evaluate content. Cross-model consensus determines accept/reject.',tools:['Multi-Model','Vote']},
-   trace:'Metrics \u2192 Threshold \u2192 Consensus \u2192 Accept/Reject'}
+  {id:6,nm:'Validator',role:'Deterministic QA',det:true,
+   gate:{nm:'Format Check',desc:'Validates format, word count, blocks forbidden patterns. O(1) deterministic checks.',tools:['Regex','Blocklist']},
+   agent:{nm:'O-R-A-V Engine',desc:'Observe diagnostics, reason about severity, act with corrections, validate final output. Zero LLM calls — pure rule-based validation.',tools:['Python','Pydantic']},
+   trace:'Draft → Format → O-R-A-V → PASS / RETRY / FAIL'},
+  {id:7,nm:'Evaluator',role:'DEMAS JIT',det:false,
+   gate:{nm:'Quality Threshold',desc:'Validates minimum O-R-A-V scores before SLM evaluation.',tools:['Threshold','Guard']},
+   agent:{nm:'SLM-as-Judge',desc:'DEMAS JIT evaluator runs per-block qualitative auditing inline within Node 5. Language-agnostic content quality assessment.',tools:['Gemma 4 SLM','Langfuse']},
+   trace:'Content → Threshold → SLM Audit → Accept/Reject'}
 ];
 
 const nodeSeq = document.getElementById('nodeSeq');
