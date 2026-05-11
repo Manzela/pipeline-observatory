@@ -135,9 +135,9 @@
             <div>
                 <div class="text-xs font-semibold text-appleLight mb-2">Compliance-First</div>
                 <p class="text-[11px] text-appleGray leading-relaxed">
-                    Every generative node is constrained by a RAG policy index containing
-                    Google&rsquo;s SPAM policies and E-E-A-T standards. Content that violates policy
-                    is rejected at the boundary.
+                    Every node boundary is audited by a deterministic quality gate.
+                    Content below threshold is rejected before reaching production &mdash;
+                    fail-closed by design.
                 </p>
             </div>
         </div>
@@ -247,56 +247,15 @@
         </div>
     </div>
 
-    <!-- DAG Topology -->
-    <div class="py-20 border-b border-appleBorder reveal">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Agent Topology</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">7-Node Execution DAG</h2>
-        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Each node pairs a deterministic gate with an execution agent. The gate fires first; if it fails, the LLM never activates. DEMAS audits every boundary.
-        </div>
-
-        <div class="card p-8 mb-8">
-            <div class="flex items-center gap-3 overflow-x-auto no-scrollbar pb-4">
-                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 1</div><div class="text-[9px] text-appleGray mb-2">City DNA</div><div class="text-[9px] font-mono text-appleGray">Cached / City</div>
-                </div>
-                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
-                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 2</div><div class="text-[9px] text-appleGray mb-2">Normalizer</div><div class="text-[9px] font-mono text-appleGray">Data Cleansing</div>
-                </div>
-                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
-                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 3</div><div class="text-[9px] text-appleGray mb-2">Synonyms</div><div class="text-[9px] font-mono text-appleGray">Cached / Client</div>
-                </div>
-                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
-                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 4</div><div class="text-[9px] text-appleGray mb-2">SV Gate</div><div class="text-[9px] font-mono text-appleGray">Deterministic Gate</div>
-                </div>
-                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
-                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 5</div><div class="text-[9px] text-appleGray mb-2">Writer</div><div class="text-[9px] font-mono text-appleGray">Content Generation</div>
-                </div>
-                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
-                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 6</div><div class="text-[9px] text-appleGray mb-2">Validator</div><div class="text-[9px] font-mono text-appleGray">O-R-A-V Gate</div>
-                </div>
-                <span class="text-appleBorder font-mono text-sm">&rarr;</span>
-                <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 7</div><div class="text-[9px] text-appleGray mb-2">Evaluator</div><div class="text-[9px] font-mono text-appleGray">DEMAS JIT</div>
-                </div>
+    <!-- Architecture Reference -->
+    <div class="py-16 border-b border-appleBorder reveal">
+        <a href="architecture.html" class="card p-8 flex items-center justify-between hover:bg-appleSurface transition-colors group block">
+            <div>
+                <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-2 font-medium">Architecture Deep Dive</div>
+                <div class="text-lg font-semibold tracking-tight">7-Node Execution DAG &middot; O-R-A-V &middot; DPO Flywheel</div>
+                <div class="text-xs text-appleGray mt-2">Node anatomy, MoE sparse routing, deterministic quality gates, and closed-loop model improvement.</div>
             </div>
-            <div class="mt-4 p-4 border border-dashed border-appleBorder bg-appleDarker/50 rounded-xl text-left">
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="text-xs font-semibold text-appleLight">DEMAS</span>
-                    <span class="text-[9px] text-appleGray/60 font-mono">Deterministic Evaluation &amp; Monitoring Audit System</span>
-                </div>
-                <div class="text-[10px] text-appleGray leading-relaxed">
-                    JIT audit layer intercepting at every node boundary. 68.9% average pass rate per boundary &mdash; rejection is intentional. Each boundary enforces schema compliance, format validation, and policy adherence via deterministic checks. Content that fails any boundary is halted and never propagates downstream. Rejected outputs feed the <a href="architecture.html#s5" class="text-appleBlue hover:underline">DPO training flywheel</a> as negative preference examples, continuously improving output quality.
-                </div>
-            </div>
-        </div>
-        <a href="architecture.html" class="inline-flex items-center gap-2 px-6 py-3 border border-appleBorder rounded-full text-xs font-medium text-appleLight hover:bg-appleSurface transition-colors">
-            See Full Architecture &rarr;
+            <span class="text-appleGray group-hover:text-appleLight transition-colors text-lg">&rarr;</span>
         </a>
     </div>
 
@@ -461,38 +420,7 @@
         </div>
     </div>
 
-    <!-- Research Signal -->
-    <div class="py-20 border-b border-appleBorder reveal">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Designed for Enterprise</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">Every Decision Traces to a Constraint</h2>
-        <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Architecture informed by product discovery sessions with SEO leadership at
-            multi-location retailers operating thousands of physical store locations.
-        </p>
 
-        <div class="card p-px bg-appleBorder grid md:grid-cols-2 gap-px overflow-hidden">
-            <div class="bg-appleSurface p-8 hover:bg-appleDarker transition-colors">
-                <div class="font-mono text-xs text-appleBlue mb-3">Constraint</div>
-                <div class="text-sm font-semibold text-appleLight mb-2">Developer buy-in is the adoption blocker</div>
-                <div class="text-[11px] text-appleGray leading-relaxed">Enterprise SEO teams cannot allocate developer hours for new tooling. Headless, external architecture &mdash; zero integration required from the client.</div>
-            </div>
-            <div class="bg-appleSurface p-8 hover:bg-appleDarker transition-colors">
-                <div class="font-mono text-xs text-appleBlue mb-3">Constraint</div>
-                <div class="text-sm font-semibold text-appleLight mb-2">Local PDPs don&rsquo;t exist at product level</div>
-                <div class="text-[11px] text-appleGray leading-relaxed">Retailers confirmed their product pages are location-aware but not location-specific. The pipeline fills a documented market gap &mdash; unique content per product per city.</div>
-            </div>
-            <div class="bg-appleSurface p-8 hover:bg-appleDarker transition-colors">
-                <div class="font-mono text-xs text-appleBlue mb-3">Constraint</div>
-                <div class="text-sm font-semibold text-appleLight mb-2">Crawl budget is the bottleneck at scale</div>
-                <div class="text-[11px] text-appleGray leading-relaxed">Enterprise SEO leadership flagged indexation as the critical barrier at 10M+ pages. Pipeline includes automated sitemap generation, search engine submission, and index status monitoring.</div>
-            </div>
-            <div class="bg-appleSurface p-8 hover:bg-appleDarker transition-colors">
-                <div class="font-mono text-xs text-appleBlue mb-3">Constraint</div>
-                <div class="text-sm font-semibold text-appleLight mb-2">Cost sensitivity is extreme</div>
-                <div class="text-[11px] text-appleGray leading-relaxed">Enterprise procurement requires predictable, fixed-cost infrastructure. Self-hosted Gemma 4 MoE on A100 eliminates per-token API pricing &mdash; $3,694/month regardless of volume.</div>
-            </div>
-        </div>
-    </div>
 
     <!-- Footer -->
     <footer class="py-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-appleBorder mt-12">
