@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Case Studies — Daniel Manzela | Pipeline Observatory</title>
 <meta name="description" content="Production case studies with verified Google Search Console metrics, video demos, and open-source implementations.">
+<meta property="og:title" content="Case Studies — Daniel Manzela | Pipeline Observatory">
+<meta property="og:description" content="Three interconnected systems: compliance-enforced content pipeline, Gemma 4 MoE deployment forensics, and AI agent governance kernel.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manzela.github.io/pipeline-observatory/case-studies.html">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -101,7 +105,7 @@
             <div class="bg-appleDarker p-8 border-t md:border-t-0 border-appleBorder">
                 <h4 class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Result</h4>
                 <div class="font-mono text-2xl font-bold text-appleBlue mb-2">260K+ pages</div>
-                <p class="text-xs text-appleGray leading-relaxed">400K+ impressions across 3 client properties, 68.9% compound pass rate, $0.0006/PDP end-to-end. 234 managed websites across 5 countries.</p>
+                <p class="text-xs text-appleGray leading-relaxed">400K+ impressions across 3 client properties, 68.9% average pass rate per boundary, $0.0006/PDP end-to-end. 234 managed websites across 5 countries.</p>
             </div>
         </div>
 
@@ -125,7 +129,7 @@
                     <div class="p-5 border-t border-appleBorder">
                         <div class="font-semibold text-sm mb-1">Search Performance</div>
                         <div class="font-mono text-xs text-appleBlue mb-2">54.4K impressions &middot; 614 clicks</div>
-                        <p class="text-[10px] text-appleGray">1.1% CTR, Avg Position 10.9. Zero manual content creation.</p>
+                        <p class="text-[10px] text-appleGray">1.1% CTR, Avg Position 10.9. Autonomous pipeline output, human-supervised.</p>
                     </div>
                 </div>
             </div>
@@ -188,7 +192,7 @@
             <div class="card p-6">
                 <div class="mb-2"><h4 class="font-semibold text-sm">Quality vs. Cost</h4></div>
                 <p class="text-xs text-appleGray mb-4">O-R-A-V (Observe→Reason→Act→Validate) deterministic validation engine. Node 6 runs zero-LLM rule-based checks; Node 7 (DEMAS JIT) runs SLM-as-judge evaluation inline within content generation.</p>
-                <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: Deterministic + SLM validation, 68.9% compound pass rate</div>
+                <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: Deterministic + SLM validation, 68.9% average pass rate per boundary</div>
             </div>
             <div class="card p-6">
                 <div class="mb-2"><h4 class="font-semibold text-sm">Safety vs. Throughput</h4></div>
@@ -230,7 +234,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mb-4">Case Study 02</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Gemma 4 MoE — Vertex AI Deployment Forensics</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Deployed Google's Gemma 4 26B-A4B-it Mixture-of-Experts model on Vertex AI with vLLM. Documented 20 distinct failure modes across 30+ deployment iterations in a forensic runbook now used as community reference material.
+            Deployed Google's Gemma 4 26B-A4B-it Mixture-of-Experts model on Vertex AI with vLLM. Documented 20 distinct failure modes across 30+ deployment iterations in a public forensic runbook.
         </div>
 
         <div class="card p-px bg-appleBorder grid md:grid-cols-3 gap-px mb-12 overflow-hidden">
@@ -249,8 +253,6 @@
             </div>
         </div>
 
-
-
         <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Deployment Timeline</div>
         <div class="card p-8 mb-10">
             <div class="timeline">
@@ -267,7 +269,7 @@
                 <div class="tl-item success">
                     <div class="font-mono text-[10px] text-appleGreen mb-1">v21 – v30</div>
                     <div class="text-sm font-semibold mb-1 text-appleLight">Stable Base Inference</div>
-                    <div class="text-xs text-appleGray leading-relaxed">Working configuration locked: vLLM 0.17.2rc1.dev133 + PagedAttention + custom entrypoint.sh. Stable inference at production throughput.</div>
+                    <div class="text-xs text-appleGray leading-relaxed">Working configuration locked: vLLM 0.17.2rc1.dev133 + PagedAttention + custom entrypoint.sh. Base inference stable; advancing toward full PRD.</div>
                 </div>
                 <div class="tl-item fail">
                     <div class="font-mono text-[10px] text-appleGray mb-1">Cycle 2</div>
@@ -346,6 +348,7 @@
             <a href="index.html" class="hover:text-appleLight transition-colors">Observatory</a>
             <a href="architecture.html" class="hover:text-appleLight transition-colors">Architecture</a>
             <a href="https://manzela.github.io/Manzela/" class="hover:text-appleLight transition-colors">Profile</a>
+            <a href="https://manzela.github.io/Elysium/" class="hover:text-appleLight transition-colors">Elysium</a>
             <a href="https://github.com/Manzela" target="_blank" class="hover:text-appleLight transition-colors">GitHub</a>
             <a href="https://linkedin.com/in/manzela" target="_blank" class="hover:text-appleLight transition-colors">LinkedIn</a>
         </div>
