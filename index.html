@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pipeline Observatory — Daniel Manzela</title>
     <meta name="description" content="Execution telemetry for a 7-node autonomous DAG pipeline processing ~10.5M product pages per cycle across 5 countries, 11 clients, and 234 websites.">
+    <meta property="og:title" content="Pipeline Observatory — Daniel Manzela">
+    <meta property="og:description" content="Execution telemetry for a 7-node autonomous DAG pipeline — ~10.5M PDPs/cycle, 234 websites, $0.0006/PDP.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://manzela.github.io/pipeline-observatory/">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -34,13 +38,13 @@
     <style>
         body { background-color: #000000; color: #f5f5f7; -webkit-font-smoothing: antialiased; }
         .card { background-color: #1d1d1f; border: 1px solid #424245; border-radius: 16px; }
+        .glass-nav { background: rgba(0, 0, 0, 0.72); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid #424245; }
         .reveal { opacity: 0; transform: translateY(20px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         .reveal.visible { opacity: 1; transform: translateY(0); }
         ::selection { background: rgba(41, 151, 255, 0.3); color: #f5f5f7; }
-        
-        .live-dot::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: #34d399; animation: ping 2s cubic-bezier(0,0,0.2,1) infinite; opacity: 0.75; }
-        .live-dot::after { content: ''; position: absolute; inset: 1px; border-radius: 50%; background: #34d399; }
-        @keyframes ping { 75%, 100% { transform: scale(2.5); opacity: 0; } }
+
+        /* Status indicator */
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block; }
 
         /* Custom scrollbar for horizontal DAG */
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -49,7 +53,31 @@
 </head>
 <body class="bg-appleBg text-appleLight antialiased selection:bg-appleBlue/30">
 
-<div class="max-w-4xl mx-auto px-6">
+<!-- Glass Nav -->
+<nav class="fixed top-0 left-0 right-0 z-50 glass-nav">
+    <div class="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div class="text-sm font-semibold tracking-tight text-appleLight">
+            Pipeline <span class="text-appleGray font-medium ml-1">Observatory</span>
+        </div>
+        <div class="hidden md:flex gap-8">
+            <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Profile</a>
+            <a href="index.html" class="text-[10px] tracking-widest uppercase text-appleLight border-b-2 border-appleLight pb-1">Telemetry</a>
+            <a href="architecture.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Architecture</a>
+            <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Case Studies</a>
+        </div>
+        <button id="navToggle" class="md:hidden text-appleGray hover:text-appleLight transition-colors" aria-label="Toggle navigation">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+        </button>
+    </div>
+    <div id="mobileNav" class="md:hidden hidden border-t border-appleBorder px-6 py-4 flex flex-col gap-3">
+        <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Profile</a>
+        <a href="index.html" class="text-[10px] tracking-widest uppercase text-appleLight">Telemetry</a>
+        <a href="architecture.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Architecture</a>
+        <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Case Studies</a>
+    </div>
+</nav>
+
+<div class="max-w-4xl mx-auto px-6 pt-14">
 
     <!-- Hero -->
     <div class="py-24 md:py-32 text-center border-b border-appleBorder">
@@ -58,15 +86,15 @@
             Execution telemetry for a 7-node autonomous DAG pipeline &mdash; ~10.5M product pages per cycle, 11 tenants, 5 countries, $0.0006 per PDP end-to-end on self-hosted Gemma.
         </p>
         <div class="text-xs text-appleGray tracking-wide mb-6">
-            <a href="architecture.html" class="text-appleLight hover:text-appleBlue transition-colors">Architecture Deep View</a> &middot; Daniel Manzela &middot; 2024–2026
+            Daniel Manzela &middot; 2024–2026
         </div>
         <div class="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-4 py-2 rounded-full">
-            <span class="live-dot relative w-2 h-2 block"></span> Last execution: 2026-05-07T11:45:24Z
+            <span class="status-dot"></span> Last execution: 2026-05-07T11:45:24Z
         </div>
     </div>
 
     <!-- Key Metrics -->
-    <div class="card p-px bg-appleBorder grid grid-cols-2 md:grid-cols-3 gap-px my-16 reveal overflow-hidden">
+    <div class="card p-px bg-appleBorder grid grid-cols-2 md:grid-cols-4 gap-px my-16 reveal overflow-hidden">
         <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
             <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct1">—</div>
             <div class="text-[9px] uppercase tracking-widest text-appleGray">Agent Ops / Cycle</div>
@@ -77,19 +105,28 @@
         </div>
         <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
             <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct3">—</div>
-            <div class="text-[9px] uppercase tracking-widest text-appleGray">Managed Websites</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">Avg Latency / PDP</div>
         </div>
         <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
             <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct4">—</div>
-            <div class="text-[9px] uppercase tracking-widest text-appleGray">Countries</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">Cost / PDP</div>
         </div>
         <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
             <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct5">—</div>
-            <div class="text-[9px] uppercase tracking-widest text-appleGray">Content Pass Rate</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">Managed Websites</div>
         </div>
         <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
             <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct6">—</div>
-            <div class="text-[9px] uppercase tracking-widest text-appleGray">Cost / PDP</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">Countries</div>
+        </div>
+        <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
+            <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct7">—</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">DEMAS Pass Rate</div>
+            <div class="text-[8px] text-appleGray/60 mt-1">Quality gate · fail-closed</div>
+        </div>
+        <div class="bg-appleSurface p-8 text-center hover:bg-appleDarker transition-colors">
+            <div class="font-mono text-2xl font-semibold text-appleLight mb-2" id="ct8">—</div>
+            <div class="text-[9px] uppercase tracking-widest text-appleGray">Model Generations</div>
         </div>
     </div>
 
@@ -117,7 +154,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Agent Topology</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">7-Node Execution DAG</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Each node pairs a deterministic gate with an execution agent. The gate fires first; if it fails, the LLM never activates. DEMAS audits every boundary. Nodes 1, 3, and 4 use city-level caching &mdash; they run once per city and reuse the result across all products in that city.
+            Each node pairs a deterministic gate with an execution agent. The gate fires first; if it fails, the LLM never activates. DEMAS audits every boundary.
         </div>
 
         <div class="card p-8 mb-8">
@@ -127,7 +164,7 @@
                 </div>
                 <span class="text-appleBorder font-mono text-sm">&rarr;</span>
                 <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 2</div><div class="text-[9px] text-appleGray mb-2">Normalizer</div><div class="text-[9px] font-mono text-appleBlue">22,760</div>
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 2</div><div class="text-[9px] text-appleGray mb-2">Normalizer</div><div class="text-[9px] font-mono text-appleGray">Data Cleansing</div>
                 </div>
                 <span class="text-appleBorder font-mono text-sm">&rarr;</span>
                 <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
@@ -135,37 +172,37 @@
                 </div>
                 <span class="text-appleBorder font-mono text-sm">&rarr;</span>
                 <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 4</div><div class="text-[9px] text-appleGray mb-2">SV Gate</div><div class="text-[9px] font-mono text-appleGray">Deterministic</div>
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 4</div><div class="text-[9px] text-appleGray mb-2">SV Gate</div><div class="text-[9px] font-mono text-appleGray">Deterministic Gate</div>
                 </div>
                 <span class="text-appleBorder font-mono text-sm">&rarr;</span>
                 <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 5</div><div class="text-[9px] text-appleGray mb-2">Writer</div><div class="text-[9px] font-mono text-appleBlue">20,314</div>
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 5</div><div class="text-[9px] text-appleGray mb-2">Writer</div><div class="text-[9px] font-mono text-appleGray">Content Generation</div>
                 </div>
                 <span class="text-appleBorder font-mono text-sm">&rarr;</span>
                 <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 6</div><div class="text-[9px] text-appleGray mb-2">Scorer</div><div class="text-[9px] font-mono text-appleGray">Deterministic</div>
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 6</div><div class="text-[9px] text-appleGray mb-2">Scorer</div><div class="text-[9px] font-mono text-appleGray">Deterministic Scoring</div>
                 </div>
                 <span class="text-appleBorder font-mono text-sm">&rarr;</span>
                 <div class="flex-shrink-0 border border-appleBorder bg-appleDarker rounded-xl p-3 text-center min-w-[90px]">
-                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 7</div><div class="text-[9px] text-appleGray mb-2">Judge</div><div class="text-[9px] font-mono text-appleBlue">Multi-Model</div>
+                    <div class="text-[10px] font-semibold text-appleLight mb-1">Node 7</div><div class="text-[9px] text-appleGray mb-2">Judge</div><div class="text-[9px] font-mono text-appleGray">Multi-Model Eval</div>
                 </div>
             </div>
             <div class="mt-4 p-4 border border-dashed border-appleBorder bg-appleDarker/50 rounded-xl text-center">
                 <span class="text-xs font-semibold text-appleLight mr-2">DEMAS</span>
-                <span class="text-[10px] text-appleGray">JIT Audit Layer &middot; 5,563 executions &middot; 68.9% pass rate &middot; Fail-Closed</span>
+                <span class="text-[10px] text-appleGray">JIT Audit Layer &middot; 68.9% pass rate &middot; Fail-Closed</span>
             </div>
         </div>
         <a href="architecture.html" class="inline-flex items-center gap-2 px-6 py-3 border border-appleBorder rounded-full text-xs font-medium text-appleLight hover:bg-appleSurface transition-colors">
-            Explore Node Anatomy &rarr;
+            See Full Architecture &rarr;
         </a>
     </div>
 
     <!-- Model Timeline -->
     <div class="py-20 border-b border-appleBorder reveal">
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Model Evolution</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">3 Generations in Production</h2>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">4 Models in Production</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Three model generations &mdash; from self-hosted Gemma (A100) to cloud-hosted Gemini. Langfuse traces per model shown below.
+            From self-hosted Gemma on A100 to cloud-hosted Gemini. Langfuse-traced executions per model shown below.
         </div>
 
         <div class="card p-8">
@@ -182,26 +219,31 @@
             Node 1 (City DNA) injects language, local regulations, and timezone context before any downstream node fires. Each city's data is cached and reused across all products in that geography.
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="card p-4 flex items-center gap-4 hover:bg-appleDarker transition-colors">
-                <div class="w-10 h-10 rounded-lg bg-appleDarker border border-appleBorder flex items-center justify-center font-mono text-[10px] font-semibold text-appleLight shrink-0">ES</div>
-                <div><div class="text-sm font-semibold text-appleLight">Spain</div><div class="text-[10px] text-appleGray mt-1">Spanish</div></div>
+        <div class="card p-px bg-appleBorder grid grid-cols-1 md:grid-cols-5 gap-px overflow-hidden">
+            <div class="bg-appleSurface p-5 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-lg font-semibold text-appleLight mb-1">ES</div>
+                <div class="text-[10px] text-appleGray">Spain</div>
+                <div class="text-[9px] text-appleGray/60 mt-1">Spanish</div>
             </div>
-            <div class="card p-4 flex items-center gap-4 hover:bg-appleDarker transition-colors">
-                <div class="w-10 h-10 rounded-lg bg-appleDarker border border-appleBorder flex items-center justify-center font-mono text-[10px] font-semibold text-appleLight shrink-0">PT</div>
-                <div><div class="text-sm font-semibold text-appleLight">Portugal</div><div class="text-[10px] text-appleGray mt-1">Portuguese</div></div>
+            <div class="bg-appleSurface p-5 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-lg font-semibold text-appleLight mb-1">PT</div>
+                <div class="text-[10px] text-appleGray">Portugal</div>
+                <div class="text-[9px] text-appleGray/60 mt-1">Portuguese</div>
             </div>
-            <div class="card p-4 flex items-center gap-4 hover:bg-appleDarker transition-colors">
-                <div class="w-10 h-10 rounded-lg bg-appleDarker border border-appleBorder flex items-center justify-center font-mono text-[10px] font-semibold text-appleLight shrink-0">IL</div>
-                <div><div class="text-sm font-semibold text-appleLight">Israel</div><div class="text-[10px] text-appleGray mt-1">Hebrew</div></div>
+            <div class="bg-appleSurface p-5 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-lg font-semibold text-appleLight mb-1">IL</div>
+                <div class="text-[10px] text-appleGray">Israel</div>
+                <div class="text-[9px] text-appleGray/60 mt-1">Hebrew</div>
             </div>
-            <div class="card p-4 flex items-center gap-4 hover:bg-appleDarker transition-colors">
-                <div class="w-10 h-10 rounded-lg bg-appleDarker border border-appleBorder flex items-center justify-center font-mono text-[10px] font-semibold text-appleLight shrink-0">US</div>
-                <div><div class="text-sm font-semibold text-appleLight">United States</div><div class="text-[10px] text-appleGray mt-1">English</div></div>
+            <div class="bg-appleSurface p-5 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-lg font-semibold text-appleLight mb-1">US</div>
+                <div class="text-[10px] text-appleGray">United States</div>
+                <div class="text-[9px] text-appleGray/60 mt-1">English</div>
             </div>
-            <div class="card p-4 flex items-center gap-4 hover:bg-appleDarker transition-colors">
-                <div class="w-10 h-10 rounded-lg bg-appleDarker border border-appleBorder flex items-center justify-center font-mono text-[10px] font-semibold text-appleLight shrink-0">MX</div>
-                <div><div class="text-sm font-semibold text-appleLight">Mexico</div><div class="text-[10px] text-appleGray mt-1">Spanish (MX)</div></div>
+            <div class="bg-appleSurface p-5 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-lg font-semibold text-appleLight mb-1">MX</div>
+                <div class="text-[10px] text-appleGray">Mexico</div>
+                <div class="text-[9px] text-appleGray/60 mt-1">Spanish (MX)</div>
             </div>
         </div>
     </div>
@@ -235,7 +277,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Execution Traces</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Sample Trace Log</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Anonymized sample from the most recent pipeline run (2026-05-07). Each line is a single node invocation with its DEMAS audit status.
+            Anonymized sample from the most recent pipeline run (2026-05-07). Each line is a single node invocation with its measured duration and DEMAS audit status.
         </div>
 
         <div class="card p-6 bg-appleDarker overflow-hidden">
@@ -276,10 +318,12 @@ const statsObs = new IntersectionObserver(entries => {
         if (e.isIntersecting) {
             animateCount(document.getElementById('ct1'), 73500000);
             animateCount(document.getElementById('ct2'), 10500000);
-            animateCount(document.getElementById('ct3'), 234);
-            animateCount(document.getElementById('ct4'), 5);
-            animateCount(document.getElementById('ct5'), 68, '%');
-            document.getElementById('ct6').textContent = '$0.0006';
+            document.getElementById('ct3').textContent = '~30s';
+            document.getElementById('ct4').textContent = '$0.0006';
+            animateCount(document.getElementById('ct5'), 234);
+            animateCount(document.getElementById('ct6'), 5);
+            animateCount(document.getElementById('ct7'), 68, '%');
+            animateCount(document.getElementById('ct8'), 4);
             statsObs.disconnect();
         }
     });
@@ -309,18 +353,22 @@ tl.forEach((t, i) => {
 
 // Execution traces
 const traces = [
-    {ts:'11:45:24Z', st:'demas', ev:'jit_audit', s:'pass'},
-    {ts:'11:45:22Z', st:'node5', ev:'content_generation', s:'ok'},
-    {ts:'11:45:20Z', st:'node5', ev:'content_generation', s:'ok'},
-    {ts:'11:45:18Z', st:'demas', ev:'jit_audit', s:'pass'},
-    {ts:'11:45:16Z', st:'node5', ev:'content_generation', s:'ok'},
-    {ts:'11:45:15Z', st:'node2', ev:'vision_extraction', s:'ok'},
-    {ts:'11:45:14Z', st:'demas', ev:'jit_audit', s:'pass'},
-    {ts:'11:45:12Z', st:'node2', ev:'taxonomy_classify', s:'ok'},
-    {ts:'11:45:10Z', st:'demas', ev:'jit_audit', s:'fail'},
-    {ts:'11:45:09Z', st:'node5', ev:'content_generation', s:'ok'},
-    {ts:'11:44:55Z', st:'node5', ev:'content_generation', s:'ok'},
-    {ts:'11:44:42Z', st:'node2', ev:'vision_extraction', s:'ok'}
+    {ts:'11:45:24Z', st:'demas',  ev:'jit_audit',           s:'pass', dur:'1ms'},
+    {ts:'11:45:23Z', st:'node7',  ev:'judge_consensus',     s:'ok',   dur:'842ms'},
+    {ts:'11:45:22Z', st:'node6',  ev:'deterministic_scoring',s:'ok',  dur:'1ms'},
+    {ts:'11:45:21Z', st:'node5',  ev:'content_generation',  s:'ok',   dur:'11.3s'},
+    {ts:'11:45:10Z', st:'demas',  ev:'jit_audit',           s:'pass', dur:'1ms'},
+    {ts:'11:45:09Z', st:'node4',  ev:'search_volume_gate',  s:'ok',   dur:'5.3s'},
+    {ts:'11:45:04Z', st:'node3',  ev:'synonym_expansion',   s:'ok',   dur:'51ms'},
+    {ts:'11:45:03Z', st:'node2',  ev:'taxonomy_classify',   s:'ok',   dur:'3.8s'},
+    {ts:'11:44:59Z', st:'node2',  ev:'vision_extraction',   s:'ok',   dur:'3.7s'},
+    {ts:'11:44:56Z', st:'demas',  ev:'jit_audit',           s:'pass', dur:'1ms'},
+    {ts:'11:44:55Z', st:'node1',  ev:'city_context_inject', s:'ok',   dur:'498ms'},
+    {ts:'11:44:55Z', st:'demas',  ev:'jit_audit',           s:'fail', dur:'1ms'},
+    {ts:'11:44:54Z', st:'node5',  ev:'content_generation',  s:'ok',   dur:'11.9s'},
+    {ts:'11:44:42Z', st:'node4',  ev:'search_volume_gate',  s:'ok',   dur:'5.1s'},
+    {ts:'11:44:37Z', st:'node3',  ev:'synonym_expansion',   s:'ok',   dur:'52ms'},
+    {ts:'11:44:36Z', st:'node1',  ev:'city_context_inject', s:'ok',   dur:'503ms'}
 ];
 const tEl = document.getElementById('traces');
 traces.forEach((t, i) => {
@@ -332,6 +380,7 @@ traces.forEach((t, i) => {
         l.innerHTML = `<span class="text-appleGray w-20 md:w-24 shrink-0">${t.ts}</span>
                        <span class="${stCol} w-16 md:w-20 shrink-0">${t.st}</span>
                        <span class="text-appleGray flex-1 truncate">${t.ev}</span>
+                       <span class="text-appleGray/60 w-16 text-right">${t.dur}</span>
                        <span class="${sc} w-12 text-right">${t.s.toUpperCase()}</span>`;
         tEl.appendChild(l);
         requestAnimationFrame(() => l.style.opacity = '1');
@@ -343,6 +392,13 @@ const obs = new IntersectionObserver(e => e.forEach(x => {
     if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); }
 }), {threshold: 0.1});
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Mobile nav toggle
+const navToggle = document.getElementById('navToggle');
+const mobileNav = document.getElementById('mobileNav');
+if (navToggle && mobileNav) {
+    navToggle.addEventListener('click', () => mobileNav.classList.toggle('hidden'));
+}
 </script>
 </body>
 </html>
