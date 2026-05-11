@@ -93,14 +93,64 @@
         </div>
     </div>
 
+    <!-- Origin -->
+    <div class="py-20 md:py-24 border-b border-appleBorder reveal">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-6 font-medium">Why This Exists</div>
+        <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-6">
+            Enterprise retailers can&rsquo;t create<br>
+            product pages fast enough.
+        </h2>
+        <p class="text-sm text-appleGray max-w-xl leading-relaxed mb-12">
+            Multi-location retailers need unique, localized product pages for every item in every
+            city they serve. At enterprise scale, this means millions to billions of pages &mdash; each
+            requiring localized copy, structured data, and policy-compliant content. Manual creation
+            doesn&rsquo;t get close.
+        </p>
+
+        <div class="card bg-appleDarker p-10 text-center mb-8">
+            <div class="font-mono text-sm text-appleGray leading-loose">
+                <span class="text-appleLight font-semibold">10K</span> SKUs &times;
+                <span class="text-appleLight font-semibold">5K</span> locations =
+                <strong class="text-3xl md:text-4xl text-appleBlue block my-4 font-bold tracking-tight">50,000,000 pages</strong>
+                <span class="text-appleGray/60 text-xs">That&rsquo;s a mid-size retailer. Hypermarkets need billions.</span>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div>
+                <div class="text-xs font-semibold text-appleLight mb-2">Scale</div>
+                <p class="text-[11px] text-appleGray leading-relaxed">
+                    Validated with SEO leadership at retailers operating 4,000&ndash;10,000+ store
+                    locations. The content gap is six orders of magnitude beyond manual capacity.
+                </p>
+            </div>
+            <div>
+                <div class="text-xs font-semibold text-appleLight mb-2">Zero Friction</div>
+                <p class="text-[11px] text-appleGray leading-relaxed">
+                    No CMS integration. No developer hours. No API setup from the client.
+                    Operates as an external, headless discovery layer that activates with
+                    a single switch.
+                </p>
+            </div>
+            <div>
+                <div class="text-xs font-semibold text-appleLight mb-2">Compliance-First</div>
+                <p class="text-[11px] text-appleGray leading-relaxed">
+                    Every generative node is constrained by a RAG policy index containing
+                    Google&rsquo;s SPAM policies and E-E-A-T standards. Content that violates policy
+                    is rejected at the boundary.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Business Context -->
     <div class="py-16 border-b border-appleBorder reveal">
         <div class="grid md:grid-cols-2 gap-12 items-start">
             <div>
-                <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">The Problem</div>
-                <h2 class="text-2xl font-bold tracking-tight mb-4">Manual Content Doesn&rsquo;t Scale</h2>
+                <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Current Production</div>
+                <h2 class="text-2xl font-bold tracking-tight mb-4">11 Clients &middot; ~10.5M Pages / Cycle</h2>
                 <p class="text-sm text-appleGray leading-relaxed">
-                    Enterprise e-commerce retailers need unique, localized product pages for every product in every city they serve &mdash; titles, descriptions, structured data, all compliant with search engine policies. At 11 clients &times; ~45K products &times; ~21 locations, that&rsquo;s <strong class="text-appleLight">~10.5 million pages per cycle</strong>. Manual creation is mathematically impossible.
+                    The pipeline currently processes 11 tenants across 5 countries &mdash; generating titles, descriptions, and structured data for ~45K products &times; ~21 locations per cycle. Every page is unique, localized, and policy-compliant before reaching production.
                 </p>
             </div>
             <div>
@@ -250,6 +300,39 @@
         </a>
     </div>
 
+    <!-- Product Lifecycle -->
+    <div class="py-20 border-b border-appleBorder reveal">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Product Lifecycle</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">From Catalog to Indexed Page</h2>
+        <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+            Each pipeline run transforms raw product catalogs into live, indexed, geo-targeted
+            product pages &mdash; from ingestion through deployment and traffic measurement.
+        </p>
+
+        <div class="card p-px bg-appleBorder grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden">
+            <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xs text-appleBlue mb-2">01</div>
+                <div class="text-xs font-semibold text-appleLight mb-1">Ingest</div>
+                <div class="text-[10px] text-appleGray leading-relaxed">Product scraping, data normalization, catalog sync</div>
+            </div>
+            <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xs text-appleBlue mb-2">02</div>
+                <div class="text-xs font-semibold text-appleLight mb-1">Analyze</div>
+                <div class="text-[10px] text-appleGray leading-relaxed">Keyword generation, SERP analysis, demand mapping per locale</div>
+            </div>
+            <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xs text-appleBlue mb-2">03</div>
+                <div class="text-xs font-semibold text-appleLight mb-1">Generate</div>
+                <div class="text-[10px] text-appleGray leading-relaxed">Policy-compliant localized PDPs via constrained LLM inference</div>
+            </div>
+            <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xs text-appleBlue mb-2">04</div>
+                <div class="text-xs font-semibold text-appleLight mb-1">Deploy</div>
+                <div class="text-[10px] text-appleGray leading-relaxed">Indexation, traffic measurement, location intelligence</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Model Timeline -->
     <div class="py-20 border-b border-appleBorder reveal">
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Model Evolution</div>
@@ -330,34 +413,38 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Unit Economics</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Why $0.0006 / PDP</h2>
         <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            The 80/20 deterministic split is an economic architecture decision, not just a safety one. Most of the pipeline runs on CPU-bound validation with near-zero marginal cost. The heaviest inference node runs on self-hosted hardware with no per-token API fees.
+            The heaviest inference node (Writer) runs on a self-hosted Gemma 4 26B-A4B MoE model deployed to a single A100 80GB GPU. No per-token API fees. The cost per PDP is derived directly from the VM&rsquo;s fixed monthly cost divided by the volume of pages it serves.
         </div>
 
-        <div class="card p-px bg-appleBorder grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden">
+        <!-- Cost Derivation -->
+        <div class="card bg-appleDarker p-8">
+            <div class="font-mono text-sm text-appleGray leading-loose text-center">
+                <span class="text-appleLight font-semibold">$5.06</span>/hr &times; <span class="text-appleLight font-semibold">730</span> hrs/mo = <strong class="text-appleBlue">~$3,694</strong>/month <span class="text-appleGray/60">(a2-ultragpu-1g &middot; 1&times; A100 80GB)</span><br>
+                <strong class="text-appleBlue">~$3,694</strong>/month &divide; <span class="text-appleLight font-semibold">~6.16M</span> PDPs/month = <strong class="text-appleBlue">~$0.0006</strong>/PDP
+            </div>
+        </div>
+
+        <!-- Supporting Stats -->
+        <div class="card p-px bg-appleBorder grid grid-cols-3 gap-px overflow-hidden mt-6">
             <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
                 <div class="font-mono text-lg font-semibold text-appleLight mb-1">80%</div>
                 <div class="text-[9px] uppercase tracking-widest text-appleGray">Deterministic Compute</div>
                 <div class="text-[8px] text-appleGray/60 mt-1">Near-zero marginal cost</div>
             </div>
             <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-lg font-semibold text-appleLight mb-1">$0</div>
+                <div class="text-[9px] uppercase tracking-widest text-appleGray">Per-Token API Fees</div>
+                <div class="text-[8px] text-appleGray/60 mt-1">Self-hosted Gemma 4 MoE</div>
+            </div>
+            <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
                 <div class="font-mono text-lg font-semibold text-appleLight mb-1">~20%</div>
                 <div class="text-[9px] uppercase tracking-widest text-appleGray">Actual LLM Calls</div>
                 <div class="text-[8px] text-appleGray/60 mt-1">City + client caching</div>
             </div>
-            <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
-                <div class="font-mono text-lg font-semibold text-appleLight mb-1">$0</div>
-                <div class="text-[9px] uppercase tracking-widest text-appleGray">Node 5 API Cost</div>
-                <div class="text-[8px] text-appleGray/60 mt-1">Self-hosted Gemma 4 MoE</div>
-            </div>
-            <div class="bg-appleSurface p-6 text-center hover:bg-appleDarker transition-colors">
-                <div class="font-mono text-lg font-semibold text-appleLight mb-1">flash-lite</div>
-                <div class="text-[9px] uppercase tracking-widest text-appleGray">Cheapest API Tier</div>
-                <div class="text-[8px] text-appleGray/60 mt-1">Nodes 1 &amp; 7 only</div>
-            </div>
         </div>
 
         <div class="mt-6 pt-4 border-t border-appleBorder text-center text-[10px] text-appleGray leading-relaxed">
-            Deterministic nodes (gates, schemas, dedup) have near-zero compute cost. Self-hosted Gemma 4 26B-A4B MoE on A100 eliminates per-token API pricing for the heaviest inference node (Writer). Gemini API is reserved for the cheapest tier &mdash; flash-lite &mdash; on evaluation nodes only.
+            Deterministic nodes (gates, schemas, dedup) have near-zero compute cost. The A100 GPU serves only the Writer (Node 5) and Evaluator (Node 7) inference paths. Caching at city and client levels further reduces actual LLM invocations per cycle.
         </div>
     </div>
 
@@ -371,6 +458,39 @@
 
         <div class="card p-6 bg-appleDarker overflow-hidden">
             <div id="traces" class="space-y-1"></div>
+        </div>
+    </div>
+
+    <!-- Research Signal -->
+    <div class="py-20 border-b border-appleBorder reveal">
+        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Designed for Enterprise</div>
+        <h2 class="text-3xl font-bold tracking-tight mb-4">Every Decision Traces to a Constraint</h2>
+        <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+            Architecture informed by product discovery sessions with SEO leadership at
+            multi-location retailers operating thousands of physical store locations.
+        </p>
+
+        <div class="card p-px bg-appleBorder grid md:grid-cols-2 gap-px overflow-hidden">
+            <div class="bg-appleSurface p-8 hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xs text-appleBlue mb-3">Constraint</div>
+                <div class="text-sm font-semibold text-appleLight mb-2">Developer buy-in is the adoption blocker</div>
+                <div class="text-[11px] text-appleGray leading-relaxed">Enterprise SEO teams cannot allocate developer hours for new tooling. Headless, external architecture &mdash; zero integration required from the client.</div>
+            </div>
+            <div class="bg-appleSurface p-8 hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xs text-appleBlue mb-3">Constraint</div>
+                <div class="text-sm font-semibold text-appleLight mb-2">Local PDPs don&rsquo;t exist at product level</div>
+                <div class="text-[11px] text-appleGray leading-relaxed">Retailers confirmed their product pages are location-aware but not location-specific. The pipeline fills a documented market gap &mdash; unique content per product per city.</div>
+            </div>
+            <div class="bg-appleSurface p-8 hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xs text-appleBlue mb-3">Constraint</div>
+                <div class="text-sm font-semibold text-appleLight mb-2">Crawl budget is the bottleneck at scale</div>
+                <div class="text-[11px] text-appleGray leading-relaxed">Enterprise SEO leadership flagged indexation as the critical barrier at 10M+ pages. Pipeline includes automated sitemap generation, search engine submission, and index status monitoring.</div>
+            </div>
+            <div class="bg-appleSurface p-8 hover:bg-appleDarker transition-colors">
+                <div class="font-mono text-xs text-appleBlue mb-3">Constraint</div>
+                <div class="text-sm font-semibold text-appleLight mb-2">Cost sensitivity is extreme</div>
+                <div class="text-[11px] text-appleGray leading-relaxed">Enterprise procurement requires predictable, fixed-cost infrastructure. Self-hosted Gemma 4 MoE on A100 eliminates per-token API pricing &mdash; $3,694/month regardless of volume.</div>
+            </div>
         </div>
     </div>
 
