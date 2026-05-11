@@ -2,7 +2,7 @@
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Status: Production](https://img.shields.io/badge/Status-Live_in_Production-brightgreen.svg)]()
-[![Models: 3 Generations](https://img.shields.io/badge/Models-3_Generations-purple.svg)]()
+[![Models: 4 Generations](https://img.shields.io/badge/Models-4_Generations-purple.svg)]()
 
 A publication-grade interactive dashboard and architectural documentation for an autonomous 7-node Directed Acyclic Graph (DAG) pipeline. It features mechanistic interpretability visuals, fail-closed policy enforcement (DEMAS), and enterprise-scale execution telemetry.
 
@@ -36,8 +36,8 @@ graph LR
         N3[Node 3<br/>Synonyms]
         N4[Node 4<br/>SV Gate]
         N5[Node 5<br/>Writer]
-        N6[Node 6<br/>Validator]
-        N7[Node 7<br/>Features]
+        N6[Node 6<br/>Scorer]
+        N7[Node 7<br/>Judge]
     end
 
     N1 --> N2 --> N3 --> N4 --> N5 --> N6 --> N7
@@ -52,13 +52,13 @@ graph LR
 
 ### Key Design Decisions
 - **Fail-Closed Policy (DEMAS):** A Just-In-Time parallel audit layer running alongside generation. Any failure halts downstream propagation.
-- **O-R-A-V Validation:** Node 6 runs Overlap, Relevance, Accuracy, and Voice checks via LLM-as-Judge.
+- **O-R-A-V Validation:** Node 6 runs Originality, Relevance, Accuracy, and Value checks via LLM-as-Judge.
 - **Model Hot-Swapping:** Zero-downtime swaps between Gemma 3/4 and Gemini 2.5/3.1 Flash-Lite.
 
 ## Enterprise Scale
 Production throughput across 11 enterprise clients:
-- **~7.9M PDPs** (Product Detail Pages) per generation cycle.
-- **~55M Node operations** per cycle.
+- **~10.5M PDPs** (Product Detail Pages) per generation cycle.
+- **~73.5M Node operations** per cycle.
 - Auto-scaling up to 1,000 concurrent Modal workers.
 
 ## Project Documentation

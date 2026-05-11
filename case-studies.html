@@ -77,7 +77,7 @@
         <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mb-6">Engineering Portfolio</div>
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6">Case Studies & Demos</h1>
         <p class="text-appleGray text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-            Production systems with verified metrics, video demonstrations, and open-source implementations. Every claim is backed by code, telemetry, or third-party certification.
+            Three interconnected systems: a compliance-enforced content pipeline, the model infrastructure powering it, and the governance kernel managing autonomous AI development. Every claim is backed by code, telemetry, or third-party certification.
         </p>
     </div>
 
@@ -96,33 +96,18 @@
             </div>
             <div class="bg-appleSurface p-8">
                 <h4 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Approach</h4>
-                <p class="text-xs text-appleGray leading-relaxed">Designed a fail-closed 7-node DAG where 80% of compute is deterministic (gates, schemas, dedup) and only 20% is probabilistic (LLM). Every node boundary is audited by a JIT integrity layer.</p>
+                <p class="text-xs text-appleGray leading-relaxed">Designed a fail-closed 7-node DAG where every generative node is constrained by a dedicated RAG policy index (Google SPAM policies + E-E-A-T standards). 80% of compute is deterministic; only 20% is probabilistic. Every node boundary is audited by a JIT integrity layer.</p>
             </div>
             <div class="bg-appleDarker p-8 border-t md:border-t-0 border-appleBorder">
                 <h4 class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Result</h4>
                 <div class="font-mono text-2xl font-bold text-appleBlue mb-2">260K+ pages</div>
-                <p class="text-xs text-appleGray leading-relaxed">400K+ impressions across 3 client properties, 68.9% quality pass rate, <$0.0001 per pipeline run. 234 managed websites across 5 countries.</p>
-            </div>
-        </div>
-
-        <!-- Aggregate Metrics -->
-        <div class="card p-px bg-appleBorder grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden mb-12">
-            <div class="bg-appleSurface p-6 text-center">
-                <div class="font-mono text-2xl font-semibold text-appleLight mb-1">260K+</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Pages Indexed</div>
-            </div>
-            <div class="bg-appleSurface p-6 text-center">
-                <div class="font-mono text-2xl font-semibold text-appleLight mb-1">400K+</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Impressions</div>
-            </div>
-            <div class="bg-appleSurface p-6 text-center">
-                <div class="font-mono text-2xl font-semibold text-appleLight mb-1">5.1K+</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Organic Clicks</div>
-            </div>
-            <div class="bg-appleSurface p-6 text-center">
-                <div class="font-mono text-2xl font-semibold text-appleLight mb-1">3</div><div class="text-[9px] uppercase tracking-widest text-appleGray">Client Properties</div>
+                <p class="text-xs text-appleGray leading-relaxed">400K+ impressions across 3 client properties, 68.9% compound pass rate, $0.0006/PDP end-to-end. 234 managed websites across 5 countries.</p>
             </div>
         </div>
 
         <!-- Verified Evidence -->
-        <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Verified Evidence &mdash; Google Search Console</div>
+        <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-4">Verified Evidence &mdash; Google Search Console</div>
+        <div class="text-[10px] text-appleGray mb-6">Aggregate results across 3 active client properties &mdash; verified via Google Search Console.</div>
 
         <div class="mb-10">
             <div class="text-[10px] text-appleGray uppercase tracking-widest mb-4 font-medium border-b border-appleBorder pb-2">Enterprise Client A &mdash; Major European DIY Chain (Spain)</div>
@@ -195,30 +180,30 @@
         <div class="rounded-xl overflow-hidden border border-appleBorder mb-4 relative pt-[56.25%]">
             <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/czZsPbylC1M" allowfullscreen></iframe>
         </div>
-        <div class="text-center text-[10px] text-appleGray mb-12">Pipeline execution &mdash; autonomous content generation with human-supervised quality gates</div>
+        <div class="text-center text-[10px] text-appleGray mb-12">End-to-end pipeline experience &mdash; the self-serve interface for autonomous content generation with human-supervised quality gates</div>
 
         <!-- Trade-offs -->
         <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Engineering Trade-offs</div>
         <div class="grid md:grid-cols-2 gap-4 mb-10">
             <div class="card p-6">
-                <div class="flex items-center gap-2 mb-2"><div class="w-2 h-2 rounded-sm bg-appleBlue"></div><h4 class="font-semibold text-sm">Quality vs. Cost</h4></div>
+                <div class="mb-2"><h4 class="font-semibold text-sm">Quality vs. Cost</h4></div>
                 <p class="text-xs text-appleGray mb-4">O-R-A-V (Observe→Reason→Act→Validate) deterministic validation engine. Node 6 runs zero-LLM rule-based checks; Node 7 (DEMAS JIT) runs SLM-as-judge evaluation inline within content generation.</p>
                 <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: Deterministic + SLM validation, 68.9% compound pass rate</div>
             </div>
             <div class="card p-6">
-                <div class="flex items-center gap-2 mb-2"><div class="w-2 h-2 rounded-sm bg-appleRed"></div><h4 class="font-semibold text-sm">Safety vs. Throughput</h4></div>
+                <div class="mb-2"><h4 class="font-semibold text-sm">Safety vs. Throughput</h4></div>
                 <p class="text-xs text-appleGray mb-4">Fail-closed design means ~31% of content is rejected. Intentional &mdash; no partial or low-quality content ever propagates downstream to production surfaces.</p>
                 <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: Fail-closed at every boundary, zero tolerance</div>
             </div>
             <div class="card p-6">
-                <div class="flex items-center gap-2 mb-2"><div class="w-2 h-2 rounded-sm bg-appleGreen"></div><h4 class="font-semibold text-sm">Self-Improvement</h4></div>
-                <p class="text-xs text-appleGray mb-4">3-tier RLAIF data flywheel. DPO preference pairs generated automatically for continuous alignment without human labeling.</p>
+                <div class="mb-2"><h4 class="font-semibold text-sm">Self-Improvement</h4></div>
+                <p class="text-xs text-appleGray mb-4">RLAIF data flywheel. DPO preference pairs generated from Node 6/7 evaluation signals for continuous model alignment.</p>
                 <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: Closed-loop flywheel, autonomous preference pairs</div>
             </div>
             <div class="card p-6">
-                <div class="flex items-center gap-2 mb-2"><div class="w-2 h-2 rounded-sm bg-appleCyan"></div><h4 class="font-semibold text-sm">Scale vs. Locality</h4></div>
-                <p class="text-xs text-appleGray mb-4">5 countries require different linguistic, cultural, and regulatory context. Node 1 injects locale-specific signals before any LLM invocation, ensuring adaptation without prompt bloat.</p>
-                <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: Context-first architecture, zero-shot locale adapt</div>
+                <div class="mb-2"><h4 class="font-semibold text-sm">Scale vs. Locality</h4></div>
+                <p class="text-xs text-appleGray mb-4">5 countries require different linguistic, cultural, and regulatory context. Per-locale context injection increases prompt engineering complexity but eliminates fine-tuning per market.</p>
+                <div class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: Context-first architecture, zero-shot locale adaptation</div>
             </div>
         </div>
 
@@ -260,15 +245,11 @@
             <div class="bg-appleDarker p-8 border-t md:border-t-0 border-appleBorder">
                 <h4 class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Result</h4>
                 <div class="font-mono text-2xl font-bold text-appleBlue mb-2">20 failure modes</div>
-                <p class="text-xs text-appleGray leading-relaxed">documented. Stable base inference achieved. LoRA enablement identified as blocked by dependency triangle.</p>
+                <p class="text-xs text-appleGray leading-relaxed">Forensically documented across 30+ iterations &mdash; proving the engineering diligence of developing stable, cost-effective MoE inference. Currently running stable base version while advancing toward full PRD: quality, cost efficiency, intelligence, and reliability.</p>
             </div>
         </div>
 
-        <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Architecture Walk-through</div>
-        <div class="rounded-xl overflow-hidden border border-appleBorder mb-4 relative pt-[56.25%]">
-            <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.loom.com/embed/be8a97a64f80414eae11176843c559bb" allowfullscreen></iframe>
-        </div>
-        <div class="text-center text-[10px] text-appleGray mb-12">Full architecture breakdown: gate/agent pattern, model routing, and evaluation pipeline</div>
+
 
         <div class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Deployment Timeline</div>
         <div class="card p-8 mb-10">
@@ -309,7 +290,7 @@
         <div class="grid md:grid-cols-3 gap-4">
             <a href="https://github.com/Manzela/gemma4-vllm-deployment" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">Forensic Runbook <span class="text-appleGray">&rarr;</span></a>
             <a href="https://github.com/Manzela/agent-dag-pipeline" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">Consumer: DAG Pipeline <span class="text-appleGray">&rarr;</span></a>
-            <a href="https://youtu.be/czZsPbylC1M" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">Video Demo <span class="text-appleGray">&rarr;</span></a>
+            <a href="https://github.com/Manzela/gemma4-vllm-deployment/blob/main/docs/DEPLOYMENT_GUIDE.md" target="_blank" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface">Deployment Guide <span class="text-appleGray">&rarr;</span></a>
         </div>
     </div>
 
@@ -332,8 +313,8 @@
             </div>
             <div class="bg-appleDarker p-8 border-t md:border-t-0 border-appleBorder">
                 <h4 class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Result</h4>
-                <div class="font-mono text-2xl font-bold text-appleBlue mb-2">4,550 LOC</div>
-                <p class="text-xs text-appleGray leading-relaxed">Open-source on GitHub. Full governance docs: ADOPTERS, MAINTAINERS, SECURITY, CONTRIBUTING, GOVERNANCE.</p>
+                <div class="font-mono text-2xl font-bold text-appleBlue mb-2">8 Core Modules</div>
+                <p class="text-xs text-appleGray leading-relaxed">Provider-agnostic governance kernel. 6 plugin domains, 7 governance frameworks. Open-source on GitHub.</p>
             </div>
         </div>
 
@@ -360,7 +341,7 @@
 
     <!-- Footer -->
     <footer class="pt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-appleBorder mt-8">
-        <div class="text-sm font-semibold text-appleLight">Case Studies &middot; Daniel Manzela</div>
+        <div class="text-sm font-semibold text-appleLight">Case Studies &middot; Daniel Manzela &middot; 2024&ndash;2026</div>
         <div class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-appleGray">
             <a href="index.html" class="hover:text-appleLight transition-colors">Observatory</a>
             <a href="architecture.html" class="hover:text-appleLight transition-colors">Architecture</a>
