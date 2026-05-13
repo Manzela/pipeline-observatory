@@ -3,577 +3,489 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Autonomous Pipeline Architecture — Daniel Manzela</title>
-<meta name="description" content="Architecture deep-dive: 7-node DAG pipeline with MoE sparse routing, per-tenant LoRA adapters, O-R-A-V deterministic validation, DEMAS JIT audit layer, and closed-loop DPO dataset curation.">
+<title>Architecture — Daniel Manzela</title>
+<meta name="description" content="Architecture deep-dive: 7-node DAG with MoE sparse routing, per-tenant LoRA adapters, O-R-A-V deterministic validation, DEMAS JIT audit, and closed-loop DPO dataset curation.">
+<meta property="og:title" content="Architecture — Daniel Manzela">
+<meta property="og:description" content="7 nodes. 80% deterministic. 11 tenants. One DAG.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://manzela.github.io/pipeline-observatory/architecture.html">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    appleBg: '#000000',
-                    appleSurface: '#1d1d1f',
-                    appleBorder: '#424245',
-                    appleLight: '#f5f5f7',
-                    appleGray: '#86868b',
-                    appleBlue: '#2997ff',
-                    appleDarker: '#151516',
-                    appleGreen: '#34d399',
-                    appleRed: '#f87171',
-                    appleAmber: '#fbbf24'
-                },
-                fontFamily: {
-                    sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-                    mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
-                }
-            }
-        }
-    }
-</script>
-<style>
-    body { background-color: #000000; color: #f5f5f7; -webkit-font-smoothing: antialiased; }
-    .card { background-color: #1d1d1f; border: 1px solid #424245; border-radius: 16px; }
-    .reveal { opacity: 0; transform: translateY(20px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    ::selection { background: rgba(41, 151, 255, 0.3); color: #f5f5f7; }
-
-    /* MoE Layer */
-    .moe-grid { display: grid; grid-template-columns: repeat(16, 1fr); gap: 8px; padding: 24px; justify-items: center; background: rgba(255,255,255,0.02); border: 1px solid #424245; border-radius: 12px; margin-bottom: 20px; }
-    .expert { width: 16px; height: 16px; border-radius: 50%; background: #424245; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-    .expert.active { background: #2997ff; box-shadow: 0 0 12px rgba(41, 151, 255, 0.5); transform: scale(1.5); }
-    @media(max-width: 768px) { .moe-grid { grid-template-columns: repeat(8, 1fr); } }
-
-    /* LoRA Fluid Membranes */
-    @keyframes fluidShape {
-        0%,100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
-        34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
-        67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; }
-    }
-    .lora-a .lora-membrane { position: absolute; inset: -10%; background: radial-gradient(circle at center, rgba(41, 151, 255, 0.08) 0%, transparent 60%); animation: fluidShape 8s linear infinite; pointer-events: none; z-index: 0; }
-    .lora-a.active .lora-membrane { background: radial-gradient(circle at center, rgba(41, 151, 255, 0.15) 0%, transparent 60%); animation-duration: 3s; }
-
-    /* DAG Arrows */
-    .dag-arr { color: #86868b; font-size: 14px; flex-shrink: 0; user-select: none; }
-    .dag { display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; padding: 8px 4px 16px 4px; }
-    .dag::-webkit-scrollbar { display: none; }
-
-    /* RL Spark */
-    @keyframes sparkUp { 0% { transform: translateY(0) scale(1); opacity: 0; } 20% { opacity: 1; transform: translateY(-20px) scale(1.2); } 80% { opacity: 1; transform: translateY(-80px) scale(0.8); } 100% { transform: translateY(-100px) scale(0); opacity: 0; } }
-    .rl-spark { position: absolute; width: 4px; height: 4px; background: #fbbf24; border-radius: 50%; box-shadow: 0 0 10px #fbbf24; animation: sparkUp 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; top: 0; left: 50%; }
-
-    /* Node Sequence Animation */
-    .node-item { opacity: 0; transform: translateY(30px); transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-    .node-item.visible { opacity: 1; transform: translateY(0); }
-    .node-arrow { opacity: 0; transform: translateY(10px); transition: all 0.5s 0.2s; }
-    .node-arrow.visible { opacity: 1; transform: translateY(0); }
-
-    /* Nav Glass */
-    .glass-nav { background: rgba(0, 0, 0, 0.72); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid #424245; }
-    .nav-glass { background: rgba(29, 29, 31, 0.7); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border: 1px solid #424245; }
-</style>
+<script src="assets/tokens.js"></script>
+<link rel="stylesheet" href="assets/chrome.css">
 </head>
 <body class="bg-appleBg text-appleLight antialiased selection:bg-appleBlue/30 pb-32">
 
-<!-- Glass Nav -->
-<nav class="fixed top-0 left-0 right-0 z-50 glass-nav">
-    <div class="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
-        <div class="text-sm font-semibold tracking-tight text-appleLight">
-            Autonomous <span class="text-appleGray font-medium ml-1">pipeline</span>
-        </div>
-        <div class="hidden md:flex gap-8">
-            <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Profile</a>
-            <a href="index.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Pipeline</a>
-            <a href="architecture.html" class="text-[10px] tracking-widest uppercase text-appleLight border-b-2 border-appleLight pb-1">Architecture</a>
-            <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Case Studies</a>
-        </div>
-        <button id="navToggle" class="md:hidden text-appleGray hover:text-appleLight transition-colors" aria-label="Toggle navigation">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
-        </button>
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<!-- BEGIN NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 glass-nav" aria-label="Primary">
+  <div class="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
+    <a href="index.html" class="text-sm font-semibold tracking-tight text-appleLight">
+      Autonomous <span class="text-appleGray font-medium ml-1">pipeline</span>
+    </a>
+    <ul class="hidden md:flex gap-8 list-none m-0 p-0">
+      <li><a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Profile</a></li>
+      <li><a href="index.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors" data-nav="pipeline">Pipeline</a></li>
+      <li><a href="architecture.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors" data-nav="architecture">Architecture</a></li>
+      <li><a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors" data-nav="case-studies">Case Studies</a></li>
+    </ul>
+    <button id="navToggle" class="md:hidden text-appleGray hover:text-appleLight transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+    </button>
+  </div>
+  <div id="mobileNav" class="md:hidden hidden border-t border-appleBorder px-6 py-4 flex flex-col gap-3">
+    <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2">Profile</a>
+    <a href="index.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2" data-nav="pipeline">Pipeline</a>
+    <a href="architecture.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2" data-nav="architecture">Architecture</a>
+    <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2" data-nav="case-studies">Case Studies</a>
+  </div>
+</nav>
+<!-- END NAV -->
+
+<main id="main" class="max-w-4xl mx-auto px-6 pt-14">
+
+  <!-- Hero -->
+  <header class="py-24 md:py-32 text-center border-b border-appleBorder">
+    <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-tight">
+      7 nodes. 80% deterministic.<br>11 tenants. One DAG.
+    </h1>
+    <div class="flex flex-wrap justify-center items-center gap-3 mb-4">
+      <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-4 py-2 rounded-full">Active since 2024</span>
+      <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-4 py-2 rounded-full">Human-supervised</span>
     </div>
-    <div id="mobileNav" class="md:hidden hidden border-t border-appleBorder px-6 py-4 flex flex-col gap-3">
-        <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Profile</a>
-        <a href="index.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Pipeline</a>
-        <a href="architecture.html" class="text-[10px] tracking-widest uppercase text-appleLight">Architecture</a>
-        <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Case Studies</a>
+    <div class="text-xs text-appleGray tracking-wide">
+      One page over: <a href="index.html" class="text-appleLight hover:text-appleBlue transition-colors">Pipeline</a>
+      &middot; <a href="case-studies.html" class="text-appleLight hover:text-appleBlue transition-colors">Case Studies</a>
+      &middot; Daniel Manzela
     </div>
+  </header>
+
+  <!-- DAG sticky-stage (signature moment) -->
+  <section class="py-20 border-b border-appleBorder reveal" id="dag" aria-labelledby="dag-h">
+    <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Execution DAG</div>
+    <h2 id="dag-h" class="text-3xl font-bold tracking-tight mb-4">7 nodes, in order.</h2>
+    <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+      Each node pairs a deterministic gate with an execution agent. The gate fires first; the agent activates only if the gate passes. DEMAS intercepts at every boundary for JIT validation. Nodes 4 and 6 are pure Python &mdash; no LLM invoked. Scroll to walk node-by-node.
+    </p>
+
+    <div class="dag-stage" data-active-node="1">
+      <div class="dag-stage__pinned">
+        <div class="card p-4 md:p-6">
+          <div class="dag-stage__overview" id="dagOverview"></div>
+        </div>
+      </div>
+      <div id="nodeSeq" class="flex flex-col gap-12"></div>
+    </div>
+
+    <div class="bg-appleDarker border border-appleBorder p-4 rounded-xl mt-12 text-left">
+      <div class="font-mono text-[10px] text-appleLight font-bold mb-1 tracking-widest">DEMAS &middot; JIT Audit Layer</div>
+      <div class="text-[10px] text-appleGray leading-relaxed">Deterministic Evaluation &amp; Monitoring Audit System &mdash; intercepts at every node boundary. Validates data integrity, schema compliance, and output quality in real time. 68.9% pass rate &middot; fail-closed &mdash; rejected outputs never propagate downstream.</div>
+    </div>
+  </section>
+
+  <!-- MoE Sparse Activation -->
+  <section class="py-20 border-b border-appleBorder reveal" id="moe" aria-labelledby="moe-h">
+    <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Sparse Activation &amp; Routing</div>
+    <h2 id="moe-h" class="text-3xl font-bold tracking-tight mb-4">Multi-LoRA serving engine.</h2>
+    <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+      Base model: Gemma 4 MoE (128 experts, 4 active per token). Only 4B parameters fire per forward pass despite 26B total — cost-efficient sparse inference without sacrificing capacity. Multi-LoRA serving enables fast adapter switching at inference time.
+    </p>
+
+    <div class="card p-8 text-center overflow-hidden">
+      <div class="font-mono text-[10px] text-appleGray mb-6 tracking-widest uppercase">Base model: Gemma 4 26B-A4B MoE</div>
+
+      <div class="moe-grid" id="moeGrid" aria-label="MoE expert grid: 128 experts, 4 active per token"></div>
+
+      <div class="w-px h-10 mx-auto bg-gradient-to-b from-appleBlue/50 to-transparent my-4" aria-hidden="true"></div>
+
+      <div class="font-mono text-[10px] text-appleBlue mb-6 tracking-widest uppercase">LoRA adapters &middot; 18 prompts per tenant &middot; 8 of 11 tenants shown</div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full" id="loraFan"></div>
+
+      <div class="mt-8 pt-6 border-t border-appleBorder">
+        <h3 class="text-sm font-semibold mb-4">Isolation stack</h3>
+        <div class="grid md:grid-cols-4 gap-3">
+          <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
+            <div class="font-semibold mb-1">Tenant</div><div class="font-mono text-[10px] text-appleGray">adapter_id binding</div>
+          </div>
+          <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
+            <div class="font-semibold mb-1">Prompt</div><div class="font-mono text-[10px] text-appleGray">scoped system cache</div>
+          </div>
+          <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
+            <div class="font-semibold mb-1">Task</div><div class="font-mono text-[10px] text-appleGray">DAG node boundaries</div>
+          </div>
+          <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
+            <div class="font-semibold mb-1">KV cache</div><div class="font-mono text-[10px] text-appleGray">PagedAttention</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- O-R-A-V Validation Engine -->
+  <section class="py-20 border-b border-appleBorder reveal" id="orav" aria-labelledby="orav-h">
+    <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Deterministic Quality Gate</div>
+    <h2 id="orav-h" class="text-3xl font-bold tracking-tight mb-4">O-R-A-V validation engine.</h2>
+    <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+      O-R-A-V is a control-flow pattern. Node 6 executes deterministic validation across every content block: <strong>O</strong>bserve diagnostics, <strong>R</strong>eason about severity, <strong>A</strong>ct with corrections, <strong>V</strong>alidate the final output. Zero LLM calls — pure rule-based defense-in-depth.
+    </p>
+
+    <div class="card p-6 mb-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen transition-colors hover:border-appleLight/30">
+          <div class="text-3xl font-bold mb-2">O</div><div class="text-xs font-semibold mb-1">Observe</div><div class="font-mono text-[9px] text-appleGray">scan diagnostics</div>
+        </div>
+        <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen transition-colors hover:border-appleLight/30">
+          <div class="text-3xl font-bold mb-2">R</div><div class="text-xs font-semibold mb-1">Reason</div><div class="font-mono text-[9px] text-appleGray">assess severity</div>
+        </div>
+        <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen transition-colors hover:border-appleLight/30">
+          <div class="text-3xl font-bold mb-2">A</div><div class="text-xs font-semibold mb-1">Act</div><div class="font-mono text-[9px] text-appleGray">apply corrections</div>
+        </div>
+        <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen transition-colors hover:border-appleLight/30">
+          <div class="text-3xl font-bold mb-2">V</div><div class="text-xs font-semibold mb-1">Validate</div><div class="font-mono text-[9px] text-appleGray">final gate decision</div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-appleBorder">
+        <div class="text-[10px] uppercase tracking-widest text-appleGray mb-3 font-medium">Deterministic checks (Node 6)</div>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+          <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Template variable leak detection</div>
+          <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Transactional language blocklist</div>
+          <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Character length bounds</div>
+          <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Internal label leak detection</div>
+          <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Empty field validation</div>
+          <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Schema compliance enforcement</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 border border-appleRed/30 bg-appleRed/5 rounded-xl text-center">
+      <strong class="text-appleRed font-mono text-xs tracking-widest block mb-2">FAIL-CLOSED POLICY</strong>
+      <div class="text-[10px] text-appleGray">Below threshold &rarr; halt &rarr; Firestore trace &rarr; downstream block &rarr; retry with corrected prompt</div>
+    </div>
+  </section>
+
+  <!-- Self-improving data flow (merged: 3-tier + DPO loop) -->
+  <section class="py-20 border-b border-appleBorder reveal" id="flow" aria-labelledby="flow-h">
+    <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Self-improving Data Flow</div>
+    <h2 id="flow-h" class="text-3xl font-bold tracking-tight mb-4">Every run becomes training data.</h2>
+    <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+      Production runs write to a 3-tier dataset. O-R-A-V scores and DEMAS verdicts route each output into a tier. DPO preference pairs are assembled automatically from the spread between tiers and queued for offline LoRA fine-tuning.
+    </p>
+
+    <div class="card p-8 mb-8">
+      <div class="flex flex-col gap-6 mb-10">
+        <div class="flex items-center gap-4 p-4 border border-appleGreen/20 bg-appleGreen/5 rounded-xl">
+          <div class="w-10 h-10 shrink-0 bg-appleGreen/10 text-appleGreen font-mono font-bold flex items-center justify-center rounded-lg">T1</div>
+          <div><div class="text-sm font-semibold">production-baseline</div><div class="text-[10px] text-appleGray mt-1">All production runs ingested. Raw I/O pairs across 18 prompt-specific partitions.</div></div>
+        </div>
+        <div class="text-center text-appleGray font-mono text-[10px]">&darr; O-R-A-V &ge; 0.7 &amp;&amp; DEMAS PASS</div>
+        <div class="flex items-center gap-4 p-4 border border-appleBlue/20 bg-appleBlue/5 rounded-xl">
+          <div class="w-10 h-10 shrink-0 bg-appleBlue/10 text-appleBlue font-mono font-bold flex items-center justify-center rounded-lg">T2</div>
+          <div><div class="text-sm font-semibold">quality-approved</div><div class="text-[10px] text-appleGray mt-1">High-quality outputs curated as <span class="text-appleBlue font-medium">chosen</span> examples for DPO training pairs.</div></div>
+        </div>
+        <div class="text-center text-appleGray font-mono text-[10px]">&darr; O-R-A-V &lt; 0.5 || DEMAS FAIL</div>
+        <div class="flex items-center gap-4 p-4 border border-appleRed/20 bg-appleRed/5 rounded-xl">
+          <div class="w-10 h-10 shrink-0 bg-appleRed/10 text-appleRed font-mono font-bold flex items-center justify-center rounded-lg">T3</div>
+          <div><div class="text-sm font-semibold">failure-cases</div><div class="text-[10px] text-appleGray mt-1">Rejected outputs curated as <span class="text-appleRed font-medium">rejected</span> examples. Includes DEMAS failures + node errors.</div></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
+        <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center">
+          <div class="w-6 h-6 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">1</div>
+          <div class="text-xs font-semibold mb-1">Ingest</div><div class="text-[9px] text-appleGray">Tenant data</div>
+        </div>
+        <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center">
+          <div class="w-6 h-6 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">2</div>
+          <div class="text-xs font-semibold mb-1">Generate</div><div class="text-[9px] text-appleGray">DAG execution</div>
+        </div>
+        <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center">
+          <div class="w-6 h-6 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">3</div>
+          <div class="text-xs font-semibold mb-1">Evaluate</div><div class="text-[9px] text-appleGray">O-R-A-V judging</div>
+        </div>
+        <div class="bg-appleDarker border border-appleAmber/50 rounded-xl p-4 text-center">
+          <div class="w-6 h-6 rounded-full border border-appleAmber text-appleAmber font-mono text-[10px] flex items-center justify-center mx-auto mb-3">4</div>
+          <div class="text-xs font-semibold mb-1">Label</div><div class="text-[9px] text-appleGray">Chosen vs rejected</div>
+        </div>
+        <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center">
+          <div class="w-6 h-6 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">5</div>
+          <div class="text-xs font-semibold mb-1">Curate</div><div class="text-[9px] text-appleGray">DPO dataset</div>
+        </div>
+        <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center">
+          <div class="w-6 h-6 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">6</div>
+          <div class="text-xs font-semibold mb-1">Fine-tune</div><div class="text-[9px] text-appleGray">LoRA update</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 border border-appleAmber/20 bg-appleAmber/5 rounded-xl text-center">
+      <strong class="text-appleAmber font-mono text-[10px] tracking-widest uppercase block mb-2">DPO preference pairs &rarr; LoRA fine-tuning &rarr; model update</strong>
+      <div class="text-[10px] text-appleGray">Margin-maximized (chosen, rejected) pairs with score gap &ge; 0.15 feed curriculum-based LoRA training.</div>
+    </div>
+  </section>
+
+  <!-- Multi-tenant pipeline architecture -->
+  <section class="py-20 border-b border-appleBorder reveal" id="tenants" aria-labelledby="tenants-h">
+    <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Execution Model</div>
+    <h2 id="tenants-h" class="text-3xl font-bold tracking-tight mb-4">Multi-tenant pipeline architecture.</h2>
+    <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+      Each tenant runs an independent, auto-scaling pipeline with dedicated compute. 18 prompts auto-bind with LoRA adapters per <code>client_id</code>. Previous successful runs serve as tuned few-shot context for every sub-agent execution.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <div class="card p-6">
+        <div class="text-[9px] uppercase tracking-widest text-appleGreen font-bold mb-3">Compute isolation</div>
+        <div class="text-sm font-semibold mb-2">Auto-scaling pipeline</div>
+        <div class="text-xs text-appleGray leading-relaxed">Each tenant gets a parallel, independent pipeline with dedicated GPU/CPU. Resources auto-configure based on data volume, epoch count, batch count, and batch size.</div>
+      </div>
+      <div class="card p-6">
+        <div class="text-[9px] uppercase tracking-widest text-appleBlue font-bold mb-3">Adapter binding</div>
+        <div class="text-sm font-semibold mb-2">18 prompts &times; client_id</div>
+        <div class="text-xs text-appleGray leading-relaxed">Each of 18 pipeline prompts auto-binds with a tenant-specific LoRA adapter at inference time. No cross-tenant contamination. Previous successful runs feed tuned few-shot context per prompt.</div>
+      </div>
+      <div class="card p-6">
+        <div class="text-[9px] uppercase tracking-widest text-appleAmber font-bold mb-3">Hybrid execution</div>
+        <div class="text-sm font-semibold mb-2">Deterministic + agentic</div>
+        <div class="text-xs text-appleGray leading-relaxed">Each tenant pipeline mixes deterministic Python logic (Nodes 4, 6) with agentic inference (Gemma 4 MoE, Gemini). Nodes 4 and 6 are fully deterministic.</div>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <div class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Tenant pipeline lifecycle</div>
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
+          <div class="w-8 h-8 shrink-0 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] font-bold flex items-center justify-center">1</div>
+          <div><div class="text-xs font-semibold">Pipeline initialization</div><div class="text-[10px] text-appleGray">Tenant data volume determines compute allocation. GPU/CPU auto-scaled per batch size and epoch count.</div></div>
+        </div>
+        <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
+          <div class="w-8 h-8 shrink-0 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] font-bold flex items-center justify-center">2</div>
+          <div><div class="text-xs font-semibold">Adapter binding</div><div class="text-[10px] text-appleGray">18 LoRA adapters auto-bind per <code>client_id</code>. Each adapter carries tuned weights from previous successful runs.</div></div>
+        </div>
+        <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
+          <div class="w-8 h-8 shrink-0 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] font-bold flex items-center justify-center">3</div>
+          <div><div class="text-xs font-semibold">Few-shot context injection</div><div class="text-[10px] text-appleGray">Previous high-scoring outputs serve as few-shot examples per prompt, per task, per sub-agent. Context is tenant-scoped.</div></div>
+        </div>
+        <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
+          <div class="w-8 h-8 shrink-0 rounded-full border border-appleGreen text-appleGreen font-mono text-[10px] font-bold flex items-center justify-center">4</div>
+          <div><div class="text-xs font-semibold">DAG execution</div><div class="text-[10px] text-appleGray">Pipeline runs autonomously through all DAG nodes. Deterministic gates and agentic nodes execute in sequence. DEMAS audits every boundary.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- BEGIN FOOTER -->
+<footer class="py-12 px-6 max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 border-t border-appleBorder mt-12" role="contentinfo">
+  <div class="text-sm font-semibold text-appleLight"><span data-page-title>Architecture</span> &middot; Daniel Manzela</div>
+  <ul class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-appleGray list-none m-0 p-0">
+    <li><a href="index.html" class="hover:text-appleLight transition-colors">Pipeline</a></li>
+    <li><a href="architecture.html" class="hover:text-appleLight transition-colors">Architecture</a></li>
+    <li><a href="case-studies.html" class="hover:text-appleLight transition-colors">Case Studies</a></li>
+    <li><a href="https://manzela.github.io/Manzela/" class="hover:text-appleLight transition-colors">Profile</a></li>
+    <li><a href="https://manzela.github.io/Manzela/elysium/" class="hover:text-appleLight transition-colors">Elysium</a></li>
+    <li><a href="https://github.com/Manzela" target="_blank" rel="noopener noreferrer" class="hover:text-appleLight transition-colors">GitHub</a></li>
+    <li><a href="https://linkedin.com/in/danielmanzela" target="_blank" rel="noopener noreferrer" class="hover:text-appleLight transition-colors">LinkedIn</a></li>
+  </ul>
+</footer>
+<!-- END FOOTER -->
+
+<!-- Sticky bottom anchor nav (desktop) -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 nav-glass rounded-full px-4 py-3 hidden md:flex gap-3 md:gap-5 text-[10px] uppercase tracking-widest font-medium text-appleGray z-50" aria-label="Section anchors">
+  <a href="#dag" class="hover:text-appleLight transition-colors">DAG</a>
+  <a href="#moe" class="hover:text-appleLight transition-colors">MoE</a>
+  <a href="#orav" class="hover:text-appleLight transition-colors">O-R-A-V</a>
+  <a href="#flow" class="hover:text-appleLight transition-colors">Flow</a>
+  <a href="#tenants" class="hover:text-appleLight transition-colors">Tenants</a>
 </nav>
 
-<div class="max-w-4xl mx-auto px-6 pt-14">
-
-    <!-- Hero -->
-    <div class="py-24 md:py-32 text-center border-b border-appleBorder">
-        <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6">Autonomous Pipeline<br>Architecture</h1>
-        <p class="text-appleGray text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-            7-node DAG with deterministic gates, MoE sparse routing, per-tenant LoRA adapters, and closed-loop dataset curation. Majority deterministic compute — only Nodes 1, 2, 3, 5 invoke LLM inference; Nodes 4 and 6 are pure Python and math. 11 tenants. Human-supervised autonomous execution.
-        </p>
-        <div class="text-xs text-appleGray tracking-wide mb-6">
-            <a href="index.html" class="text-appleLight hover:text-appleBlue transition-colors">Scaling Organic Traffic</a> &middot; <a href="case-studies.html" class="text-appleGray hover:text-appleBlue transition-colors">Case Studies</a> &middot; Daniel Manzela &middot; 2024–2026
-        </div>
+<!-- Mobile bottom anchor nav -->
+<nav class="fixed bottom-4 right-4 md:hidden z-50" aria-label="Section anchors (mobile)">
+  <details class="relative">
+    <summary class="w-12 h-12 rounded-full nav-glass flex items-center justify-center cursor-pointer text-appleLight text-lg list-none">
+      <span aria-hidden="true">☰</span>
+      <span class="sr-only">Toggle section anchors</span>
+    </summary>
+    <div class="absolute bottom-14 right-0 nav-glass rounded-xl p-3 flex flex-col gap-2 min-w-[140px]">
+      <a href="#dag" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-2">DAG</a>
+      <a href="#moe" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-2">MoE</a>
+      <a href="#orav" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-2">O-R-A-V</a>
+      <a href="#flow" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-2">Flow</a>
+      <a href="#tenants" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-2">Tenants</a>
     </div>
-
-    <!-- Inference Layer (MoE Sparse Activation) -->
-    <div class="py-20 border-b border-appleBorder reveal" id="s0">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Execution Topology</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">Execution DAG</h2>
-        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            The 7-node pipeline operates as a Directed Acyclic Graph. DEMAS intercepts at every boundary for JIT validation.
-        </div>
-
-        <div class="card p-6 md:p-8 text-center">
-            <div class="dag mb-8">
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
-                    <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">1</div>
-                    <div class="text-xs font-semibold mb-1">City DNA</div><div class="text-[10px] font-mono text-appleGray">Context</div>
-                </div>
-                <span class="dag-arr">&rarr;</span>
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
-                    <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">2</div>
-                    <div class="text-xs font-semibold mb-1">Normalizer</div><div class="text-[10px] font-mono text-appleGray">Cleanse</div>
-                </div>
-                <span class="dag-arr">&rarr;</span>
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
-                    <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">3</div>
-                    <div class="text-xs font-semibold mb-1">Synonyms</div><div class="text-[10px] font-mono text-appleGray">Expand</div>
-                </div>
-                <span class="dag-arr">&rarr;</span>
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
-                    <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">4</div>
-                    <div class="text-xs font-semibold mb-1">SV Gate</div><div class="text-[10px] font-mono text-appleGray">Filter</div>
-                </div>
-                <span class="dag-arr">&rarr;</span>
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
-                    <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">5</div>
-                    <div class="text-xs font-semibold mb-1">Writer</div><div class="text-[10px] font-mono text-appleGray">Generate</div>
-                </div>
-                <span class="dag-arr">&rarr;</span>
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
-                    <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">6</div>
-                    <div class="text-xs font-semibold mb-1">Validator</div><div class="text-[10px] font-mono text-appleGray">Deterministic</div>
-                </div>
-                <span class="dag-arr">&rarr;</span>
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-3 w-24 shrink-0 relative hover:border-appleBlue/50 transition-colors">
-                    <div class="absolute -top-2 -right-2 bg-appleBg border border-appleBlue text-appleBlue text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center">7</div>
-                    <div class="text-xs font-semibold mb-1">Evaluator</div><div class="text-[10px] font-mono text-appleGray">DEMAS JIT</div>
-                </div>
-            </div>
-
-            <div class="bg-appleDarker border border-appleBorder p-4 rounded-xl mt-8 text-left">
-                <div class="font-mono text-[10px] text-appleLight font-bold mb-1 tracking-widest">DEMAS (Deterministic Evaluation &amp; Monitoring Audit System) &mdash; JIT AUDIT LAYER</div>
-                <div class="text-[10px] text-appleGray">Deterministic audit system intercepting at every node boundary. Validates data integrity, schema compliance, and output quality in real-time. 68.9% pass rate &middot; Fail-closed &mdash; rejected outputs never propagate downstream.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. Closed Loop (RLHF) -->
-    <div class="py-20 border-b border-appleBorder reveal" id="s1">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Node-Level Architecture</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">Sub-Agent Node Anatomy</h2>
-        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Each node pairs a deterministic gate with an execution agent. The gate fires first; the agent activates only if the gate passes.
-        </div>
-
-        <div class="card p-6 bg-appleDarker mb-8">
-            <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-3 font-medium">Model Routing Strategy</div>
-            <div class="text-xs text-appleGray leading-relaxed">Most nodes use specialized, self-hosted SLMs. <strong class="text-appleLight">Nodes 4 and 6</strong> are fully deterministic (Python/Math). <strong class="text-appleLight">Node 5</strong> leverages a MoE (Mixture-of-Experts) base model with per-tenant LoRA adapters for domain-specific generation. <strong class="text-appleLight">Node 7</strong> runs the DEMAS JIT auditor (SLM-as-judge) to ensure output parity with human quality benchmarks.</div>
-        </div>
-
-        <div class="flex flex-col gap-8" id="nodeSeq"></div>
-    </div>
-
-    <!-- DAG Topology -->
-    <div class="py-20 border-b border-appleBorder reveal" id="s2">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Sparse Activation & Routing</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">Multi-LoRA Serving Engine</h2>
-        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Base model: Gemma 4 MoE (128 experts, 4 active per token). Only 4B parameters fire per forward pass despite 26B total — cost-efficient sparse inference without sacrificing capacity. Multi-LoRA serving enables fast adapter switching at inference time.
-        </div>
-
-        <div class="card p-8 text-center overflow-hidden">
-            <div class="font-mono text-[10px] text-appleGray mb-6 tracking-widest uppercase">Base Model: Gemma 4 26B-A4B MoE</div>
-            
-            <div class="moe-grid" id="moeGrid"></div>
-            
-            <div class="w-px h-10 mx-auto bg-gradient-to-b from-appleBlue/50 to-transparent my-4"></div>
-
-            <div class="font-mono text-[10px] text-appleBlue mb-6 tracking-widest uppercase">LoRA Adapters &middot; 18 Prompts per Tenant &middot; 8 of 11 Tenants Shown</div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full" id="lora-fan"></div>
-
-            <div class="mt-8 pt-6 border-t border-appleBorder">
-                <h3 class="text-sm font-semibold mb-4">Isolation Stack</h3>
-                <div class="grid md:grid-cols-4 gap-3">
-                    <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
-                        <div class="font-semibold mb-1">Tenant</div><div class="font-mono text-[10px] text-appleGray">adapter_id binding</div>
-                    </div>
-                    <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
-                        <div class="font-semibold mb-1">Prompt</div><div class="font-mono text-[10px] text-appleGray">scoped system cache</div>
-                    </div>
-                    <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
-                        <div class="font-semibold mb-1">Task</div><div class="font-mono text-[10px] text-appleGray">DAG node boundaries</div>
-                    </div>
-                    <div class="bg-appleDarker border border-appleBorder rounded-lg p-3 text-center text-xs hover:border-appleLight/20 transition-colors">
-                        <div class="font-semibold mb-1">KV Cache</div><div class="font-mono text-[10px] text-appleGray">PagedAttention</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Node Anatomy -->
-    <div class="py-20 border-b border-appleBorder reveal" id="s4">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Deterministic Quality Gate</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">O-R-A-V Validation Engine</h2>
-        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            O-R-A-V is a control-flow pattern. Node 6 executes deterministic validation across every content block: Observe diagnostics, Reason about severity, Act with corrections, Validate the final output. Zero LLM calls — pure rule-based defense-in-depth.
-        </div>
-
-        <div class="card p-6 mb-6">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen hover:scale-105 transition-transform">
-                        <div class="text-3xl font-bold mb-2">O</div><div class="text-xs font-semibold mb-1">Observe</div><div class="font-mono text-[9px] text-appleGray">scan diagnostics</div>
-                    </div>
-                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen hover:scale-105 transition-transform">
-                        <div class="text-3xl font-bold mb-2">R</div><div class="text-xs font-semibold mb-1">Reason</div><div class="font-mono text-[9px] text-appleGray">assess severity</div>
-                    </div>
-                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen hover:scale-105 transition-transform">
-                        <div class="text-3xl font-bold mb-2">A</div><div class="text-xs font-semibold mb-1">Act</div><div class="font-mono text-[9px] text-appleGray">apply corrections</div>
-                    </div>
-                    <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center border-l-2 border-l-appleGreen hover:scale-105 transition-transform">
-                        <div class="text-3xl font-bold mb-2">V</div><div class="text-xs font-semibold mb-1">Validate</div><div class="font-mono text-[9px] text-appleGray">final gate decision</div>
-                    </div>
-            </div>
-
-            <div class="mt-6 pt-4 border-t border-appleBorder">
-                <div class="text-[10px] uppercase tracking-widest text-appleGray mb-3 font-medium">Deterministic Checks (Node 6)</div>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Template variable leak detection</div>
-                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Transactional language blocklist</div>
-                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Character length bounds</div>
-                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Internal label leak detection</div>
-                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Empty field validation</div>
-                    <div class="text-[10px] text-appleGray bg-appleBg border border-appleBorder rounded-lg px-3 py-2">Schema compliance enforcement</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 border border-appleRed/30 bg-appleRed/5 rounded-xl text-center">
-            <strong class="text-appleRed font-mono text-xs tracking-widest block mb-2">FAIL-CLOSED POLICY</strong>
-            <div class="text-[10px] text-appleGray">Below threshold &rarr; halt &rarr; Firestore trace &rarr; downstream block &rarr; retry with corrected prompt</div>
-        </div>
-    </div>
-
-    <!-- 5a. Data Flywheel -->
-    <div class="py-20 border-b border-appleBorder reveal" id="s5">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Self-Improving Data Loop</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">3-Tier Dataset Flywheel</h2>
-        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Every pipeline run writes to a 3-tier dataset. O-R-A-V patterns and DEMAS verdicts determine which tier. DPO preference pairs are assembled automatically from the spread between tiers.
-        </div>
-
-        <div class="card p-8">
-            <div class="flex flex-col gap-6">
-                <div class="flex items-center gap-4 p-4 border border-appleGreen/20 bg-appleGreen/5 rounded-xl">
-                    <div class="w-10 h-10 shrink-0 bg-appleGreen/10 text-appleGreen font-mono font-bold flex items-center justify-center rounded-lg">T1</div>
-                    <div><div class="text-sm font-semibold">production-baseline</div><div class="text-[10px] text-appleGray mt-1">All production runs ingested. Raw I/O pairs across 18 prompt-specific partitions.</div></div>
-                </div>
-                <div class="text-center text-appleGray font-mono text-[10px]">&darr; O-R-A-V &ge; 0.7 && DEMAS PASS</div>
-                <div class="flex items-center gap-4 p-4 border border-appleBlue/20 bg-appleBlue/5 rounded-xl">
-                    <div class="w-10 h-10 shrink-0 bg-appleBlue/10 text-appleBlue font-mono font-bold flex items-center justify-center rounded-lg">T2</div>
-                    <div><div class="text-sm font-semibold">quality-approved</div><div class="text-[10px] text-appleGray mt-1">High-quality outputs curated as <span class="text-appleBlue font-medium">chosen</span> examples for DPO training pairs.</div></div>
-                </div>
-                <div class="text-center text-appleGray font-mono text-[10px]">&darr; O-R-A-V < 0.5 || DEMAS FAIL</div>
-                <div class="flex items-center gap-4 p-4 border border-appleRed/20 bg-appleRed/5 rounded-xl">
-                    <div class="w-10 h-10 shrink-0 bg-appleRed/10 text-appleRed font-mono font-bold flex items-center justify-center rounded-lg">T3</div>
-                    <div><div class="text-sm font-semibold">failure-cases</div><div class="text-[10px] text-appleGray mt-1">Rejected outputs curated as <span class="text-appleRed font-medium">rejected</span> examples. Includes DEMAS failures + node errors.</div></div>
-                </div>
-            </div>
-            
-            <div class="mt-8 p-4 border border-appleAmber/20 bg-appleAmber/5 rounded-xl text-center">
-                <strong class="text-appleAmber font-mono text-[10px] tracking-widest uppercase block mb-2">DPO Preference Pairs &rarr; LoRA Fine-Tuning &rarr; Model Update</strong>
-                <div class="text-[10px] text-appleGray">Margin-maximized (chosen, rejected) pairs with score gap &ge; 0.15 feed curriculum-based LoRA training</div>
-            </div>
-        </div>
-
-        <div class="mt-6 p-4 border border-appleBorder bg-appleDarker/50 rounded-xl">
-            <div class="text-[10px] text-appleGray leading-relaxed text-center">Curated preference pairs feed back into the <a href="#s3" class="text-appleBlue hover:underline">RL Feedback Loop</a>. Thresholds are set by the <a href="#s4" class="text-appleBlue hover:underline">O-R-A-V Engine</a>.</div>
-        </div>
-    </div>
-
-    <!-- Multi-Tenant Execution Architecture -->
-    <div class="py-20 border-b border-appleBorder reveal" id="s3">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Offline Model Improvement</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">DPO Fine-Tuning Loop</h2>
-        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Every run produces labeled data. O-R-A-V patterns classify outputs into chosen and rejected tiers. DPO preference pairs are assembled automatically and queued for offline LoRA fine-tuning.
-        </div>
-
-        <div class="card p-8">
-            <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center">
-                    <div class="w-6 h-6 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">1</div>
-                    <div class="text-xs font-semibold mb-1">Ingest</div><div class="text-[9px] text-appleGray">Tenant Data</div>
-                </div>
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center">
-                    <div class="w-6 h-6 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">2</div>
-                    <div class="text-xs font-semibold mb-1">Generate</div><div class="text-[9px] text-appleGray">DAG Execution</div>
-                </div>
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center">
-                    <div class="w-6 h-6 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">3</div>
-                    <div class="text-xs font-semibold mb-1">Evaluate</div><div class="text-[9px] text-appleGray">O-R-A-V Judging</div>
-                </div>
-                <div class="bg-appleDarker border border-appleAmber/50 rounded-xl p-4 text-center relative overflow-hidden">
-                    <div class="w-6 h-6 rounded-full border border-appleAmber text-appleAmber font-mono text-[10px] flex items-center justify-center mx-auto mb-3">4</div>
-                    <div class="text-xs font-semibold mb-1">Label</div><div class="text-[9px] text-appleGray">Chosen vs Rejected</div>
-                    <div class="rl-spark" title="Preference signal routing to DPO dataset"></div>
-                </div>
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center">
-                    <div class="w-6 h-6 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">5</div>
-                    <div class="text-xs font-semibold mb-1">Curate</div><div class="text-[9px] text-appleGray">DPO Dataset</div>
-                </div>
-                <div class="bg-appleDarker border border-appleBorder rounded-xl p-4 text-center">
-                    <div class="w-6 h-6 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">6</div>
-                    <div class="text-xs font-semibold mb-1">Fine-Tune</div><div class="text-[9px] text-appleGray">LoRA Update</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-6 p-4 border border-appleBorder bg-appleDarker/50 rounded-xl">
-            <div class="text-[10px] text-appleGray leading-relaxed text-center">This loop is fed by the <a href="#s4" class="text-appleBlue hover:underline">O-R-A-V Engine</a>, which classifies outputs, and the <a href="#s5" class="text-appleBlue hover:underline">3-Tier Dataset Flywheel</a>.</div>
-        </div>
-    </div>
-
-    <!-- 4. Evaluation Engine -->
-    <div class="py-20 border-b border-appleBorder reveal" id="s6">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4 font-medium">Execution Model</div>
-        <h2 class="text-3xl font-bold tracking-tight mb-4">Multi-Tenant Pipeline Architecture</h2>
-        <div class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-            Each tenant runs an independent, auto-scaling pipeline with dedicated compute. 18 prompts auto-bind with LoRA adapters per client_id. Previous successful runs serve as tuned few-shot context for every sub-agent execution.
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-4 mb-8">
-            <div class="card p-6">
-                <div class="text-[9px] uppercase tracking-widest text-appleGreen font-bold mb-3">Compute Isolation</div>
-                <div class="text-sm font-semibold mb-2">Auto-Scaling Pipeline</div>
-                <div class="text-xs text-appleGray leading-relaxed">Each tenant gets a parallel, independent pipeline with dedicated GPU/CPU. Resources auto-configure based on data volume, epoch count, batch count, and batch size.</div>
-            </div>
-            <div class="card p-6">
-                <div class="text-[9px] uppercase tracking-widest text-appleBlue font-bold mb-3">Adapter Binding</div>
-                <div class="text-sm font-semibold mb-2">18 Prompts &times; client_id</div>
-                <div class="text-xs text-appleGray leading-relaxed">Each of 18 pipeline prompts auto-binds with a tenant-specific LoRA adapter at inference time. No cross-tenant contamination. Previous successful runs feed tuned few-shot context per prompt.</div>
-            </div>
-            <div class="card p-6">
-                <div class="text-[9px] uppercase tracking-widest text-appleAmber font-bold mb-3">Hybrid Execution</div>
-                <div class="text-sm font-semibold mb-2">Deterministic + Agentic</div>
-                <div class="text-xs text-appleGray leading-relaxed">Each tenant pipeline mixes deterministic Python logic (Nodes 4, 6) with agentic inference (Gemma 4 MoE, Gemini). Nodes 4 and 6 are fully deterministic.</div>
-            </div>
-        </div>
-
-        <div class="card p-6">
-            <div class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Tenant Pipeline Lifecycle</div>
-            <div class="flex flex-col gap-3">
-                <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
-                    <div class="w-8 h-8 shrink-0 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] font-bold flex items-center justify-center">1</div>
-                    <div><div class="text-xs font-semibold">Pipeline Initialization</div><div class="text-[10px] text-appleGray">Tenant data volume determines compute allocation. GPU/CPU auto-scaled per batch size and epoch count.</div></div>
-                </div>
-                <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
-                    <div class="w-8 h-8 shrink-0 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] font-bold flex items-center justify-center">2</div>
-                    <div><div class="text-xs font-semibold">Adapter Binding</div><div class="text-[10px] text-appleGray">18 LoRA adapters auto-bind per client_id. Each adapter carries tuned weights from previous successful runs.</div></div>
-                </div>
-                <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
-                    <div class="w-8 h-8 shrink-0 rounded-full border border-appleBlue text-appleBlue font-mono text-[10px] font-bold flex items-center justify-center">3</div>
-                    <div><div class="text-xs font-semibold">Few-Shot Context Injection</div><div class="text-[10px] text-appleGray">Previous high-scoring outputs serve as few-shot examples per prompt, per task, per sub-agent. Context is tenant-scoped.</div></div>
-                </div>
-                <div class="flex items-center gap-4 bg-appleDarker border border-appleBorder rounded-lg p-4">
-                    <div class="w-8 h-8 shrink-0 rounded-full border border-appleGreen text-appleGreen font-mono text-[10px] font-bold flex items-center justify-center">4</div>
-                    <div><div class="text-xs font-semibold">DAG Execution</div><div class="text-[10px] text-appleGray">Pipeline runs autonomously through all DAG nodes. Deterministic gates and agentic nodes execute in sequence. DEMAS audits every boundary.</div></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="pt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-appleBorder mt-8">
-        <div class="text-sm font-semibold text-appleLight">Architecture Deep View &middot; Daniel Manzela</div>
-        <div class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-appleGray">
-            <a href="index.html" class="hover:text-appleLight transition-colors">Observatory</a>
-            <a href="case-studies.html" class="hover:text-appleLight transition-colors">Case Studies</a>
-            <a href="https://manzela.github.io/Manzela/" class="hover:text-appleLight transition-colors">Profile</a>
-            <a href="https://github.com/Manzela" target="_blank" rel="noopener noreferrer" class="hover:text-appleLight transition-colors">GitHub</a>
-            <a href="https://manzela.github.io/Manzela/elysium/" class="hover:text-appleLight transition-colors">Elysium</a>
-            <a href="https://linkedin.com/in/danielmanzela" target="_blank" rel="noopener noreferrer" class="hover:text-appleLight transition-colors">LinkedIn</a>
-        </div>
-    </footer>
-
-</div>
-
-<!-- Sticky Nav -->
-<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 nav-glass rounded-full px-4 py-3 flex gap-3 md:gap-5 text-[10px] uppercase tracking-widest font-medium text-appleGray z-50 hidden md:flex">
-    <a href="#s0" class="hover:text-appleLight transition-colors">DAG</a>
-    <a href="#s1" class="hover:text-appleLight transition-colors">Nodes</a>
-    <a href="#s2" class="hover:text-appleLight transition-colors">MoE</a>
-    <a href="#s4" class="hover:text-appleLight transition-colors">Eval</a>
-    <a href="#s5" class="hover:text-appleLight transition-colors">Data</a>
-    <a href="#s3" class="hover:text-appleLight transition-colors">Loop</a>
-    <a href="#s6" class="hover:text-appleLight transition-colors">Tenants</a>
+  </details>
 </nav>
 
-<!-- Mobile Nav -->
-<nav class="fixed bottom-4 right-4 md:hidden z-50">
-    <details class="relative">
-        <summary class="w-12 h-12 rounded-full nav-glass flex items-center justify-center cursor-pointer text-appleLight text-lg">☰</summary>
-        <div class="absolute bottom-14 right-0 nav-glass rounded-xl p-3 flex flex-col gap-2 min-w-[120px]">
-            <a href="#s0" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">DAG</a>
-            <a href="#s1" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">Nodes</a>
-            <a href="#s2" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">MoE</a>
-            <a href="#s4" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">Eval</a>
-            <a href="#s5" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">Data</a>
-            <a href="#s3" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">Loop</a>
-            <a href="#s6" class="text-[10px] uppercase tracking-widest text-appleGray hover:text-appleLight transition-colors py-1">Tenants</a>
-        </div>
-    </details>
-</nav>
-
+<script src="assets/stage.js"></script>
 <script>
-// Reveal on scroll
-const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')}),{threshold:0.05});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+PO.setActiveNav('architecture');
 
-// Generate MoE Grid (128 Experts)
-const moeGrid = document.getElementById('moeGrid');
-const experts = [];
-for(let i=0; i<128; i++) {
-  const ex = document.createElement('div');
-  ex.className = 'expert';
-  moeGrid.appendChild(ex);
-  experts.push(ex);
-}
+(function () {
+  const nodeData = [
+    { id: 1, nm: 'City DNA',   role: 'Context Injection', det: false,
+      gate:  { nm: 'Locale Resolver', desc: 'Validates ISO locale codes and timezone offsets. Rejects malformed location data.', tools: ['ISO-3166', 'Timezone DB'] },
+      agent: { nm: 'Grounded Search', desc: 'Fetches factual, up-to-date data from verified .gov sources per locale.', tools: ['Gemini', 'Gov Sources'] },
+      trace: 'Locale → Gate → Web Search → Context' },
+    { id: 2, nm: 'Normalizer', role: 'Data Cleansing', det: false,
+      gate:  { nm: 'Schema Validator', desc: 'Enforces strict JSON schema. Fails on mismatch.', tools: ['Pydantic', 'AST'] },
+      agent: { nm: 'Vision + Classifier', desc: 'Text classification for taxonomy mapping. Vision model extracts context from product images.', tools: ['Classification', 'Vision'] },
+      trace: 'Input → Schema → Classification → Record' },
+    { id: 3, nm: 'Synonyms',   role: 'Expansion', det: false,
+      gate:  { nm: 'Dedup Filter', desc: 'Exact-match and fuzzy deduplication across the synonym set.', tools: ['SimHash', 'Levenshtein'] },
+      agent: { nm: 'LPN Generator', desc: 'Text classification model generating locale-aware synonyms and landing page name variants.', tools: ['Classification', 'Tenant Dict'] },
+      trace: 'Terms → Dedup → Classification → Set' },
+    { id: 4, nm: 'SV Gate',    role: 'Volume Filter', det: true,
+      gate:  { nm: 'Volume Fetcher', desc: 'Queries Google Ads API for keyword search volume per synonym per location.', tools: ['Google Ads API', 'BigQuery'] },
+      agent: { nm: 'Keyword Ranker', desc: 'Algorithmic scoring ranks keywords by commercial value per city. No LLM invoked.', tools: ['NumPy', 'Custom Math'] },
+      trace: 'Set → API Query → Math Ranking → Qualified' },
+    { id: 5, nm: 'Writer',     role: 'Generation', det: false,
+      gate:  { nm: 'Template Selector', desc: 'Enforces structural constraints: length, heading count, content block schema.', tools: ['Jinja2', 'Constraints'] },
+      agent: { nm: 'Content Generator', desc: 'Generates 10 SEO-optimized content blocks per product-location pair.', tools: ['Gemma 4 MoE', 'LoRA'] },
+      trace: 'Qualified → Template → LoRA → 10 Blocks' },
+    { id: 6, nm: 'Validator',  role: 'Deterministic QA', det: true,
+      gate:  { nm: 'Format Check', desc: 'Validates format, word count, blocks forbidden patterns. O(1) deterministic checks.', tools: ['Regex', 'Blocklist'] },
+      agent: { nm: 'O-R-A-V Engine', desc: 'Observe diagnostics, reason about severity, act with corrections, validate final output. Zero LLM calls — pure rule-based validation.', tools: ['Python', 'Pydantic'] },
+      trace: 'Draft → Format → O-R-A-V → PASS / RETRY / FAIL' },
+    { id: 7, nm: 'Evaluator',  role: 'DEMAS JIT', det: false,
+      gate:  { nm: 'Quality Threshold', desc: 'Validates minimum O-R-A-V scores before SLM evaluation.', tools: ['Threshold', 'Guard'] },
+      agent: { nm: 'SLM-as-Judge', desc: 'DEMAS JIT evaluator runs per-block qualitative auditing inline within Node 5. Language-agnostic content quality assessment.', tools: ['Gemma 4 SLM', 'Langfuse'] },
+      trace: 'Content → Threshold → SLM Audit → Accept/Reject' }
+  ];
 
-// Simulate Sparse Routing (4 active per token)
-setInterval(() => {
-  experts.forEach(e => e.classList.remove('active'));
-  const active = new Set();
-  while(active.size < 4) active.add(Math.floor(Math.random() * 128));
-  active.forEach(i => experts[i].classList.add('active'));
-}, 1200);
-
-// LoRA fan-out
-const tenants=[{id:'adapter_1',nm:'Tenant A (ES)'},{id:'adapter_2',nm:'Tenant B (ES)'},{id:'adapter_3',nm:'Tenant C (PT)'},{id:'adapter_4',nm:'Tenant D (IL)'},{id:'adapter_5',nm:'Tenant E (US)'},{id:'adapter_6',nm:'Tenant F (MX)'},{id:'adapter_7',nm:'Tenant G (ES)'},{id:'adapter_8',nm:'Tenant H (ES)'}];
-const lf=document.getElementById('lora-fan');
-tenants.forEach(t=>{
-  const d=document.createElement('div');
-  d.className='bg-appleDarker border border-appleBorder rounded-xl p-4 text-center relative overflow-hidden lora-a transition-colors hover:border-appleBlue/30';
-  d.innerHTML=`<div class="lora-membrane"></div><div class="relative z-10"><div class="font-mono text-[9px] text-appleBlue mb-1">${t.id}</div><div class="text-xs font-semibold">${t.nm}</div><div class="font-mono text-[8px] text-appleGray/60 mt-2">18 prompt adapters</div></div>`;
-  lf.appendChild(d);
-});
-setInterval(() => {
-  document.querySelectorAll('.lora-a').forEach(l => l.classList.remove('active'));
-  const rt = Math.floor(Math.random() * tenants.length);
-  document.querySelectorAll('.lora-a')[rt].classList.add('active');
-}, 2500);
-
-// 7-Node Sequence
-const nodeData = [
-  {id:1,nm:'City DNA',role:'Context Injection',det:false,
-   gate:{nm:'Locale Resolver',desc:'Validates ISO locale codes and timezone offsets. Rejects malformed location data.',tools:['ISO-3166','Timezone DB']},
-   agent:{nm:'Grounded Search',desc:'Fetches factual, up-to-date data from verified .gov sources per locale.',tools:['Gemini','Gov Sources']},
-   trace:'Locale \u2192 Gate \u2192 Web Search \u2192 Context'},
-  {id:2,nm:'Normalizer',role:'Data Cleansing',det:false,
-   gate:{nm:'Schema Validator',desc:'Enforces strict JSON schema. Fails on mismatch.',tools:['Pydantic','AST']},
-   agent:{nm:'Vision + Classifier',desc:'Text classification for taxonomy mapping. Vision model extracts context from product images.',tools:['Classification','Vision']},
-   trace:'Input \u2192 Schema \u2192 Classification \u2192 Record'},
-  {id:3,nm:'Synonyms',role:'Expansion',det:false,
-   gate:{nm:'Dedup Filter',desc:'Exact-match and fuzzy deduplication across the synonym set.',tools:['SimHash','Levenshtein']},
-   agent:{nm:'LPN Generator',desc:'Text classification model generating locale-aware synonyms and landing page name variants.',tools:['Classification','Tenant Dict']},
-   trace:'Terms \u2192 Dedup \u2192 Classification \u2192 Set'},
-  {id:4,nm:'SV Gate',role:'Volume Filter',det:true,
-   gate:{nm:'Volume Fetcher',desc:'Queries Google Ads API for keyword search volume per synonym per location.',tools:['Google Ads API','BigQuery']},
-   agent:{nm:'Keyword Ranker',desc:'Algorithmic scoring ranks keywords by commercial value per city. No LLM invoked.',tools:['NumPy','Custom Math']},
-   trace:'Set \u2192 API Query \u2192 Math Ranking \u2192 Qualified'},
-  {id:5,nm:'Writer',role:'Generation',det:false,
-   gate:{nm:'Template Selector',desc:'Enforces structural constraints: length, heading count, content block schema.',tools:['Jinja2','Constraints']},
-   agent:{nm:'Content Generator',desc:'Generates 10 SEO-optimized content blocks per product-location pair.',tools:['Gemma 4 MoE','LoRA']},
-   trace:'Qualified \u2192 Template \u2192 LoRA \u2192 10 Blocks'},
-  {id:6,nm:'Validator',role:'Deterministic QA',det:true,
-   gate:{nm:'Format Check',desc:'Validates format, word count, blocks forbidden patterns. O(1) deterministic checks.',tools:['Regex','Blocklist']},
-   agent:{nm:'O-R-A-V Engine',desc:'Observe diagnostics, reason about severity, act with corrections, validate final output. Zero LLM calls — pure rule-based validation.',tools:['Python','Pydantic']},
-   trace:'Draft → Format → O-R-A-V → PASS / RETRY / FAIL'},
-  {id:7,nm:'Evaluator',role:'DEMAS JIT',det:false,
-   gate:{nm:'Quality Threshold',desc:'Validates minimum O-R-A-V scores before SLM evaluation.',tools:['Threshold','Guard']},
-   agent:{nm:'SLM-as-Judge',desc:'DEMAS JIT evaluator runs per-block qualitative auditing inline within Node 5. Language-agnostic content quality assessment.',tools:['Gemma 4 SLM','Langfuse']},
-   trace:'Content → Threshold → SLM Audit → Accept/Reject'}
-];
-
-const nodeSeq = document.getElementById('nodeSeq');
-nodeData.forEach((n, i) => {
-  const item = document.createElement('div');
-  item.className = 'card p-8 node-item';
-  const agentLabel = n.det ? 'Deterministic Logic' : 'Probabilistic Agent';
-  const agentColor = n.det ? 'appleGreen' : 'appleBlue';
-  item.innerHTML = `
-    <div class="flex items-center gap-4 mb-6 pb-4 border-b border-appleBorder">
-      <div class="w-8 h-8 rounded-full border-2 border-appleBlue text-appleBlue flex items-center justify-center font-mono text-xs font-bold">${n.id}</div>
-      <div class="text-lg font-bold">Node ${n.id} &mdash; ${n.nm}</div>
-      <div class="ml-auto text-[9px] uppercase tracking-widest font-semibold bg-${n.det ? 'appleGreen' : 'appleBlue'}/10 text-${n.det ? 'appleGreen' : 'appleBlue'} border border-${n.det ? 'appleGreen' : 'appleBlue'}/20 px-3 py-1 rounded-full">${n.role}</div>
-    </div>
-    <div class="grid md:grid-cols-2 gap-6 relative">
-      <div class="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-appleGreen/30 to-${agentColor}/30 hidden md:block"></div>
-      <div class="bg-appleBg border border-appleBorder rounded-xl p-6 relative z-10 hover:border-appleGreen/50 transition-colors">
-        <div class="text-[9px] uppercase tracking-widest font-bold text-appleGreen bg-appleGreen/10 border border-appleGreen/20 inline-block px-2 py-0.5 rounded mb-3">Deterministic Gate</div>
-        <div class="font-bold text-sm mb-2">${n.gate.nm}</div>
-        <div class="text-xs text-appleGray mb-4">${n.gate.desc}</div>
-        <div class="flex gap-2 flex-wrap">${n.gate.tools.map(t => '<span class="text-[10px] px-2 py-1 rounded border border-appleBorder bg-appleSurface text-appleGray">' + t + '</span>').join('')}</div>
-      </div>
-      <div class="bg-appleBg border border-appleBorder rounded-xl p-6 relative z-10 hover:border-${agentColor}/50 transition-colors">
-        <div class="text-[9px] uppercase tracking-widest font-bold text-${agentColor} bg-${agentColor}/10 border border-${agentColor}/20 inline-block px-2 py-0.5 rounded mb-3">${agentLabel}</div>
-        <div class="font-bold text-sm mb-2">${n.agent.nm}</div>
-        <div class="text-xs text-appleGray mb-4">${n.agent.desc}</div>
-        <div class="flex gap-2 flex-wrap">${n.agent.tools.map(t => '<span class="text-[10px] px-2 py-1 rounded border border-appleBorder bg-appleSurface text-appleGray">' + t + '</span>').join('')}</div>
-      </div>
-    </div>
-    <div class="text-center mt-6 pt-4 border-t border-appleBorder font-mono text-[10px] text-appleGray">${n.trace}</div>
-  `;
-  nodeSeq.appendChild(item);
-  
-  if (i < 6) {
-    const arr = document.createElement('div');
-    arr.className = 'text-center text-appleGray node-arrow py-2';
-    arr.innerHTML = '&darr;';
-    nodeSeq.appendChild(arr);
-  }
-});
-
-// Staggered reveal for nodes
-const nodeObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('visible'); nodeObs.unobserve(e.target); }
-  });
-}, {threshold: 0.15});
-document.querySelectorAll('.node-item, .node-arrow').forEach(el => nodeObs.observe(el));
-
-
-
-// Active nav linking
-const navLinks = document.querySelectorAll('.nav-glass a');
-const sections = document.querySelectorAll('[id^="s"]');
-const navObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      navLinks.forEach(l => l.classList.remove('text-appleLight'));
-      const link = document.querySelector(`.nav-glass a[href="#${e.target.id}"]`);
-      if (link) link.classList.add('text-appleLight');
+  // Pinned overview: 7 small node tiles.
+  const dagOverview = document.getElementById('dagOverview');
+  nodeData.forEach(function (n, i) {
+    if (i > 0) {
+      const arr = document.createElement('span');
+      arr.className = 'dag-arr';
+      arr.setAttribute('aria-hidden', 'true');
+      arr.textContent = '→';
+      dagOverview.appendChild(arr);
     }
+    const tile = document.createElement('a');
+    tile.href = '#node-' + n.id;
+    tile.dataset.node = String(n.id);
+    tile.className = 'dag-node hover:border-appleBlue/50';
+    tile.innerHTML =
+      '<div class="text-[9px] font-mono text-appleBlue mb-1">' + n.id + '</div>' +
+      '<div class="text-xs font-semibold mb-1">' + n.nm + '</div>' +
+      '<div class="text-[9px] font-mono text-appleGray">' + n.role.split(' ')[0] + '</div>';
+    dagOverview.appendChild(tile);
   });
-}, {threshold: 0.3, rootMargin: '-20% 0px -60% 0px'});
-sections.forEach(s => navObs.observe(s));
 
-// Mobile nav toggle
-const navToggle = document.getElementById('navToggle');
-const mobileNav = document.getElementById('mobileNav');
-if (navToggle && mobileNav) {
-    navToggle.addEventListener('click', () => mobileNav.classList.toggle('hidden'));
-}
+  // Scrolling cards (one per node).
+  const nodeSeq = document.getElementById('nodeSeq');
+  nodeData.forEach(function (n) {
+    const item = document.createElement('article');
+    item.id = 'node-' + n.id;
+    item.dataset.node = String(n.id);
+    item.dataset.beat = String(n.id);
+    item.className = 'dag-stage__card card p-8 reveal';
+    const agentLabel = n.det ? 'Deterministic Logic' : 'Probabilistic Agent';
+    const agentColor = n.det ? 'appleGreen' : 'appleBlue';
+    item.innerHTML =
+      '<div class="flex items-center gap-4 mb-6 pb-4 border-b border-appleBorder">' +
+        '<div class="w-8 h-8 rounded-full border-2 border-appleBlue text-appleBlue flex items-center justify-center font-mono text-xs font-bold">' + n.id + '</div>' +
+        '<div class="text-lg font-bold">Node ' + n.id + ' &mdash; ' + n.nm + '</div>' +
+        '<div class="ml-auto text-[9px] uppercase tracking-widest font-semibold bg-' + agentColor + '/10 text-' + agentColor + ' border border-' + agentColor + '/20 px-3 py-1 rounded-full">' + n.role + '</div>' +
+      '</div>' +
+      '<div class="grid md:grid-cols-2 gap-6">' +
+        '<div class="bg-appleBg border border-appleBorder rounded-xl p-6 transition-colors hover:border-appleGreen/50">' +
+          '<div class="text-[9px] uppercase tracking-widest font-bold text-appleGreen bg-appleGreen/10 border border-appleGreen/20 inline-block px-2 py-0.5 rounded mb-3">Deterministic Gate</div>' +
+          '<div class="font-bold text-sm mb-2">' + n.gate.nm + '</div>' +
+          '<div class="text-xs text-appleGray mb-4">' + n.gate.desc + '</div>' +
+          '<div class="flex gap-2 flex-wrap">' + n.gate.tools.map(function (t) { return '<span class="text-[10px] px-2 py-1 rounded border border-appleBorder bg-appleSurface text-appleGray">' + t + '</span>'; }).join('') + '</div>' +
+        '</div>' +
+        '<div class="bg-appleBg border border-appleBorder rounded-xl p-6 transition-colors hover:border-' + agentColor + '/50">' +
+          '<div class="text-[9px] uppercase tracking-widest font-bold text-' + agentColor + ' bg-' + agentColor + '/10 border border-' + agentColor + '/20 inline-block px-2 py-0.5 rounded mb-3">' + agentLabel + '</div>' +
+          '<div class="font-bold text-sm mb-2">' + n.agent.nm + '</div>' +
+          '<div class="text-xs text-appleGray mb-4">' + n.agent.desc + '</div>' +
+          '<div class="flex gap-2 flex-wrap">' + n.agent.tools.map(function (t) { return '<span class="text-[10px] px-2 py-1 rounded border border-appleBorder bg-appleSurface text-appleGray">' + t + '</span>'; }).join('') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="text-center mt-6 pt-4 border-t border-appleBorder font-mono text-[10px] text-appleGray">' + n.trace + '</div>';
+    nodeSeq.appendChild(item);
+  });
+
+  PO.attachReveals(nodeSeq);
+  PO.attachStage({
+    stageSelector: '.dag-stage',
+    beatSelector: '.dag-stage__card',
+    attr: 'data-active-node'
+  });
+})();
+
+(function () {
+  // MoE expert grid — one-shot pulse on intersection, settles to a static "4 active" frame.
+  const moeGrid = document.getElementById('moeGrid');
+  if (!moeGrid) return;
+  const experts = [];
+  for (let i = 0; i < 128; i++) {
+    const ex = document.createElement('div');
+    ex.className = 'expert';
+    ex.setAttribute('aria-hidden', 'true');
+    moeGrid.appendChild(ex);
+    experts.push(ex);
+  }
+  // Deterministic settle indices (so the static composition is reproducible).
+  PO.pulseOnce({
+    container: moeGrid,
+    items: experts,
+    count: 3,
+    settleIndices: [12, 47, 89, 113],
+    intervalMs: 600
+  });
+})();
+
+(function () {
+  // LoRA adapter tiles — static (no infinite reshuffle, no fluid membrane decoration).
+  const tenants = [
+    { id: 'adapter_1', nm: 'Tenant A (ES)' },
+    { id: 'adapter_2', nm: 'Tenant B (ES)' },
+    { id: 'adapter_3', nm: 'Tenant C (PT)' },
+    { id: 'adapter_4', nm: 'Tenant D (IL)' },
+    { id: 'adapter_5', nm: 'Tenant E (US)' },
+    { id: 'adapter_6', nm: 'Tenant F (MX)' },
+    { id: 'adapter_7', nm: 'Tenant G (ES)' },
+    { id: 'adapter_8', nm: 'Tenant H (ES)' }
+  ];
+  const lf = document.getElementById('loraFan');
+  if (!lf) return;
+  tenants.forEach(function (t) {
+    const d = document.createElement('div');
+    d.className = 'bg-appleDarker border border-appleBorder rounded-xl p-4 text-center transition-colors hover:border-appleBlue/40';
+    d.innerHTML = '<div class="font-mono text-[9px] text-appleBlue mb-1">' + t.id + '</div>' +
+                  '<div class="text-xs font-semibold">' + t.nm + '</div>' +
+                  '<div class="font-mono text-[8px] text-appleGray/60 mt-2">18 prompt adapters</div>';
+    lf.appendChild(d);
+  });
+})();
+
+(function () {
+  // Active section highlight in bottom anchor nav.
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('nav[aria-label="Section anchors"] a');
+  const linkMap = {};
+  links.forEach(function (l) {
+    const id = l.getAttribute('href').slice(1);
+    linkMap[id] = l;
+  });
+  if (!sections.length || PO.reduced) return;
+  const obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        Object.keys(linkMap).forEach(function (k) {
+          linkMap[k].classList.toggle('text-appleLight', k === e.target.id);
+          linkMap[k].classList.toggle('text-appleGray', k !== e.target.id);
+        });
+      }
+    });
+  }, { threshold: 0.3, rootMargin: '-20% 0px -60% 0px' });
+  sections.forEach(function (s) { obs.observe(s); });
+})();
 </script>
 </body>
 </html>
