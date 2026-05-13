@@ -1,0 +1,356 @@
+/* Shared chrome — loaded by all three pages.
+   Body, glass nav, hairlines, reveal, focus ring, skip link, reduced-motion fallback,
+   and the per-page sticky-stage motifs (telemetry, DAG, editorial spine). */
+
+body {
+  background: #000;
+  color: #f5f5f7;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(41, 151, 255, 0.3);
+  color: #f5f5f7;
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   Solid surfaces, hairline separators (Principle 10)
+   ─────────────────────────────────────────────────────────────────────── */
+.card {
+  background: #1d1d1f;
+  border: 1px solid #424245;
+  border-radius: 16px;
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   Glass on chrome only (Principle 10)
+   ─────────────────────────────────────────────────────────────────────── */
+.glass-nav {
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid #424245;
+}
+
+.nav-glass {
+  background: rgba(29, 29, 31, 0.7);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid #424245;
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   Skip-link + focus ring (Principle 12 floor)
+   ─────────────────────────────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 8px 16px;
+  background: #f5f5f7;
+  color: #000;
+  font-weight: 600;
+  z-index: 100;
+  border-radius: 4px;
+  text-decoration: none;
+}
+.skip-link:focus {
+  left: 8px;
+  top: 8px;
+  outline: 2px solid #2997ff;
+  outline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid #2997ff;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   Single reveal definition (Principle 9 — one definition, fires once)
+   ─────────────────────────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   Status dot (operational surfaces)
+   ─────────────────────────────────────────────────────────────────────── */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  display: inline-block;
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   Telemetry sticky-stage  (index.html signature)
+   ─────────────────────────────────────────────────────────────────────── */
+.telemetry-stage {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 1024px) {
+  .telemetry-stage {
+    grid-template-columns: 6fr 5fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .telemetry-stage__pinned {
+    position: sticky;
+    top: 80px;
+    height: calc(100vh - 96px);
+    overflow: hidden;
+  }
+}
+.telemetry-stage__beat {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.trace-row {
+  transition: background-color 0.25s ease, opacity 0.25s ease, border-color 0.25s ease;
+  border-left: 2px solid transparent;
+}
+.telemetry-stage[data-active-beat="1"] [data-trace-line]:not([data-highlight~="b1"]),
+.telemetry-stage[data-active-beat="2"] [data-trace-line]:not([data-highlight~="b2"]),
+.telemetry-stage[data-active-beat="3"] [data-trace-line]:not([data-highlight~="b3"]),
+.telemetry-stage[data-active-beat="4"] [data-trace-line]:not([data-highlight~="b4"]),
+.telemetry-stage[data-active-beat="5"] [data-trace-line]:not([data-highlight~="b5"]) {
+  opacity: 0.35;
+}
+.telemetry-stage[data-active-beat="1"] [data-highlight~="b1"],
+.telemetry-stage[data-active-beat="2"] [data-highlight~="b2"],
+.telemetry-stage[data-active-beat="3"] [data-highlight~="b3"],
+.telemetry-stage[data-active-beat="4"] [data-highlight~="b4"],
+.telemetry-stage[data-active-beat="5"] [data-highlight~="b5"] {
+  background: rgba(41, 151, 255, 0.18);
+  border-left-color: #2997ff;
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   DAG sticky-stage  (architecture.html signature)
+   ─────────────────────────────────────────────────────────────────────── */
+.dag-stage {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 1024px) {
+  .dag-stage__pinned {
+    position: sticky;
+    top: 64px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.86);
+    backdrop-filter: saturate(180%) blur(8px);
+    -webkit-backdrop-filter: saturate(180%) blur(8px);
+    border-bottom: 1px solid #424245;
+    padding: 12px 0;
+    margin-bottom: 16px;
+  }
+}
+.dag-stage__overview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px;
+}
+.dag-stage__overview::-webkit-scrollbar { display: none; }
+.dag-node {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+  background: #151516;
+  border: 1px solid #424245;
+  border-radius: 12px;
+  padding: 8px 10px;
+  width: 92px;
+  flex-shrink: 0;
+  text-align: center;
+}
+.dag-stage[data-active-node="1"] .dag-node:not([data-node="1"]),
+.dag-stage[data-active-node="2"] .dag-node:not([data-node="2"]),
+.dag-stage[data-active-node="3"] .dag-node:not([data-node="3"]),
+.dag-stage[data-active-node="4"] .dag-node:not([data-node="4"]),
+.dag-stage[data-active-node="5"] .dag-node:not([data-node="5"]),
+.dag-stage[data-active-node="6"] .dag-node:not([data-node="6"]),
+.dag-stage[data-active-node="7"] .dag-node:not([data-node="7"]) { opacity: 0.45; }
+.dag-stage[data-active-node="1"] .dag-node[data-node="1"],
+.dag-stage[data-active-node="2"] .dag-node[data-node="2"],
+.dag-stage[data-active-node="3"] .dag-node[data-node="3"],
+.dag-stage[data-active-node="4"] .dag-node[data-node="4"],
+.dag-stage[data-active-node="5"] .dag-node[data-node="5"],
+.dag-stage[data-active-node="6"] .dag-node[data-node="6"],
+.dag-stage[data-active-node="7"] .dag-node[data-node="7"] {
+  border-color: #2997ff;
+  box-shadow: 0 0 14px rgba(41, 151, 255, 0.4);
+}
+.dag-stage__card {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  scroll-margin-top: 200px;
+}
+.dag-arr {
+  color: #86868b;
+  font-size: 14px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* MoE expert grid (architecture.html) */
+.moe-grid {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 8px;
+  padding: 24px;
+  justify-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #424245;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+.expert {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #424245;
+  transition: background 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.expert.active {
+  background: #2997ff;
+  box-shadow: 0 0 12px rgba(41, 151, 255, 0.5);
+  transform: scale(1.5);
+}
+@media (max-width: 768px) {
+  .moe-grid { grid-template-columns: repeat(8, 1fr); }
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   Editorial spine  (case-studies.html signature)
+   ─────────────────────────────────────────────────────────────────────── */
+.spine-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 1024px) {
+  .spine-layout {
+    grid-template-columns: 80px 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .spine {
+    position: sticky;
+    top: 96px;
+    height: max-content;
+  }
+}
+.spine ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.spine li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.spine .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #424245;
+  background: transparent;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+.spine .label {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  color: #86868b;
+  letter-spacing: 0.1em;
+  transition: color 0.25s ease;
+}
+.spine[data-active-case="01"] li[data-id="01"] .dot,
+.spine[data-active-case="02"] li[data-id="02"] .dot,
+.spine[data-active-case="03"] li[data-id="03"] .dot {
+  border-color: #2997ff;
+  background: #2997ff;
+  box-shadow: 0 0 8px rgba(41, 151, 255, 0.45);
+}
+.spine[data-active-case="01"] li[data-id="01"] .label,
+.spine[data-active-case="02"] li[data-id="02"] .label,
+.spine[data-active-case="03"] li[data-id="03"] .label {
+  color: #f5f5f7;
+}
+@media (max-width: 1023px) {
+  .spine {
+    position: sticky;
+    top: 56px;
+    background: rgba(0, 0, 0, 0.86);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 12px;
+    border-radius: 8px;
+    z-index: 10;
+  }
+  .spine ol {
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+  }
+}
+
+.case-bridge {
+  border-top: 1px solid #424245;
+  border-bottom: 1px solid #424245;
+  padding: 24px 0;
+  margin: 40px auto;
+  font-style: italic;
+  color: #86868b;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 42rem;
+}
+.case-bridge::before { content: "—— "; color: #424245; }
+.case-bridge::after  { content: " ——"; color: #424245; }
+
+/* ───────────────────────────────────────────────────────────────────────
+   Reduced-motion fallback (Principle 12 floor)
+   ─────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  /* Sticky-stages substitute the documented static composition: */
+  .telemetry-stage__pinned { position: static; height: auto; }
+  .telemetry-stage [data-trace-line] { opacity: 1 !important; background: transparent !important; border-left-color: transparent !important; }
+  .dag-stage__pinned { position: static; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .dag-stage .dag-node { opacity: 1 !important; box-shadow: none !important; }
+  .spine { position: static !important; }
+  .expert.active { transform: none; }
+}
