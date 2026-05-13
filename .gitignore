@@ -1,0 +1,11 @@
+node_modules/
+package.json
+package-lock.json
+tests/playwright/test-results/
+tests/playwright/playwright-report/
+test-results/
+playwright-report/
+.DS_Store
+Untitled-*
+.superpowers/
+.playwright-mcp/
