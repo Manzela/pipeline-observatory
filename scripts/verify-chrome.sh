@@ -8,7 +8,11 @@ cd "$ROOT"
 
 extract() {
   local file="$1" tag="$2"
-  awk "/<!-- BEGIN $tag -->/,/<!-- END $tag -->/" "$file"
+  # The footer contains a per-page title inside <span data-page-title>...</span>.
+  # Normalize that text to a placeholder before diffing so the rest of the chrome
+  # is compared byte-for-byte.
+  awk "/<!-- BEGIN $tag -->/,/<!-- END $tag -->/" "$file" \
+    | sed -E 's|(<span data-page-title>)[^<]*(</span>)|\1__PAGE_TITLE__\2|g'
 }
 
 check() {

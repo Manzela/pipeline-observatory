@@ -38,13 +38,17 @@
     }
     const beats = document.querySelectorAll(beatSelector);
     if (!beats.length) return;
+    // Trigger band: a horizontal slice in the upper-middle of the viewport.
+    // rootMargin '-15% 0px -55% 0px' creates a ~30% band ranging from 15% to 45%
+    // from the viewport top. threshold: 0 fires as soon as ANY part of a beat
+    // overlaps this band — works for beats taller than the band itself.
     const obs = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting && e.target.dataset.beat) {
           stage.setAttribute(attrName, e.target.dataset.beat);
         }
       });
-    }, { threshold: 0.5, rootMargin: '-20% 0px -50% 0px' });
+    }, { threshold: 0, rootMargin: '-15% 0px -55% 0px' });
     beats.forEach((b) => obs.observe(b));
   }
 

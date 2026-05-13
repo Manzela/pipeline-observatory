@@ -111,10 +111,10 @@ for (const path of PAGES) {
 }
 
 test('chrome verify script: nav and footer fragments are identical across pages', async () => {
-  const { execSync } = require('child_process');
+  const { execFileSync } = require('child_process');
   const path = require('path');
   const script = path.resolve(__dirname, '../../scripts/verify-chrome.sh');
-  const out = execSync(`bash ${script}`).toString();
+  const out = execFileSync('bash', [script]).toString();
   expect(out).toContain('OK: NAV');
   expect(out).toContain('OK: FOOTER');
 });
