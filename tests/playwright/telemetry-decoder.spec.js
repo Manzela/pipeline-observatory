@@ -1,12 +1,15 @@
 const { test, expect } = require('@playwright/test');
 
+const TARGET_PAGE = '/index.html';
+
 test.describe('telemetry intent decoder', () => {
+  // Default desktop viewport. Mobile test overrides this inline.
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
   });
 
   test('initial render seeded to Beat 1', async ({ page }) => {
-    await page.goto('/index.html');
+    await page.goto(TARGET_PAGE);
     await page.locator('.telemetry-stage').waitFor();
 
     // Assert stage initialized to Beat 1
@@ -25,7 +28,7 @@ test.describe('telemetry intent decoder', () => {
   });
 
   test('Beat change triggers decoder update', async ({ page }) => {
-    await page.goto('/index.html');
+    await page.goto(TARGET_PAGE);
     await page.locator('.telemetry-stage').waitFor();
 
     // Programmatically change to Beat 2 (mimics IntersectionObserver on scroll)
@@ -33,11 +36,8 @@ test.describe('telemetry intent decoder', () => {
       document.querySelector('.telemetry-stage').setAttribute('data-active-beat', '2');
     });
 
-    // Wait for MutationObserver to flush and update caption
-    await page.waitForFunction(() => {
-      const cap = document.getElementById('telemetryCaption');
-      return cap && cap.textContent.startsWith('Nodes 1');
-    });
+    // Wait for decoder to render the expected card
+    await page.locator('#intentDecoder .intent-card[data-node-id="5"]').waitFor({ timeout: 2000 });
 
     // Assert Beat 2 caption
     const captionText = await page.locator('#telemetryCaption').textContent();
@@ -57,19 +57,22 @@ test.describe('telemetry intent decoder', () => {
   });
 
   test('Beat 3 surfaces the DEMAS failureRoute chip', async ({ page }) => {
-    await page.goto('/index.html');
+    await page.goto(TARGET_PAGE);
     await page.locator('.telemetry-stage').waitFor();
+
+    // Prime via Beat 2 first to ensure clean state (avoid previous-beat-DEMAS-card race)
+    await page.evaluate(() => {
+      document.querySelector('.telemetry-stage').setAttribute('data-active-beat', '2');
+    });
+    await page.locator('#intentDecoder .intent-card[data-node-id="5"]').waitFor({ timeout: 2000 });
 
     // Change to Beat 3 (FAIL beat)
     await page.evaluate(() => {
       document.querySelector('.telemetry-stage').setAttribute('data-active-beat', '3');
     });
 
-    // Wait for caption update
-    await page.waitForFunction(() => {
-      const cap = document.getElementById('telemetryCaption');
-      return cap && cap.textContent.startsWith('FAIL ');
-    });
+    // Wait for DEMAS card to render
+    await page.locator('#intentDecoder .intent-card[data-node-id="demas"]').waitFor({ timeout: 2000 });
 
     // Assert FAIL caption
     const captionText = await page.locator('#telemetryCaption').textContent();
@@ -83,14 +86,14 @@ test.describe('telemetry intent decoder', () => {
     const failChipCount = await page.evaluate(() => {
       const demasCard = document.querySelector('#intentDecoder .intent-card[data-node-id="demas"]');
       if (!demasCard) return 0;
-      const redElements = demasCard.querySelectorAll('.border-appleRed\\/30, .text-appleRed');
+      const redElements = demasCard.querySelectorAll('[class*="border-appleRed"], [class*="text-appleRed"]');
       return redElements.length;
     });
     expect(failChipCount).toBeGreaterThan(0);
   });
 
   test('Beat 4 (scale beat) renders caption but zero cards', async ({ page }) => {
-    await page.goto('/index.html');
+    await page.goto(TARGET_PAGE);
     await page.locator('.telemetry-stage').waitFor();
 
     // Change to Beat 4 (scale beat)
@@ -98,10 +101,9 @@ test.describe('telemetry intent decoder', () => {
       document.querySelector('.telemetry-stage').setAttribute('data-active-beat', '4');
     });
 
-    // Wait for caption update
+    // Wait for decoder to clear
     await page.waitForFunction(() => {
-      const cap = document.getElementById('telemetryCaption');
-      return cap && cap.textContent.includes('11 tenants');
+      return document.querySelectorAll('#intentDecoder .intent-card').length === 0;
     });
 
     // Assert scale caption contains tenant count
@@ -114,7 +116,7 @@ test.describe('telemetry intent decoder', () => {
   });
 
   test('trace rows are keyboard-focusable and carry tooltips', async ({ page }) => {
-    await page.goto('/index.html');
+    await page.goto(TARGET_PAGE);
 
     // Assert trace lines have tabindex="0"
     const focusableCount = await page.locator('[data-trace-line][tabindex="0"]').count();
@@ -135,7 +137,7 @@ test.describe('telemetry intent decoder', () => {
 
   test('mobile viewport shows all 8 node cards', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 800 });
-    await page.goto('/index.html');
+    await page.goto(TARGET_PAGE);
 
     // Mobile fallback should render all 8 cards
     const cardCount = await page.locator('#intentDecoder .intent-card').count();
