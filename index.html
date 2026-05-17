@@ -232,6 +232,7 @@
 </footer>
 <!-- END FOOTER -->
 
+<script src="assets/dag-data.js"></script>
 <script src="assets/stage.js"></script>
 <script>
 PO.setActiveNav('pipeline');
@@ -258,22 +259,22 @@ PO.setActiveNav('pipeline');
 
 (function () {
   const traces = [
-    { ts: '11:45:24Z', st: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1 b3' },
-    { ts: '11:45:23Z', st: 'node7', ev: 'judge_consensus',       s: 'ok',   dur: '842ms', hl: 'b2' },
-    { ts: '11:45:22Z', st: 'node6', ev: 'deterministic_scoring', s: 'ok',   dur: '1ms',   hl: 'b2' },
-    { ts: '11:45:21Z', st: 'node5', ev: 'content_generation',    s: 'ok',   dur: '11.3s', hl: 'b2' },
-    { ts: '11:45:10Z', st: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1' },
-    { ts: '11:45:09Z', st: 'node4', ev: 'search_volume_gate',    s: 'ok',   dur: '5.3s',  hl: '' },
-    { ts: '11:45:04Z', st: 'node3', ev: 'synonym_expansion',     s: 'ok',   dur: '51ms',  hl: '' },
-    { ts: '11:45:03Z', st: 'node2', ev: 'taxonomy_classify',     s: 'ok',   dur: '3.8s',  hl: '' },
-    { ts: '11:44:59Z', st: 'node2', ev: 'vision_extraction',     s: 'ok',   dur: '3.7s',  hl: '' },
-    { ts: '11:44:56Z', st: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1' },
-    { ts: '11:44:55Z', st: 'node1', ev: 'city_context_inject',   s: 'ok',   dur: '498ms', hl: '' },
-    { ts: '11:44:55Z', st: 'demas', ev: 'jit_audit',             s: 'fail', dur: '1ms',   hl: 'b3' },
-    { ts: '11:44:54Z', st: 'node5', ev: 'content_generation',    s: 'ok',   dur: '11.9s', hl: 'b2' },
-    { ts: '11:44:42Z', st: 'node4', ev: 'search_volume_gate',    s: 'ok',   dur: '5.1s',  hl: '' },
-    { ts: '11:44:37Z', st: 'node3', ev: 'synonym_expansion',     s: 'ok',   dur: '52ms',  hl: '' },
-    { ts: '11:44:36Z', st: 'node1', ev: 'city_context_inject',   s: 'ok',   dur: '503ms', hl: '' }
+    { ts: '11:45:24Z', st: 'demas', nodeId: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1 b3' },
+    { ts: '11:45:23Z', st: 'node7', nodeId: 7,       ev: 'judge_consensus',       s: 'ok',   dur: '842ms', hl: 'b2' },
+    { ts: '11:45:22Z', st: 'node6', nodeId: 6,       ev: 'deterministic_scoring', s: 'ok',   dur: '1ms',   hl: 'b2' },
+    { ts: '11:45:21Z', st: 'node5', nodeId: 5,       ev: 'content_generation',    s: 'ok',   dur: '11.3s', hl: 'b2' },
+    { ts: '11:45:10Z', st: 'demas', nodeId: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1' },
+    { ts: '11:45:09Z', st: 'node4', nodeId: 4,       ev: 'search_volume_gate',    s: 'ok',   dur: '5.3s',  hl: '' },
+    { ts: '11:45:04Z', st: 'node3', nodeId: 3,       ev: 'synonym_expansion',     s: 'ok',   dur: '51ms',  hl: '' },
+    { ts: '11:45:03Z', st: 'node2', nodeId: 2,       ev: 'taxonomy_classify',     s: 'ok',   dur: '3.8s',  hl: '' },
+    { ts: '11:44:59Z', st: 'node2', nodeId: 2,       ev: 'vision_extraction',     s: 'ok',   dur: '3.7s',  hl: '' },
+    { ts: '11:44:56Z', st: 'demas', nodeId: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1' },
+    { ts: '11:44:55Z', st: 'node1', nodeId: 1,       ev: 'city_context_inject',   s: 'ok',   dur: '498ms', hl: '' },
+    { ts: '11:44:55Z', st: 'demas', nodeId: 'demas', ev: 'jit_audit',             s: 'fail', dur: '1ms',   hl: 'b3' },
+    { ts: '11:44:54Z', st: 'node5', nodeId: 5,       ev: 'content_generation',    s: 'ok',   dur: '11.9s', hl: 'b2' },
+    { ts: '11:44:42Z', st: 'node4', nodeId: 4,       ev: 'search_volume_gate',    s: 'ok',   dur: '5.1s',  hl: '' },
+    { ts: '11:44:37Z', st: 'node3', nodeId: 3,       ev: 'synonym_expansion',     s: 'ok',   dur: '52ms',  hl: '' },
+    { ts: '11:44:36Z', st: 'node1', nodeId: 1,       ev: 'city_context_inject',   s: 'ok',   dur: '503ms', hl: '' }
   ];
   const tEl = document.getElementById('traces');
   if (!tEl) return;
