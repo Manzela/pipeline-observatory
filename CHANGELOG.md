@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Telemetry Intent Decoder**: New sub-panel below the trace log on `index.html` that re-renders per active scroll beat. Shows one card per node touched by the current beat — role badge (deterministic green / probabilistic blue), `gate → agent` micro-pattern, intent line, tool chips. Adds a fail-route chip on the FAIL beat. Mobile (`<md`) renders all 7 nodes + DEMAS at once with no scroll-sync. Rotating engineering caption between the trace and the cards narrates the architectural decision each beat illustrates.
+- **Trace Row Affordances**: Trace rows on `index.html` now carry `tabindex="0"` and a native `title` tooltip sourced from `PO.DAG_NODES` (format: `<role> · <gate name>`). Adds a `:focus-visible` outline for keyboard users.
+- **Shared DAG Metadata Module**: Extracted per-node DAG metadata into `assets/dag-data.js` as `PO.DAG_NODES`. `architecture.html` now consumes the shared module instead of inlining its `nodeData` literal; the new telemetry decoder on `index.html` is the second consumer. Includes an entry for the DEMAS audit boundary alongside the 7 numbered nodes.
+
+### Changed
+- Mobile breakpoint (`767px`) extracted into `PO.MOBILE_BREAKPOINT_PX` on the shared `PO` namespace in `assets/stage.js`. CSS media queries continue to use the literal value with a pointer-comment to the JS source of truth.
+
 ## [2.1.0] - 2026-05-08
 
 ### Added
