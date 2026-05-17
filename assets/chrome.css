@@ -144,6 +144,22 @@ html, body {
   border-left-color: #2997ff;
 }
 
+/* Intent decoder cards — fade transition synced to existing stage rhythm. */
+.intent-card { transition: opacity 0.25s ease, border-color 0.25s ease; }
+
+/* Reduced-motion: instant swap, no fade. */
+@media (prefers-reduced-motion: reduce) {
+  .intent-card { transition: none; }
+}
+
+/* Mobile reduced-motion / static stage: hide the divider so the decoder
+   reads as a continuation of the trace card. */
+@media (max-width: 767px) {
+  .telemetry-stage__decoder-region {
+    border-top-color: rgba(255,255,255,0.06);
+  }
+}
+
 /* ───────────────────────────────────────────────────────────────────────
    DAG sticky-stage  (architecture.html signature)
    ─────────────────────────────────────────────────────────────────────── */

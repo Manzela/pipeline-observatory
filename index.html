@@ -165,9 +165,18 @@
       </div>
 
       <div class="telemetry-stage__pinned">
-        <div class="card p-4 bg-appleDarker overflow-y-auto h-full">
-          <div class="text-[9px] uppercase tracking-widest text-appleGray mb-3 px-2">Trace log &middot; sample</div>
-          <div id="traces" class="space-y-1"></div>
+        <div class="card p-4 bg-appleDarker h-full flex flex-col gap-4 overflow-hidden">
+          <!-- Top: trace log -->
+          <div class="flex-1 min-h-0 overflow-y-auto telemetry-stage__trace-region">
+            <div class="text-[9px] uppercase tracking-widest text-appleGray mb-3 px-2">Trace log &middot; sample</div>
+            <div id="traces" class="space-y-1"></div>
+          </div>
+          <!-- Divider + bottom: caption + decoder -->
+          <div class="border-t border-appleBorder pt-4 flex-shrink-0 telemetry-stage__decoder-region">
+            <div class="text-[9px] uppercase tracking-widest text-appleGray mb-3 px-2">Intent decoder</div>
+            <p id="telemetryCaption" class="text-[11px] md:text-xs text-appleGray leading-relaxed px-2 mb-3" aria-live="polite"></p>
+            <div id="intentDecoder" class="grid grid-cols-1 sm:grid-cols-2 gap-2" aria-live="polite" aria-label="Per-node intent decoder"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -282,6 +291,7 @@ PO.setActiveNav('pipeline');
     const l = document.createElement('div');
     l.dataset.traceLine = '';
     if (t.hl) l.dataset.highlight = t.hl;
+    l.dataset.nodeId = String(t.nodeId);
     l.className = 'trace-row font-mono text-[10px] md:text-xs py-2 px-3 flex gap-2 md:gap-4 items-center rounded';
     const sc = (t.s === 'ok' || t.s === 'pass') ? 'text-appleLight font-semibold' : 'text-appleRed font-semibold';
     l.innerHTML = '<span class="text-appleGray w-20 md:w-24 shrink-0">' + t.ts + '</span>' +
@@ -297,6 +307,130 @@ PO.setActiveNav('pipeline');
     beatSelector: '.telemetry-stage__beat',
     attr: 'data-active-beat'
   });
+
+  // --- Intent Decoder panel ---
+
+  var BEAT_CAPTIONS = {
+    '1': 'DEMAS sits between nodes — not inside them. It can reject a perfectly-formed output if it violates a downstream contract, before the next node is invoked.',
+    '2': 'Nodes 1–4 deterministically narrow the candidate set; Node 5 generates against a small qualified input; Nodes 6–7 deterministically validate. The probabilistic surface is one node wide.',
+    '3': 'FAIL → Firestore trace written → downstream nodes for this PDP halt → orchestrator schedules a corrected-prompt retry. Below-threshold output never reaches production.',
+    '4': '11 tenants × 7 nodes × ~10.5M PDPs. Telemetry density is by design — every boundary writes one row so the failure of any one PDP is traceable in isolation.',
+    '5': 'Trace excerpted from the most recent full-pipeline run. Single-PDP slice; the full run carries the same row shape across all 73.5M events.'
+  };
+
+  var ALL_NODE_IDS = [1, 2, 3, 4, 5, 6, 7, 'demas'];
+
+  var stage = document.querySelector('.telemetry-stage');
+  var captionEl = document.getElementById('telemetryCaption');
+  var decoderEl = document.getElementById('intentDecoder');
+
+  function isMobileViewport() {
+    return window.matchMedia('(max-width: 767px)').matches;
+  }
+
+  function nodeIdsForActiveBeat(beat) {
+    if (!beat) return [];
+    var rows = document.querySelectorAll('[data-trace-line][data-highlight~="b' + beat + '"]');
+    var seen = {};
+    var ordered = [];
+    for (var i = 0; i < rows.length; i++) {
+      var n = rows[i].dataset.nodeId;
+      if (n === undefined) continue;
+      var key = (n === 'demas') ? 'demas' : Number(n);
+      var k = String(key);
+      if (!seen[k]) {
+        seen[k] = true;
+        ordered.push(key);
+      }
+    }
+    return ordered;
+  }
+
+  function renderCard(nodeId, includeFailRoute) {
+    var node = PO.DAG_NODES[nodeId];
+    if (!node) return '';
+    var isDet = !!node.det;
+    var color = isDet ? 'appleGreen' : 'appleBlue';
+    var roleLabel = isDet ? 'Deterministic' : 'Probabilistic';
+    var gateName = (node.gate && node.gate.nm) || '';
+    var agentName = (node.agent && node.agent.nm) || '';
+    var tools = (node.agent && node.agent.tools) || [];
+    var toolChips = tools.map(function (t) {
+      return '<span class="text-[9px] px-1.5 py-0.5 rounded border border-appleBorder bg-appleBg text-appleGray">' + t + '</span>';
+    }).join('');
+    var failChip = '';
+    if (includeFailRoute && node.failureRoute) {
+      failChip = '<div class="mt-2 pt-2 border-t border-appleRed/30 text-[9px] text-appleRed leading-snug">' + node.failureRoute + '</div>';
+    }
+    var label = (nodeId === 'demas') ? 'DEMAS' : ('Node ' + nodeId);
+    return '' +
+      '<article class="intent-card bg-appleBg border border-appleBorder rounded-lg p-3 transition-opacity duration-200" data-node-id="' + nodeId + '">' +
+        '<div class="flex items-center gap-2 mb-2">' +
+          '<span class="font-mono text-[10px] text-' + color + ' font-semibold">' + label + '</span>' +
+          '<span class="text-[9px] uppercase tracking-widest font-semibold bg-' + color + '/10 text-' + color + ' border border-' + color + '/20 px-1.5 py-0.5 rounded">' + roleLabel + '</span>' +
+        '</div>' +
+        '<div class="font-mono text-[10px] text-appleLight mb-1 truncate" title="' + gateName + ' → ' + agentName + '">' + gateName + ' → ' + agentName + '</div>' +
+        '<div class="text-[10px] text-appleGray leading-relaxed mb-2">' + (node.intent || '') + '</div>' +
+        (toolChips ? '<div class="flex gap-1 flex-wrap">' + toolChips + '</div>' : '') +
+        failChip +
+      '</article>';
+  }
+
+  function nodeIdsToRender(beat) {
+    if (isMobileViewport()) return ALL_NODE_IDS;
+    return nodeIdsForActiveBeat(beat);
+  }
+
+  function shouldShowFailRouteForDemas(beat) {
+    if (!beat || isMobileViewport()) {
+      return true;
+    }
+    var failRows = document.querySelectorAll('[data-trace-line][data-highlight~="b' + beat + '"]');
+    for (var i = 0; i < failRows.length; i++) {
+      if (failRows[i].querySelector('.text-appleRed')) return true;
+    }
+    return false;
+  }
+
+  function renderDecoder(beat) {
+    if (captionEl) {
+      captionEl.textContent = BEAT_CAPTIONS[beat] || '';
+    }
+    if (!decoderEl) return;
+    var ids = nodeIdsToRender(beat);
+    var includeFail = shouldShowFailRouteForDemas(beat);
+    var html = '';
+    for (var i = 0; i < ids.length; i++) {
+      var id = ids[i];
+      html += renderCard(id, id === 'demas' && includeFail);
+    }
+    decoderEl.innerHTML = html;
+  }
+
+  renderDecoder(stage ? stage.getAttribute('data-active-beat') : '1');
+
+  if (stage && window.MutationObserver) {
+    var obs = new MutationObserver(function (mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        if (mutations[i].attributeName === 'data-active-beat') {
+          renderDecoder(stage.getAttribute('data-active-beat'));
+          break;
+        }
+      }
+    });
+    obs.observe(stage, { attributes: true, attributeFilter: ['data-active-beat'] });
+  }
+
+  var mq = window.matchMedia('(max-width: 767px)');
+  if (mq.addEventListener) {
+    mq.addEventListener('change', function () {
+      renderDecoder(stage ? stage.getAttribute('data-active-beat') : '1');
+    });
+  } else if (mq.addListener) {
+    mq.addListener(function () {
+      renderDecoder(stage ? stage.getAttribute('data-active-beat') : '1');
+    });
+  }
 })();
 </script>
 </body>
