@@ -154,6 +154,7 @@ html, body {
 
 /* Mobile reduced-motion / static stage: hide the divider so the decoder
    reads as a continuation of the trace card. */
+/* Mobile breakpoint — synced to PO.MOBILE_BREAKPOINT_PX in assets/stage.js. */
 @media (max-width: 767px) {
   .telemetry-stage__decoder-region {
     border-top-color: rgba(255,255,255,0.06);
