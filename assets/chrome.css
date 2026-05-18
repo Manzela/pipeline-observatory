@@ -564,6 +564,51 @@ code, pre, .mono { font-family: var(--font-mono); }
 .demas-callout p:last-child { margin-bottom: 0; }
 
 /* ───────────────────────────────────────────────────────────────────────
+   Flywheel epilogue  (task B.6)
+   Post-lifecycle, pre-economics. Industrial register: ink-rule top border
+   marks the close of the lifecycle cluster; mono label, sans display
+   heading, body prose. No new motion, no new tokens.
+   See spec §5 IA, §7.3 components, §10 content mapping.
+   ─────────────────────────────────────────────────────────────────────── */
+.flywheel {
+  padding: 80px 24px 64px;
+  max-width: 1024px;
+  margin: 0 auto;
+  border-top: 1px solid var(--ink-rule);
+}
+.flywheel__header {
+  margin-bottom: 32px;
+  max-width: 720px;
+}
+.flywheel__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+  margin-bottom: 8px;
+}
+.flywheel__title {
+  font-family: var(--font-sans);
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.15;
+}
+.flywheel__body {
+  max-width: 720px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.flywheel__body p { margin: 0 0 16px; }
+.flywheel__body p:last-child { margin-bottom: 0; }
+
+/* ───────────────────────────────────────────────────────────────────────
    DAG schematic  (task B.5 — index.html signature visual)
    Industrial / Aicher / Lufthansa technical-drawing register: thin ink
    strokes, sharp corners, IBM Plex Mono labels, semantic accent fill on

@@ -652,6 +652,21 @@
   </div>
   <!-- END LIFECYCLE SECTIONS -->
 
+  <!-- BEGIN FLYWHEEL EPILOGUE (Task B.6) -->
+  <section class="flywheel" id="flywheel" aria-labelledby="flywheel-h">
+    <header class="flywheel__header">
+      <span class="flywheel__label">Epilogue</span>
+      <h2 class="flywheel__title" id="flywheel-h">Every run becomes training data.</h2>
+    </header>
+    <div class="flywheel__body">
+      <p>Production runs write to a 3-tier dataset. O-R-A-V scores and DEMAS verdicts route each output into a tier: <span class="font-mono">T1 production-baseline</span> ingests every run; <span class="font-mono">T2 quality-approved</span> takes outputs with O-R-A-V &ge; 0.7 and a clean DEMAS pass; <span class="font-mono">T3 failure-cases</span> takes outputs with O-R-A-V &lt; 0.5 or any DEMAS fail. Eighteen prompt-specific partitions sit beneath the tiers, one per pipeline prompt.</p>
+      <p>DPO preference pairs are assembled automatically from the spread between T2 and T3 &mdash; <span class="font-mono">chosen</span> from quality-approved, <span class="font-mono">rejected</span> from failure-cases. Pairs with a score gap &ge; 0.15 are kept; the rest are dropped to avoid weak gradients. Margin-maximized pairs feed curriculum-based LoRA fine-tuning per tenant; the updated adapter is hot-swapped on the next CRON cycle.</p>
+      <p>The <strong>68.9% pass rate</strong> at the O-R-A-V/DEMAS boundary is the engine of this loop. The thresholds are tuned so the failure tier stays large enough to feed DPO with a real <span class="font-mono">chosen</span>/<span class="font-mono">rejected</span> spread. A 99% pass rate would starve the loop; 50% would burn cost. 68.9% is the production setpoint. Failures aren&rsquo;t waste &mdash; they&rsquo;re the labelled half of the training signal.</p>
+      <p>The same machinery that keeps the production DAG fail-closed also generates the RLAIF-style preference data that improves the next epoch. Every block the validator rejects is a labelled negative; every block that clears DEMAS is a labelled positive. No human-in-the-loop annotation pipeline; the deterministic gates do the labelling.</p>
+    </div>
+  </section>
+  <!-- END FLYWHEEL EPILOGUE -->
+
 </main>
 
 <!-- BEGIN FOOTER -->
