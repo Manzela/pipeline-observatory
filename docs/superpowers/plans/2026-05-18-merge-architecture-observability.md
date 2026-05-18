@@ -1409,3 +1409,121 @@ Mirrors the spec DoD (§13.4). Repeated here for the implementing engineer:
 - [ ] PR description includes before/after Lighthouse, before/after screenshots at 3 breakpoints, link to spec.
 - [ ] Sibling-repo PRs (`Manzela`, `Resume CV`) merged within 24h of `pipeline-observatory` PR.
 - [ ] Search Console removal request submitted for `architecture.html`.
+
+---
+
+## Appendix C — Design Re-Direction Notes (2026-05-18, post-plan, during execution)
+
+**Trigger:** Review against the `bencium-innovative-ux-designer` skill surfaced three direct conflicts with the original spec §4 (Apple mimicry banned; Inter as primary banned; glass morphism banned). Re-anchored via the skill's Design Thinking Protocol to: **Tone = Industrial / utilitarian**; **Differentiation = "the pipeline as a technical schematic."**
+
+**Spec commit recording the re-direction:** `c24efa7` (updates §4, §5, §5.1, §5.2, §6, §7.1, §7.3, §8, §12, §13.4).
+
+This appendix supersedes the following plan items where they diverge. Items not listed are unchanged.
+
+### New Task 0.3: Design Tokens Update (insert between Section 0 and Section A)
+
+Must run BEFORE any Section A task that touches `assets/chrome.css` (i.e. A.3, A.5, A.7).
+
+**Files:** `index.html` (font links + class swaps), `assets/chrome.css` (palette, fonts, glass-nav removal), `assets/tokens.js` (matching JS tokens), `case-studies.html` (note: temporary visual divergence is acceptable; logged as follow-up).
+
+- [ ] **Step 1: Update Google Fonts link**
+
+In `<head>` of `index.html` (and same in `case-studies.html`), replace the Inter+JetBrains Mono `<link>` with:
+```html
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+```
+
+- [ ] **Step 2: Replace palette in `assets/chrome.css`**
+
+Define the new token block at the top of `chrome.css` per spec §4:
+```css
+:root {
+  /* Industrial / utilitarian palette — paper + ink + 2 semantic accents */
+  --paper: #F8F6F1;
+  --paper-deep: #F2EFE7;
+  --ink: #1A1A1A;
+  --ink-mid: #4A4A4A;
+  --ink-low: #8A8A8A;
+  --ink-rule: rgba(26, 26, 26, 0.12);
+  --det-green: #2D5A2F;     /* deterministic nodes — drafting forest */
+  --prob-blue: #1B3A5C;     /* probabilistic nodes — drafting navy */
+  --signal: #B83216;        /* surgical warning accent — Aicher red */
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', monospace;
+  --z-nav: 60;
+  --z-schematic: 50;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0F1418;
+    --paper-deep: #161C20;
+    --ink: #E8E6E0;
+    --ink-mid: #B0AEA6;
+    --ink-low: #7A786E;
+    --ink-rule: rgba(232, 230, 224, 0.12);
+    --det-green: #6FAF6B;
+    --prob-blue: #6FA0CC;
+    --signal: #E07A5F;
+  }
+}
+body { background: var(--paper); color: var(--ink); font-family: var(--font-sans); }
+code, pre, .mono { font-family: var(--font-mono); }
+```
+
+Remove all old `appleBg`, `appleLight`, `appleGray`, `appleBlue` references — replace with the new token names. Grep for `apple` in chrome.css and index.html to find them all.
+
+- [ ] **Step 3: Remove `.glass-nav`**
+
+Find `.glass-nav` rule in `chrome.css` and delete it. Replace top nav styling with:
+```css
+.top-nav {
+  position: sticky; top: 0; z-index: var(--z-nav);
+  background: var(--paper);
+  border-bottom: 1px solid var(--ink-rule);
+  padding: 12px 24px;
+}
+```
+And update the nav HTML in `index.html` + `case-studies.html`: change `class="… glass-nav"` to `class="top-nav"`.
+
+- [ ] **Step 4: Verify type stack loads**
+
+Open the page in a browser (dev server on 8765), inspect computed style on `body` — confirm `font-family` resolves to `IBM Plex Sans`. Same on a `<code>` element — confirm `IBM Plex Mono`.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add index.html case-studies.html assets/chrome.css assets/tokens.js
+git commit -m "feat(tokens): industrial register — IBM Plex stack, paper-and-ink palette, glass-nav retired"
+```
+
+### Renamed / re-scoped Section A tasks
+
+- **A.3 Sticky rail → Sticky schematic.** Task name becomes "Sticky DAG schematic with active node + keyboard nav." Spec file `lifecycle.rail.spec.js` becomes `lifecycle.schematic.spec.js`. Assertions: click on a schematic node group jumps to that section + moves focus; arrow keys cycle through nodes (when schematic is focused); the schematic is sticky beneath top nav only while inside the lifecycle region (`#dag` through `#economics`); active node group has the semantic fill color (det-green or prob-blue). The schematic itself is built as part of Task B.5 (craft) — the A.3 spec validates the BEHAVIOR layer once the schematic exists.
+
+- **A.6 Intent Decoder re-target → Detail Legend implementation.** Task name becomes "Detail Legend re-render alongside schematic." Spec file `lifecycle.intent-decoder.spec.js` becomes `lifecycle.detail-legend.spec.js`. The existing Intent Decoder's card chrome is replaced; same data source (`PO.DAG_NODES`), same event subscription (`po:active-node-change`), new DOM template (typographic labels on the grid, no card wrapper).
+
+- **A.7 Mobile rail+decoder → Mobile schematic+legend.** Spec file name unchanged (`lifecycle.mobile.spec.js`). Assertions update: at `<768px` the schematic stacks vertically (or compacts to a horizontal numbered strip beneath top nav); the detail legend renders inline within each node section (no bottom-sheet); touch targets ≥ 44pt on schematic node groups.
+
+### Re-scoped Section B tasks
+
+- **B.5 Anchored Decoder integration → DAG schematic implementation.** This becomes the highest-stakes craft task in Section B. The schematic is the page's signature element. Approach: build an SVG technical drawing in the spirit of Aicher's 1972 Munich Olympics signage system, Lufthansa identity manuals, and ERCO catalogs. Thin (1px / 0.5px) ink strokes, IBM Plex Mono labels, technical-drawing arrowheads, DEMAS perimeter as dashed line enclosing nodes 1-6 with Node 7 outside ("in R&D · Langfuse" annotation). Build iteratively with the user as oracle: sketch → present in visual companion → refine → repeat. Final SVG either inline in `index.html` or in `assets/dag-schematic.svg.js`. Subscribes to `po:active-node-change`. The Detail Legend (built in A.6) sits beside / below the schematic per §6.
+
+- **B.7 Apple copy pass → Industrial copy pass.** Same intent (illustration-not-promotion, engineering notes, no CTAs, no superlatives, precise numbers); reference works update from "Apple Environmental Report / How an iPad is made" to "Aicher Lufthansa manual / Braun product spec / IBM 1960s technical documentation." Voice: terser, more schematic, more measurement-oriented. Reads as a system spec, not a product page.
+
+### Unchanged tasks
+
+A.1, A.2, A.4, A.5 (behaviorally the same — the no-JS spec just gains "schematic renders as static SVG" instead of "decoder cards stacked"), B.1, B.2, B.3, B.4, B.6, and all of Section C and Section D are structurally unchanged. Implementation details may need light token-renaming during execution (replace `appleBg` → `--paper`, etc.); subagents will handle this when they touch the relevant files.
+
+### Risks added by the re-direction
+
+1. **Aicher-style schematic is genuinely novel for an AI portfolio.** Done poorly, it could read as cold, alien, or unfinished. Mitigation: build it iteratively with user as oracle (Task B.5); compare against the named reference works at each iteration.
+2. **`case-studies.html` will visually diverge.** It still uses Inter / glass-nav / appleBg tokens. The merged page commit deliberately doesn't update it (out of scope). Mitigation: logged as follow-up PR in this repo's CHANGELOG; merged page top nav still navigates to it cleanly.
+3. **IBM Plex Sans rendering on Windows Chrome may differ subtly from Inter.** Mitigation: covered by visual regression baselines at 3 breakpoints in Task D.2; cross-browser parity tested manually before PR opens.
+
+### Skill provenance for this re-direction
+
+This re-direction was driven by review against `bencium-innovative-ux-designer` (v2.0.0) from `https://github.com/bencium/bencium-marketplace`. The skill's anti-pattern protocol — specifically its "Master Tier" requirement that the controller commit to one of 11 Tone Options as an extreme rather than asking for a generic "design a website" — is what forced the re-anchoring. The four-question Design Thinking Protocol from the skill was answered by:
+- Purpose: illustrate Daniel's professional work to AI labs / retail-tech investors / technical recruiters (from existing CLAUDE.md + spec §2).
+- Tone: Industrial / utilitarian (user-selected, 2026-05-18).
+- Constraints: vanilla HTML/CSS/JS + Tailwind CDN + WCAG AA + Lighthouse mobile ≥95 (from spec §9).
+- Differentiation: "the pipeline as a technical schematic" — Aicher / Lufthansa identity manual register (user-selected, 2026-05-18).
