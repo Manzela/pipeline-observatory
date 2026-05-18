@@ -28,7 +28,7 @@
     <ul class="hidden md:flex gap-8 list-none m-0 p-0">
       <li><a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors">Profile</a></li>
       <li><a href="index.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="pipeline">Pipeline</a></li>
-      <li><a href="architecture.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="architecture">Architecture</a></li>
+      <li><a href="index.html#dag" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="architecture">DAG schematic</a></li>
       <li><a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="case-studies">Case Studies</a></li>
     </ul>
     <button id="navToggle" class="md:hidden text-inkLow hover:text-ink transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
@@ -38,7 +38,7 @@
   <div id="mobileNav" class="md:hidden hidden border-t border-inkRule px-6 py-4 flex flex-col gap-3">
     <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2">Profile</a>
     <a href="index.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="pipeline">Pipeline</a>
-    <a href="architecture.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="architecture">Architecture</a>
+    <a href="index.html#dag" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="architecture">DAG schematic</a>
     <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="case-studies">Case Studies</a>
   </div>
 </nav>
@@ -46,12 +46,19 @@
 
 <main id="main" class="max-w-4xl mx-auto px-6 pt-14">
 
-  <!-- Hero -->
-  <header class="py-24 md:py-32 text-center border-b border-inkRule">
+  <!-- Hero — industrial register per spec §4: terse declarative voice, no CTAs,
+       no superlatives. Numbers sourced from Resume CV/00-GROUND-SOURCE-OF-TRUTH.md
+       L59 (11 enterprise retailers / 5 countries / 234 managed websites) and L60
+       (~10.5M PDPs/cycle, $0.0006/PDP, 68.9% O-R-A-V pass, 7-node DAG). -->
+  <header class="py-24 md:py-32 border-b border-inkRule" id="hero">
     <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-tight">
-      The autonomous pipeline<br>that scales organic traffic.
+      Pipeline.
     </h1>
-    
+    <p class="text-base text-inkLow max-w-2xl leading-relaxed">
+      A 7-node autonomous content pipeline serving 11 enterprise retailers across 5 countries. Google ADK orchestration on Vertex AI; Gemma 4 26B-A4B-it Mixture-of-Experts with per-tenant LoRA adapters; deterministic O-R-A-V validation at 68.9% pass by design. $0.0006 per product detail page. ~10.5M PDPs per cycle, ~73.5M agent operations per run. Live trace below.
+      <!-- numbers source: Resume CV/00-GROUND-SOURCE-OF-TRUTH.md L59-60 -->
+    </p>
+
     <!-- Headline metrics: 2 hero KPIs + 4 supporting -->
   <div class="mt-12 text-left" aria-label="Headline metrics">
     <div class="grid md:grid-cols-2 gap-px bg-inkRule mb-px overflow-hidden rounded-t-2xl">
@@ -111,19 +118,8 @@
     </div>
   </section>
 
-  <!-- The Solution -->
-  <section class="py-20 border-b border-inkRule reveal" id="solution">
-    <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4">The Solution</div>
-    <h2 class="text-3xl font-bold tracking-tight mb-4">Self-Improving Generative AI Pipeline</h2>
-    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
-      Event-driven multi-agent systems using programmatic validators, automated error-handling handoffs, and production-data flywheels for continuous retraining.
-    </p>
-  </section>
-
-
-  
-
-  
+  <!-- "Self-Improving Generative AI Pipeline" overview section removed (Step 1):
+       absorbed by the framing strip + lifecycle structure per spec §10. -->
 
   <!-- Telemetry sticky-stage (signature moment) -->
   <section class="py-20 border-b border-inkRule reveal" id="telemetry" aria-labelledby="telemetry-h">
@@ -166,61 +162,20 @@
 
       <div class="telemetry-stage__pinned">
         <div class="card p-4 bg-paperDeep h-full flex flex-col gap-4 overflow-hidden">
-          <!-- Top: trace log -->
+          <!-- Trace log only — per-node Intent Decoder card cluster removed
+               (Step 1): replaced by the typographic Detail Legend below the
+               schematic per spec §5.2 + §7.3. Trace log preserved per §7.2. -->
           <div class="flex-1 min-h-0 overflow-y-auto telemetry-stage__trace-region">
             <div class="text-[9px] uppercase tracking-widest text-inkLow mb-3 px-2">Trace log &middot; sample</div>
             <div id="traces" class="space-y-1"></div>
-          </div>
-          <!-- Divider + bottom: caption + decoder -->
-          <div class="border-t border-inkRule pt-4 flex-shrink-0 telemetry-stage__decoder-region">
-            <div class="text-[9px] uppercase tracking-widest text-inkLow mb-3 px-2">Intent decoder</div>
-            <p id="telemetryCaption" class="text-[11px] md:text-xs text-inkLow leading-relaxed px-2 mb-3" aria-live="polite"></p>
-            <div id="intentDecoder" class="grid grid-cols-1 sm:grid-cols-2 gap-2" aria-live="polite" aria-label="Per-node intent decoder"></div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  
-
-<!-- Unit Economics: cost + throughput merged -->
-  <section class="py-20 border-b border-inkRule reveal" id="economics" aria-labelledby="economics-h">
-    <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4">Unit Economics</div>
-    <h2 id="economics-h" class="text-3xl font-bold tracking-tight mb-4">$0.0006 per page. Here&rsquo;s the math.</h2>
-    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
-      The Writer node (Node 5, the only sustained inference path) runs on a self-hosted Gemma 4 26B-A4B MoE on a single A100 80GB. Fixed monthly VM cost &divide; pages served. Below: cost derivation, then the volume that produces it.
-    </p>
-
-    <div class="card bg-paperDeep p-8">
-      <div class="font-mono text-sm text-inkLow leading-loose text-center">
-        <span class="text-ink font-semibold">$5.06</span>/hr &times; <span class="text-ink font-semibold">730</span> hrs/mo = <strong class="text-probBlue">~$3,694</strong>/month <span class="text-inkLow/60">(a2-ultragpu-1g &middot; 1&times; A100 80GB)</span><br>
-        <strong class="text-probBlue">~$3,694</strong>/month &divide; <span class="text-ink font-semibold">~6.16M</span> PDPs/month = <strong class="text-probBlue">~$0.0006</strong>/PDP
-      </div>
-      <div class="mt-6 pt-4 border-t border-inkRule font-mono text-sm text-inkLow leading-loose text-center">
-        <span class="text-ink font-semibold">11</span> tenants &times; <span class="text-ink font-semibold">~45K</span> products &times; <span class="text-ink font-semibold">~21</span> locations = <strong class="text-probBlue">~10.5M PDPs</strong> per full run<br>
-        <span class="text-ink font-semibold">~10.5M PDPs</span> &times; <span class="text-ink font-semibold">7</span> DAG nodes = <strong class="text-probBlue">~73.5M ops</strong> per full run
-      </div>
-    </div>
-
-    <div class="card p-px bg-inkRule grid grid-cols-3 gap-px overflow-hidden mt-6">
-      <div class="bg-paperDeep p-6 text-center">
-        <div class="font-mono text-lg font-semibold text-ink mb-1">80%</div>
-        <div class="text-[9px] uppercase tracking-widest text-inkLow">Deterministic compute</div>
-        <div class="text-[8px] text-inkLow/60 mt-1">Near-zero marginal cost</div>
-      </div>
-      <div class="bg-paperDeep p-6 text-center">
-        <div class="font-mono text-lg font-semibold text-ink mb-1">$0</div>
-        <div class="text-[9px] uppercase tracking-widest text-inkLow">Per-token API fees</div>
-        <div class="text-[8px] text-inkLow/60 mt-1">Self-hosted Gemma 4 MoE</div>
-      </div>
-      <div class="bg-paperDeep p-6 text-center">
-        <div class="font-mono text-lg font-semibold text-ink mb-1">~20%</div>
-        <div class="text-[9px] uppercase tracking-widest text-inkLow">Actual LLM calls</div>
-        <div class="text-[8px] text-inkLow/60 mt-1">City + client caching</div>
-      </div>
-    </div>
-  </section>
+  <!-- Economics section moved to post-Flywheel per spec §5 IA order
+       (Hero → Problem → Framing → Lifecycle → Flywheel → Economics → Footer). -->
 
   <!-- BEGIN DETAIL LEGEND (task A.6 — typographic re-render of Intent Decoder; positioning refined in B.5) -->
   <aside class="detail-legend" data-detail-legend aria-live="polite" aria-label="Active node detail">
@@ -667,6 +622,45 @@
   </section>
   <!-- END FLYWHEEL EPILOGUE -->
 
+  <!-- Unit Economics: cost + throughput merged. Repositioned to post-Flywheel
+       per spec §5 IA order (Flywheel → Economics → Footer). -->
+  <section class="py-20 border-b border-inkRule reveal" id="economics" aria-labelledby="economics-h">
+    <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4">Unit Economics</div>
+    <h2 id="economics-h" class="text-3xl font-bold tracking-tight mb-4">$0.0006 per page. Here&rsquo;s the math.</h2>
+    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
+      The Writer node (Node 5, the only sustained inference path) runs on a self-hosted Gemma 4 26B-A4B MoE on a single A100 80GB. Fixed monthly VM cost &divide; pages served. Below: cost derivation, then the volume that produces it.
+    </p>
+
+    <div class="card bg-paperDeep p-8">
+      <div class="font-mono text-sm text-inkLow leading-loose text-center">
+        <span class="text-ink font-semibold">$5.06</span>/hr &times; <span class="text-ink font-semibold">730</span> hrs/mo = <strong class="text-probBlue">~$3,694</strong>/month <span class="text-inkLow/60">(a2-ultragpu-1g &middot; 1&times; A100 80GB)</span><br>
+        <strong class="text-probBlue">~$3,694</strong>/month &divide; <span class="text-ink font-semibold">~6.16M</span> PDPs/month = <strong class="text-probBlue">~$0.0006</strong>/PDP
+      </div>
+      <div class="mt-6 pt-4 border-t border-inkRule font-mono text-sm text-inkLow leading-loose text-center">
+        <span class="text-ink font-semibold">11</span> tenants &times; <span class="text-ink font-semibold">~45K</span> products &times; <span class="text-ink font-semibold">~21</span> locations = <strong class="text-probBlue">~10.5M PDPs</strong> per full run<br>
+        <span class="text-ink font-semibold">~10.5M PDPs</span> &times; <span class="text-ink font-semibold">7</span> DAG nodes = <strong class="text-probBlue">~73.5M ops</strong> per full run
+      </div>
+    </div>
+
+    <div class="card p-px bg-inkRule grid grid-cols-3 gap-px overflow-hidden mt-6">
+      <div class="bg-paperDeep p-6 text-center">
+        <div class="font-mono text-lg font-semibold text-ink mb-1">80%</div>
+        <div class="text-[9px] uppercase tracking-widest text-inkLow">Deterministic compute</div>
+        <div class="text-[8px] text-inkLow/60 mt-1">Near-zero marginal cost</div>
+      </div>
+      <div class="bg-paperDeep p-6 text-center">
+        <div class="font-mono text-lg font-semibold text-ink mb-1">$0</div>
+        <div class="text-[9px] uppercase tracking-widest text-inkLow">Per-token API fees</div>
+        <div class="text-[8px] text-inkLow/60 mt-1">Self-hosted Gemma 4 MoE</div>
+      </div>
+      <div class="bg-paperDeep p-6 text-center">
+        <div class="font-mono text-lg font-semibold text-ink mb-1">~20%</div>
+        <div class="text-[9px] uppercase tracking-widest text-inkLow">Actual LLM calls</div>
+        <div class="text-[8px] text-inkLow/60 mt-1">City + client caching</div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <!-- BEGIN FOOTER -->
@@ -674,7 +668,7 @@
   <div class="text-sm font-semibold text-ink"><span data-page-title>Pipeline</span> &middot; Daniel Manzela</div>
   <ul class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-inkLow list-none m-0 p-0">
     <li><a href="index.html" class="hover:text-ink transition-colors">Pipeline</a></li>
-    <li><a href="architecture.html" class="hover:text-ink transition-colors">Architecture</a></li>
+    <li><a href="index.html#dag" class="hover:text-ink transition-colors">DAG schematic</a></li>
     <li><a href="case-studies.html" class="hover:text-ink transition-colors">Case Studies</a></li>
     <li><a href="https://manzela.github.io/Manzela/" class="hover:text-ink transition-colors">Profile</a></li>
     <li><a href="https://manzela.github.io/Manzela/elysium/" class="hover:text-ink transition-colors">Elysium</a></li>
@@ -759,125 +753,11 @@ PO.setActiveNav('pipeline');
     attr: 'data-active-beat'
   });
 
-  // --- Intent Decoder panel ---
-
-  var BEAT_CAPTIONS = {
-    '1': 'DEMAS sits between nodes — not inside them. It can reject a perfectly-formed output if it violates a downstream contract, before the next node is invoked.',
-    '2': 'Nodes 1–4 deterministically narrow the candidate set; Node 5 generates against a small qualified input; Nodes 6–7 deterministically validate. The probabilistic surface is one node wide.',
-    '3': 'FAIL → Firestore trace written → downstream nodes for this PDP halt → orchestrator schedules a corrected-prompt retry. Below-threshold output never reaches production.',
-    '4': '11 tenants × 7 nodes × ~10.5M PDPs. Telemetry density is by design — every boundary writes one row so the failure of any one PDP is traceable in isolation.',
-    '5': 'Trace excerpted from the most recent full-pipeline run. Single-PDP slice; the full run carries the same row shape across all 73.5M events.'
-  };
-
-  var ALL_NODE_IDS = [1, 2, 3, 4, 5, 6, 7, 'demas'];
-
-  var stage = document.querySelector('.telemetry-stage');
-  var captionEl = document.getElementById('telemetryCaption');
-  var decoderEl = document.getElementById('intentDecoder');
-
-  function isMobileViewport() {
-    return window.matchMedia('(max-width: ' + PO.MOBILE_BREAKPOINT_PX + 'px)').matches;
-  }
-
-  function nodeIdsForActiveBeat(beat) {
-    if (!beat) return [];
-    var rows = document.querySelectorAll('[data-trace-line][data-highlight~="b' + beat + '"]');
-    var seen = {};
-    var ordered = [];
-    for (var i = 0; i < rows.length; i++) {
-      var n = rows[i].dataset.nodeId;
-      if (n === undefined) continue;
-      var key = (n === 'demas') ? 'demas' : Number(n);
-      var k = String(key);
-      if (!seen[k]) {
-        seen[k] = true;
-        ordered.push(key);
-      }
-    }
-    return ordered;
-  }
-
-  // renderCard assumes PO.DAG_NODES is dev-controlled, HTML-safe data.
-  // Do not pass user-supplied input through this function.
-  function renderCard(nodeId, includeFailRoute) {
-    var node = PO.DAG_NODES[nodeId];
-    if (!node) return '';
-    var isDet = !!node.det;
-    var color = isDet ? 'detGreen' : 'probBlue';
-    var roleLabel = isDet ? 'Deterministic' : 'Probabilistic';
-    var gateName = (node.gate && node.gate.nm) || '';
-    var agentName = (node.agent && node.agent.nm) || '';
-    var tools = (node.agent && node.agent.tools) || [];
-    var toolChips = tools.map(function (t) {
-      return '<span class="text-[9px] px-1.5 py-0.5 rounded border border-inkRule bg-paper text-inkLow">' + t + '</span>';
-    }).join('');
-    var failChip = '';
-    if (includeFailRoute && node.failureRoute) {
-      failChip = '<div class="mt-2 pt-2 border-t border-signal/30 text-[9px] text-signal leading-snug">' + node.failureRoute + '</div>';
-    }
-    var label = (nodeId === 'demas') ? 'DEMAS' : ('Node ' + nodeId);
-    return '' +
-      '<article class="intent-card bg-paper border border-inkRule rounded-lg p-3" data-node-id="' + nodeId + '">' +
-        '<div class="flex items-center gap-2 mb-2">' +
-          '<span class="font-mono text-[10px] text-' + color + ' font-semibold">' + label + '</span>' +
-          '<span class="text-[9px] uppercase tracking-widest font-semibold bg-' + color + '/10 text-' + color + ' border border-' + color + '/20 px-1.5 py-0.5 rounded">' + roleLabel + '</span>' +
-        '</div>' +
-        '<div class="font-mono text-[10px] text-ink mb-1 truncate" title="' + gateName + ' → ' + agentName + '">' + gateName + ' → ' + agentName + '</div>' +
-        '<div class="text-[10px] text-inkLow leading-relaxed mb-2">' + (node.intent || '') + '</div>' +
-        (toolChips ? '<div class="flex gap-1 flex-wrap">' + toolChips + '</div>' : '') +
-        failChip +
-      '</article>';
-  }
-
-  function nodeIdsToRender(beat) {
-    if (isMobileViewport()) return ALL_NODE_IDS;
-    return nodeIdsForActiveBeat(beat);
-  }
-
-  function shouldShowFailRouteForDemas(beat) {
-    if (!beat || isMobileViewport()) {
-      return true;
-    }
-    var rows = document.querySelectorAll('[data-trace-line][data-highlight~="b' + beat + '"]');
-    for (var i = 0; i < rows.length; i++) {
-      if (rows[i].dataset.status === 'fail') return true;
-    }
-    return false;
-  }
-
-  function renderDecoder(beat) {
-    if (captionEl) {
-      captionEl.textContent = BEAT_CAPTIONS[beat] || '';
-    }
-    if (!decoderEl) return;
-    var ids = nodeIdsToRender(beat);
-    var includeFail = shouldShowFailRouteForDemas(beat);
-    var html = '';
-    for (var i = 0; i < ids.length; i++) {
-      var id = ids[i];
-      html += renderCard(id, id === 'demas' && includeFail);
-    }
-    decoderEl.innerHTML = html;
-  }
-
-  renderDecoder(stage ? stage.getAttribute('data-active-beat') : '1');
-
-  if (stage && window.MutationObserver) {
-    var obs = new MutationObserver(function (mutations) {
-      for (var i = 0; i < mutations.length; i++) {
-        if (mutations[i].attributeName === 'data-active-beat') {
-          renderDecoder(stage.getAttribute('data-active-beat'));
-          break;
-        }
-      }
-    });
-    obs.observe(stage, { attributes: true, attributeFilter: ['data-active-beat'] });
-  }
-
-  var mq = window.matchMedia('(max-width: ' + PO.MOBILE_BREAKPOINT_PX + 'px)');
-  mq.addEventListener('change', function () {
-    renderDecoder(stage ? stage.getAttribute('data-active-beat') : '1');
-  });
+  // Intent Decoder card cluster + scroll-synced caption removed (Step 1).
+  // The per-node decoder is now a typographic Detail Legend rendered alongside
+  // the DAG schematic — see lifecycle.js + the <aside data-detail-legend>
+  // block. Spec §5.2, §7.3, §10. Trace log + beat narration above are
+  // preserved; the panel now shows the trace stream alone.
 })();
 </script>
 </body>
