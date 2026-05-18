@@ -46,16 +46,28 @@ A separate, parallel concern surfaced during red-team review (§13): O-R-A-V ter
 | 5 | **URL strategy**: delete `architecture.html`; update all external refs | Cleanest URL story; one canonical source of truth |
 | 6 | **Component spine**: Anchored Decoder — one central Intent Decoder, sticky in viewport, scroll-syncs to the active node section | Reuses the most existing JS; honors the deductive lifecycle arc |
 
-## 4. Apple Integration Philosophy
+## 4. Industrial Illustration Philosophy
 
-This is the register every subsequent decision must respect.
+> **Design re-direction note (2026-05-18, post-spec, during execution):** The original §4 framed this page around an "Apple Environmental Report / How an iPad is made" register. Review against the `bencium-innovative-ux-designer` skill's anti-pattern protocol surfaced direct conflicts (Apple mimicry banned, Inter banned, glass morphism banned). Re-directed to the **Industrial / utilitarian** Tone option committed via the skill's Design Thinking Protocol, with **"the pipeline as a technical schematic"** as the page's Differentiation signature. The underlying values (illustration not promotion, engineering notes, no CTAs, no superlatives, precise numbers) are unchanged and arguably stronger in this register because they match what the content *is*: a literal engineering system.
 
-- **Illustration, not promotion.** No CTAs ("Learn more", "Get in touch", "Contact"). No superlatives. Section titles state what *is*, not what *could be*. Captions read as engineering notes. Closest reference: Apple's *Environmental Progress Report*, the *How an iPad is made* page, *Self Service Repair*. Dense, evidence-rich, never selling.
-- **One strong idea per scroll moment.** Each viewport holds one focal element. The Anchored Decoder lights up via opacity and border, not background flash. Whitespace is a feature.
-- **Surgical color.** Two semantic hues already exist in `dag-data.js`: deterministic green (`det: true` nodes) and probabilistic blue (`det: false` nodes). Applied consistently across rail items, decoder cards, node-section badges. No new palette tokens.
-- **Deliberate motion.** Single timing function `cubic-bezier(0.4, 0, 0.2, 1)` at `0.25s` — the prevailing rhythm of `chrome.css`. Reduced motion is a first-class state, not an afterthought.
-- **Honesty over polish.** Node 7 annotated *"in R&D · Langfuse"* in both architecture text and decoder card. Multi-LoRA inline at Node 5 states "~4B active params of 26B per token" (the production reality of sparse MoE). O-R-A-V locked to production expansion *(Observe / Reason / Act / Validate)* across the merged page, `dag-data.js`, and `pipeline-observatory/README.md`.
+This is the register every subsequent decision must respect. Reference works: **Otl Aicher's 1972 Munich Olympics signage system**, **Aicher's Lufthansa identity manuals (1962-present)**, **Braun product specification sheets (Dieter Rams era)**, **ERCO lighting catalogs**, **IBM 1960s-70s technical documentation**.
+
+- **Illustration, not promotion.** No CTAs ("Learn more", "Get in touch", "Contact"). No superlatives. Section titles state what *is*, not what *could be*. Captions read as engineering notes — the voice of a system manual, not a marketing page.
+- **The schematic is the signature.** The 7-node DAG is rendered as a full-width technical drawing in the spirit of Aicher's pictogram systems and Lufthansa's process diagrams. It sits sticky beneath the top nav while the reader is inside the lifecycle, with the active node lit (scroll-syncs to the active node sections below). This is the one visual every visitor is meant to remember.
+- **Type as the primary medium.** Schematic aside, the page communicates almost entirely through typographic hierarchy, grid discipline, and white space. The grid is strict (8-column on desktop, 4 on tablet, 2 on mobile). Headings, body, captions, code, labels — five visible type levels max.
+- **Type stack.** **IBM Plex Sans** (headings + body) + **IBM Plex Mono** (code, labels, system data). IBM Plex is purpose-built for engineering documentation; geometrically Aicher-adjacent; free via Google Fonts. Replaces Inter (banned by `bencium-innovative-ux-designer` as a primary font).
+- **Surgical color.** Paper + ink + two semantic accents:
+  - **Paper** `#F8F6F1` (warm off-white, the feel of printed manual paper) for light mode; **drafting-blueprint dark** `#0F1418` for dark mode.
+  - **Ink** `#1A1A1A` (very dark gray, not pure black) on paper; `#E8E6E0` on dark.
+  - **Deterministic green** `#2D5A2F` (drafting-pen forest green, semantic for `det: true` nodes per `dag-data.js`).
+  - **Probabilistic blue** `#1B3A5C` (drafting-pen navy, semantic for `det: false` nodes).
+  No third accent. No gradients. No glass. Bencium NEVER list strictly honored.
+- **Deliberate motion.** Single timing function `cubic-bezier(0.4, 0, 0.2, 1)` at `0.25s` — preserved from existing `chrome.css`. Reduced motion is a first-class state, not an afterthought.
+- **Honesty over polish.** Node 7 annotated *"in R&D · Langfuse"* in both schematic and inline section. Multi-LoRA inline at Node 5 states "~4B active params of 26B per token" (the production reality of sparse MoE). O-R-A-V locked to production expansion *(Observe / Reason / Act / Validate)* across the merged page, `dag-data.js`, and `pipeline-observatory/README.md`.
 - **No marketing voice.** Section title example: *"Pure deterministic Python. The final structural defense before output ships."* — not *"Industry-leading validation."*
+- **Bencium NEVER list honored.** No Inter / Roboto / Arial / Space Grotesk as primary type. No SaaS blue (#3B82F6) or purple gradients on white. No Apple design language mimicry. No glass morphism. No cookie-cutter SaaS layouts.
+- **Light-mode default, dark-mode secondary.** Engineering manuals are printed; the page reads as a printed document by default. Dark mode is offered as a system-preference response (already supported by existing tokens; updated palette).
+- **Site-cohesion follow-up logged.** `case-studies.html` will visually diverge from the merged page after this PR lands. A separate follow-up aligns `case-studies.html` to the same industrial register; not in scope for this PR.
 
 ## 5. Information Architecture
 
@@ -69,7 +81,7 @@ Top-down, single URL at `/pipeline-observatory/` (i.e. `index.html` rewritten in
    - *O-R-A-V validation* (`#orav`) — Observe / Reason / Act / Validate, fail-closed, 68.9% pass rate by design.
    - *DEMAS boundary* (`#demas`) — deterministic schema + integrity check at every node boundary.
    - *Data flywheel* (`#flywheel`) — every run becomes training data via DPO.
-4. **Lifecycle** (`#dag`) — *The journey of one PDP*, the spine of the page. Seven sequential node sections in order, each with stable id `#node-1` through `#node-7`:
+4. **Lifecycle** (`#dag`) — *The journey of one PDP*, the spine of the page. Opens with the **DAG schematic** (the page's signature, see §5.1 below); the seven node sections follow in order beneath it, each with stable id `#node-1` through `#node-7`:
    - Node 1 · City DNA (Context Injection)
    - Node 2 · Normalizer (Data Cleansing)
    - Node 3 · Synonyms (Expansion)
@@ -81,21 +93,43 @@ Top-down, single URL at `/pipeline-observatory/` (i.e. `index.html` rewritten in
 6. **Economics** (`#economics`) — *"$0.0006 per page. Here's the math."* (preserved).
 7. **Footer** — links to case-studies, repo, contact (current pattern; no CTAs).
 
-**Anchored Intent Decoder** floats sticky in the viewport (top-right desktop, bottom-sheet mobile). Re-renders the gate/agent/intent/fail-route card for whichever node section is most-visible. Below it, the existing telemetry trace log continues to stream; a brief caption beneath the trace flags which rows correspond to the currently-active node.
+### 5.1 The DAG Schematic (signature element)
 
-## 6. Sticky Region Hierarchy
+A full-width SVG technical drawing rendered in the spirit of Aicher's process diagrams and ERCO catalog figures:
 
-Three sticky regions coexist; they must not compete for the same screen real estate.
+- 7 numbered nodes laid out horizontally on desktop (≥1024px), wrapped to two rows on tablet, vertical stack on mobile.
+- Each node is a thin-stroked rectangle (1px ink stroke on paper, 0.5px on dark) with the node number and short name inside; gate name above, agent name below the rectangle as caption.
+- Connection lines between nodes are thin technical-drawing strokes (continuous black on paper) with directional arrowheads in Aicher's drawing style.
+- DEMAS boundary rendered as a dashed perimeter line enclosing nodes 1-6, with Node 7 outside it ("in R&D" annotation).
+- Color: nodes are paper-on-paper (just stroke + type) by default; the active node fills with deterministic green (`det: true`) or probabilistic blue (`det: false`) per `PO.DAG_NODES`.
+- Position: sticky directly under the top nav while the reader is inside the lifecycle region (`#dag` through `#economics`). Sits in normal document flow above `#dag` and below `#economics`.
+- Height: ~22vh sticky / ~40vh expanded when first reached (paginated reveal — full schematic on first viewport, then collapses to compact-strip on scroll into nodes).
+- Doubles as wayfinding: replaces the `lifecycle-rail` from the original spec. Clicking any node in the schematic jumps to that node's section below and lights it.
 
-| Breakpoint | Top nav | Lifecycle rail | Anchored Decoder |
+### 5.2 The Detail Legend (replaces Anchored Decoder)
+
+Re-render of the existing Intent Decoder as a typographic legend that sits alongside the schematic (right column on ≥1024px desktop; below the schematic on mobile/tablet):
+
+- Shows the active node's `gate · agent · intent · trace · failureRoute` as labeled type, in IBM Plex Mono. No card chrome; just labels + values on the grid.
+- Updates via the same `po:active-node-change` event the schematic listens for.
+- Mobile: legend collapses into the section content (no floating sheet) — type doesn't need to float.
+
+The existing trace log continues to stream as part of the lifecycle content; on each node section it is filtered/captioned to flag which rows correspond to that node.
+
+## 6. Sticky Region Hierarchy (revised for schematic-as-backbone)
+
+Two sticky regions coexist (down from three after removing the lifecycle-rail in favor of the schematic):
+
+| Breakpoint | Top nav | DAG schematic | Detail legend |
 |---|---|---|---|
-| **≥1280px** | Sticky top, thin, 2 items (*Pipeline · Case Studies*) | Sticky left rail; vertical list of 9 items (7 nodes + Flywheel + Economics); width ~180px | Sticky top-right of content area; width ~340px; below rail in z-order |
-| **768–1279px** | Sticky top | Horizontal scrubber under top nav; active item centered, scrollable horizontally | Sticky top-right, narrower (~280px); collapses inline below rail when active section is tall enough |
-| **<768px** | Sticky top (existing mobile nav pattern preserved) | Horizontal scrubber pinned directly under top nav | Bottom-sheet pinned to viewport bottom, ~64px collapsed; expandable to ~50vh on tap (Apple Music mini-player pattern) |
+| **≥1280px** | Sticky top, thin paper-and-ink bar, 2 items (*Pipeline · Case Studies*) | Sticky beneath top nav while inside lifecycle (`#dag`–`#economics`); ~22vh compact strip after first reveal | Sits in right column alongside the lifecycle node sections (not sticky on its own — flows with the section it belongs to); ~280px wide |
+| **768–1279px** | Sticky top | Sticky beneath top nav inside lifecycle; horizontal scroll if needed | Inline below schematic on each node section |
+| **<768px** | Sticky top (mobile nav pattern preserved, minus glass-morphism) | Compact vertical stack; sticky thin strip beneath top nav showing just node numbers when scrolled past initial reveal | Inline within each node section (no floating sheet — type doesn't need to float) |
 
 - All touch targets ≥ 44pt.
-- Shared z-index scale via CSS custom properties: `--z-nav: 60`, `--z-decoder: 55`, `--z-rail: 50`.
-- Page content has top/right padding sufficient to prevent any sticky region from overlapping text content at any breakpoint.
+- Shared z-index scale via CSS custom properties: `--z-nav: 60`, `--z-schematic: 50`.
+- Page content has top padding sufficient to prevent any sticky region from overlapping text content at any breakpoint.
+- The Anchored Decoder / Lifecycle Rail from the original spec are replaced by the schematic + inline detail legend (see §5.1, §5.2). The skill-mandated `bencium-innovative-ux-designer` anti-glass-morphism rule retires `.glass-nav`; replacement is a thin paper-and-ink top bar with a 1px ink rule beneath.
 
 ## 7. Components
 
@@ -103,7 +137,8 @@ Three sticky regions coexist; they must not compete for the same screen real est
 
 - `assets/dag-data.js` — `PO.DAG_NODES` consumed verbatim. Source of node names, roles, gate/agent metadata, intent lines, traces, failure routes.
 - `assets/stage.js` — `attachStage`, `attachReveals`, `attachNavToggle`, `pulseOnce`, reduced-motion guard. The exact `attachStage` pattern (band: 15–45% viewport, `data-attr` mutation on container) is repurposed for lifecycle node sections.
-- `assets/chrome.css`, `assets/tokens.js` — design tokens unchanged.
+- `assets/chrome.css` — **substantial update**: replace SaaS-blue palette tokens with paper-and-ink palette per §4; replace Inter font-family with IBM Plex Sans / Plex Mono; remove `.glass-nav` rule; add `.dag-schematic`, `.detail-legend`, `.framing-strip` rules; add light-mode default + dark-mode secondary tokens.
+- `assets/tokens.js` — **substantial update**: align JS-side color and font tokens with the new palette and type stack.
 - Mobile nav toggle (`navToggle`, `mobileNav`) — collapses from 3 items to 2 (*Pipeline · Case Studies*).
 
 ### 7.2 Reused (re-targeted)
@@ -113,6 +148,8 @@ Three sticky regions coexist; they must not compete for the same screen real est
 
 ### 7.3 New
 
+- **`.dag-schematic` component** — full-width SVG technical drawing per §5.1. Single file `assets/dag-schematic.svg.js` (or inline `<svg>` in `index.html` if smaller). Reads node metadata from `PO.DAG_NODES`. Subscribes to `po:active-node-change` to toggle the active fill. Includes click handlers on each node group → scroll to that section. Honors `prefers-reduced-motion` (no fill transitions; instant state changes).
+- **`.detail-legend` component** — typographic re-render of the existing Intent Decoder per §5.2. Same data source (`PO.DAG_NODES`), same event subscription (`po:active-node-change`), but no card chrome — just labeled type on the grid. Implementation: re-using the decoder's existing render function with a different DOM template.
 - **`.lifecycle-node` section component** — one per node (×7). Structure:
   ```html
   <section class="lifecycle-node" id="node-1" data-node-id="1">
@@ -131,11 +168,9 @@ Three sticky regions coexist; they must not compete for the same screen real est
   ```
   `<details>` defaults open on desktop (≥768px), closed on mobile (progressive disclosure for density).
 
-- **`.framing-strip`** — top-of-page horizontal row of one-line concept callouts. Each callout is an anchor target. Visual: subtle dividers, monospace small caps for labels, body-weight for values.
+- **`.framing-strip`** — top-of-page horizontal row of one-line concept callouts. Each callout is an anchor target. Visual: 1px ink rules above and below the strip, IBM Plex Mono small caps for labels, body-weight Plex Sans for values.
 
-- **`.lifecycle-rail`** — sticky vertical list (desktop) / horizontal scrubber (tablet/mobile). Items rendered from a shared `LIFECYCLE_ITEMS` array (7 nodes + 2 epilogues), each carrying `nodeId | label | href`. Uses the shared IntersectionObserver (see §8) to set `aria-current="step"` on the matching item.
-
-- **Anchored Decoder container** — a sticky positioning wrapper for the existing decoder card cluster, viewport-aware per §6.
+- *(Removed)* `.lifecycle-rail` and Anchored Decoder container — replaced by `.dag-schematic` + `.detail-legend` per §5.1, §5.2.
 
 - **`404.html`** — new file. Smart client-side redirect:
   - Detects `architecture.html` in `location.pathname` and maps the five real fragment patterns currently on that page to the merged-page anchors:
@@ -172,9 +207,9 @@ IntersectionObserver (single instance)
   targets: .lifecycle-node[data-node-id]
   ↓ (on intersection)
   container.setAttribute('data-active-node', N)
-  ↓ (MutationObserver / custom event dispatch)
-  ├→ Anchored Decoder re-renders for PO.DAG_NODES[N]
-  ├→ .lifecycle-rail item N gets aria-current="step" + visual active state
+  ↓ (custom event dispatch: po:active-node-change)
+  ├→ .dag-schematic node group N receives .active class (fills with det/probabilistic color)
+  ├→ .detail-legend re-renders gate/agent/intent/trace/failureRoute for PO.DAG_NODES[N]
   ├→ Trace log caption updates to current node
   └→ aria-live="polite" region announces ("Node N: <name>") after 400ms settle
 ```
@@ -282,15 +317,15 @@ Existing harness is in `pipeline-observatory/tests/playwright/`. Config already 
 
 | Spec file (new) | Validates |
 |---|---|
-| `lifecycle.scroll-sync.spec.js` | Scrolling through each `.lifecycle-node` updates rail `aria-current` and Anchored Decoder card to matching `nodeId` |
-| `lifecycle.rail.spec.js` | Click rail item → page scrolls to section; focus moves to section heading; arrow keys cycle through items |
-| `lifecycle.mobile.spec.js` | At `<768px`: rail renders as horizontal scrubber; decoder renders as bottom sheet; tap-to-expand works |
-| `lifecycle.reduced-motion.spec.js` | `prefers-reduced-motion: reduce` → no scroll-sync; all 7 decoder cards visible stacked; no animation |
+| `lifecycle.scroll-sync.spec.js` | Scrolling through each `.lifecycle-node` updates `data-active-node` and dispatches `po:active-node-change` |
+| `lifecycle.schematic.spec.js` | Click schematic node → page scrolls to that section + focus moves; active node fills with semantic color; arrow keys on focused schematic cycle through nodes; sticky behavior under top nav within lifecycle region |
+| `lifecycle.mobile.spec.js` | At `<768px`: schematic stacks vertically; detail legend renders inline within each section (no floating sheet); 44pt touch targets on schematic node groups |
+| `lifecycle.reduced-motion.spec.js` | `prefers-reduced-motion: reduce` → no scroll-sync animations; schematic shows static composition; detail legends visible per section |
 | `lifecycle.keyboard.spec.js` | Full keyboard traversal (Tab order, focus-visible outlines, both skip links, no keyboard traps) |
-| `lifecycle.no-js.spec.js` | With JS disabled: page renders, all sections in document order, all decoder cards visible, no broken layout |
-| `lifecycle.visual.spec.js` | Visual regression: snapshot at each of 11 viewport states (hero, framing, nodes 1–7, flywheel, economics) at 3 breakpoints |
+| `lifecycle.no-js.spec.js` | With JS disabled: page renders, all sections in document order, schematic visible as static SVG, all detail legends visible per section, no broken layout |
+| `lifecycle.visual.spec.js` | Visual regression: snapshot at each of 11 viewport states (hero, framing, schematic + nodes 1–7, flywheel, economics) at 3 breakpoints |
 | `lifecycle.404.spec.js` | `404.html` correctly maps `/pipeline-observatory/architecture.html` and all 5 historical fragment patterns (`#dag-h`, `#moe-h`, `#orav-h`, `#flow-h`, `#tenants-h`) to the corresponding merged-page anchors per §7.3 |
-| `lifecycle.intent-decoder.spec.js` | Existing Intent Decoder behavior preserved (gate card, agent card, fail-route, intent line, role badge); re-targeted to node sections instead of beats |
+| `lifecycle.detail-legend.spec.js` | Detail legend re-renders gate/agent/intent/trace/failureRoute for active node via `po:active-node-change`; preserves the semantic data of the existing Intent Decoder |
 | `lifecycle.link-integrity.spec.js` | All in-page anchor `href`s resolve; no internal 404s; canonical and `og:url` valid |
 
 Specs to update (not new): any existing spec that targeted `architecture.html` directly. Catalog at implementation time.
@@ -343,7 +378,11 @@ No items skipped. No "good enough."
 - [ ] JS-disabled path verified manually (DevTools → Disable JavaScript).
 - [ ] Every number on the page traces to `Resume CV/00-GROUND-SOURCE-OF-TRUTH.md` via inline HTML comment.
 - [ ] O-R-A-V expansion consistent: *"Observe, Reason, Act, Validate"* across merged page + `pipeline-observatory/README.md` + `dag-data.js`.
-- [ ] Node 7 visually annotated *"in R&D · Langfuse"* in both section header and decoder card.
+- [ ] Node 7 visually annotated *"in R&D · Langfuse"* in both schematic (outside DEMAS perimeter) and inline section header + detail legend.
+- [ ] DAG schematic renders correctly at all 3 breakpoints; sticky behavior works inside lifecycle region only.
+- [ ] Type stack updated: IBM Plex Sans + Plex Mono load and render; Inter no longer referenced.
+- [ ] `.glass-nav` removed; replaced with thin paper-and-ink top bar.
+- [ ] Light-mode + dark-mode palettes match §4 hex specs; no SaaS-blue (`#3B82F6`) anywhere.
 - [ ] CHANGELOG `[3.0.0]` entry written.
 - [ ] PR description includes before/after Lighthouse JSON, before/after screenshots at 3 breakpoints (1440, 1024, 390), link to this spec.
 - [ ] Sibling-repo PRs (`Manzela`, `Resume CV`) merged within 24h of `pipeline-observatory` PR.
