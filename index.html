@@ -467,32 +467,104 @@
   </figure>
   <!-- END DAG SCHEMATIC -->
 
-  <!-- BEGIN LIFECYCLE SCAFFOLDING (task A.2 — placeholder sections; real content in Section B) -->
+  <!-- BEGIN LIFECYCLE SECTIONS (task B.3 — replaces A.2 placeholder scaffolding)
+       Real content per spec §7.3 + §10. Each section: header (number + name·role + DET/PROB badge)
+       and architecture body (problem · gate→agent mechanism · result). Prose source:
+       PO.DAG_NODES (assets/dag-data.js) — the same data the original architecture.html stage
+       rendered into its 7 per-node cards (recovered from git ef8131a:architecture.html lines
+       322-393). Inline cross-cutting deep-dives at Node 5 (MoE) and Node 6 (O-R-A-V + DEMAS)
+       land in Task B.4; framing strip in B.2; flywheel epilogue in B.6. -->
   <div data-lifecycle-container data-active-node="1">
-    <section class="lifecycle-node" id="node-1" data-node-id="1" style="min-height:100vh;padding:48px 24px;border-top:1px solid var(--ink-rule)">
-      <h3 class="text-2xl">Node 1 · placeholder</h3>
-      <p class="text-inkLow">Real content lands in Section B (Task B.3).</p>
+
+    <section class="lifecycle-node" id="node-1" data-node-id="1">
+      <header class="lifecycle-node__header">
+        <h3 id="node-1-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 1</span> &middot; City DNA &middot; Context Injection</h3>
+        <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>Every downstream node reasons about geography. Node 1 locks down locale facts &mdash; ISO codes, timezone, jurisdiction-specific data &mdash; before any of them runs. Without this step, taxonomy mapping, synonym expansion, and content generation drift on stale or invented context.</p>
+        <p>Locale Resolver validates ISO-3166 codes and timezone offsets and rejects malformed location data. If the gate passes, Grounded Search fetches factual data from verified .gov sources per locale via Gemini. No model call is made until the deterministic resolver returns clean.</p>
+        <p class="lifecycle-node__trace">Locale &rarr; Gate &rarr; Web Search &rarr; Context</p>
+      </div>
     </section>
-    <section class="lifecycle-node" id="node-2" data-node-id="2" style="min-height:100vh;padding:48px 24px;border-top:1px solid var(--ink-rule)">
-      <h3 class="text-2xl">Node 2 · placeholder</h3>
+
+    <section class="lifecycle-node" id="node-2" data-node-id="2">
+      <header class="lifecycle-node__header">
+        <h3 id="node-2-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 2</span> &middot; Normalizer &middot; Data Cleansing</h3>
+        <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>Tenant data lands in inconsistent shapes &mdash; partial fields, free-form taxonomies, mixed product types. Node 2 maps everything to a canonical schema so every downstream node sees the same shape.</p>
+        <p>Schema Validator (Pydantic + AST) enforces strict JSON schema and fails on mismatch. Past the gate, a text classifier maps to internal taxonomy and a vision model extracts context from product images. The two outputs join on the canonical record.</p>
+        <p class="lifecycle-node__trace">Input &rarr; Schema &rarr; Classification &rarr; Record</p>
+      </div>
     </section>
-    <section class="lifecycle-node" id="node-3" data-node-id="3" style="min-height:100vh;padding:48px 24px;border-top:1px solid var(--ink-rule)">
-      <h3 class="text-2xl">Node 3 · placeholder</h3>
+
+    <section class="lifecycle-node" id="node-3" data-node-id="3">
+      <header class="lifecycle-node__header">
+        <h3 id="node-3-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 3</span> &middot; Synonyms &middot; Expansion</h3>
+        <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>Node 3 produces the keyword surface area &mdash; locale-aware synonyms and landing page name variants &mdash; that Node 4 will filter against search volume. Over-generation is the design; the next node has the volume signal to drop the noise.</p>
+        <p>Dedup Filter runs exact-match and fuzzy deduplication (SimHash + Levenshtein) on the synonym set before any classifier runs. The LPN Generator then produces locale-tuned variants using a text classification model keyed to the tenant&rsquo;s product dictionary.</p>
+        <p class="lifecycle-node__trace">Terms &rarr; Dedup &rarr; Classification &rarr; Set</p>
+      </div>
     </section>
-    <section class="lifecycle-node" id="node-4" data-node-id="4" style="min-height:100vh;padding:48px 24px;border-top:1px solid var(--ink-rule)">
-      <h3 class="text-2xl">Node 4 · placeholder</h3>
+
+    <section class="lifecycle-node" id="node-4" data-node-id="4">
+      <header class="lifecycle-node__header">
+        <h3 id="node-4-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 4</span> &middot; SV Gate &middot; Volume Filter</h3>
+        <span class="lifecycle-node__role-badge" data-role="deterministic">DET</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>Node 4 is a hard gate. It drops sub-threshold keywords before they reach Node 5 &mdash; where ~80% of run cost lives. Every keyword that survives this node will be generated against; everything else stops here.</p>
+        <p>Volume Fetcher queries the Google Ads API for keyword search volume per synonym per location and stages results in BigQuery. Keyword Ranker then scores keywords by commercial value per city using NumPy and custom ranking math. No LLM is invoked in this node.</p>
+        <p class="lifecycle-node__trace">Set &rarr; API Query &rarr; Math Ranking &rarr; Qualified</p>
+      </div>
     </section>
-    <section class="lifecycle-node" id="node-5" data-node-id="5" style="min-height:100vh;padding:48px 24px;border-top:1px solid var(--ink-rule)">
-      <h3 class="text-2xl">Node 5 · placeholder</h3>
+
+    <section class="lifecycle-node" id="node-5" data-node-id="5">
+      <header class="lifecycle-node__header">
+        <h3 id="node-5-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 5</span> &middot; Writer &middot; Generation</h3>
+        <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>This is the only sustained inference path in the pipeline. ~80% of run cost lives in this ~11-second window. Every other node is either deterministic Python or a short-call classifier &mdash; the probabilistic surface is one node wide and pinned here on purpose.</p>
+        <p>Template Selector (Jinja2 + constraint set) enforces structural bounds before generation: length, heading count, content block schema. If the template gate passes, the Content Generator produces 10 SEO-optimized content blocks per product-location pair on Gemma 4 MoE with per-tenant LoRA adapters.</p>
+        <p>Multi-LoRA serving keeps adapter switching at inference time cheap. Tenant isolation runs through the adapter binding, not through separate model weights. Detailed serving topology lands in the inline deep-dive below in a later pass.</p>
+        <p class="lifecycle-node__trace">Qualified &rarr; Template &rarr; LoRA &rarr; 10 Blocks</p>
+      </div>
     </section>
-    <section class="lifecycle-node" id="node-6" data-node-id="6" style="min-height:100vh;padding:48px 24px;border-top:1px solid var(--ink-rule)">
-      <h3 class="text-2xl">Node 6 · placeholder</h3>
+
+    <section class="lifecycle-node" id="node-6" data-node-id="6">
+      <header class="lifecycle-node__header">
+        <h3 id="node-6-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 6</span> &middot; Validator &middot; Deterministic QA</h3>
+        <span class="lifecycle-node__role-badge" data-role="deterministic">DET</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>Pure deterministic Python &mdash; the final structural defense before output ships. Zero LLM calls. The probabilistic surface ended at Node 5; Node 6 enforces the contracts on what came out.</p>
+        <p>Format Check runs O(1) checks (regex + blocklist): format, word count, forbidden patterns. Past that gate, the O-R-A-V engine observes diagnostics, reasons about severity, acts with corrections, and validates the final output. Each step is a rule, not a model.</p>
+        <p>Outcomes are <span class="font-mono">PASS</span>, <span class="font-mono">RETRY</span>, or <span class="font-mono">FAIL</span>. Fail-closed: below-threshold blocks halt downstream, Firestore captures the trace, the orchestrator retries with a corrected prompt. The O-R-A-V mechanism is documented in the inline deep-dive below in a later pass.</p>
+        <p class="lifecycle-node__trace">Draft &rarr; Format &rarr; O-R-A-V &rarr; PASS / RETRY / FAIL</p>
+      </div>
     </section>
-    <section class="lifecycle-node" id="node-7" data-node-id="7" style="min-height:100vh;padding:48px 24px;border-top:1px solid var(--ink-rule)">
-      <h3 class="text-2xl">Node 7 · placeholder</h3>
+
+    <section class="lifecycle-node" id="node-7" data-node-id="7">
+      <header class="lifecycle-node__header">
+        <h3 id="node-7-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 7</span> &middot; Evaluator &middot; DEMAS JIT</h3>
+        <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
+        <span class="lifecycle-node__rd-flag">in R&amp;D &middot; Langfuse</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>JIT consensus audit. Node 7 validates per-block content quality before commit &mdash; the qualitative complement to Node 6&rsquo;s structural checks. Currently in R&amp;D in Langfuse; not yet in the production code repo, surfaced here for completeness.</p>
+        <p>Quality Threshold guards SLM evaluation by enforcing minimum O-R-A-V scores upstream &mdash; nothing reaches the judge that the deterministic validator already rejected. SLM-as-Judge (Gemma 4 SLM) then runs language-agnostic content quality assessment inline with Node 5&rsquo;s output.</p>
+        <p class="lifecycle-node__trace">Content &rarr; Threshold &rarr; SLM Audit &rarr; Accept/Reject</p>
+      </div>
     </section>
+
   </div>
-  <!-- END LIFECYCLE SCAFFOLDING -->
+  <!-- END LIFECYCLE SECTIONS -->
 
 </main>
 

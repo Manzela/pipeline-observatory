@@ -239,6 +239,110 @@ code, pre, .mono { font-family: var(--font-mono); }
 .detail-legend[data-role="probabilistic"] .detail-legend__role-badge { color: var(--prob-blue); border-color: var(--prob-blue); }
 
 /* ───────────────────────────────────────────────────────────────────────
+   Lifecycle node sections  (task B.3 — real content per spec §7.3)
+   One section per DAG node. Header (number + name·role + DET/PROB badge)
+   then architecture body (problem · gate→agent · result). Industrial
+   register: thin rules, sharp corners, no decoration. Inline cross-cutting
+   deep-dives at Node 5 and Node 6 land in B.4; framing strip in B.2.
+   ─────────────────────────────────────────────────────────────────────── */
+.lifecycle-node {
+  padding: 64px 24px;
+  border-top: 1px solid var(--ink-rule);
+  scroll-margin-top: 72px; /* top-nav height + breathing room */
+  /* Keep each section tall enough to dominate the IntersectionObserver
+     band (lifecycle.js rootMargin '-15% 0px -55% 0px' = ~30% of viewport).
+     Without this, multiple short sections overlap the band on scroll and
+     the scroll-sync test (each node sets data-active-node) flakes. */
+  min-height: 70vh;
+}
+.lifecycle-node__header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.lifecycle-node__title {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+  flex: 1;
+}
+/* Node N numerical prefix inside the title — mono register, dimmed.
+   Kept inside the <h3> (not a sibling span) so the test contract
+   `#node-N h3` matches /Node N/ without a separate element. */
+.lifecycle-node__num {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+  margin-right: 4px;
+}
+.lifecycle-node__title:focus-visible {
+  outline: 2px solid var(--prob-blue);
+  outline-offset: 4px;
+}
+.lifecycle-node__role-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid;
+  border-radius: 0; /* sharp corners — industrial register */
+}
+.lifecycle-node__role-badge[data-role="deterministic"] {
+  color: var(--det-green);
+  border-color: var(--det-green);
+}
+.lifecycle-node__role-badge[data-role="probabilistic"] {
+  color: var(--prob-blue);
+  border-color: var(--prob-blue);
+}
+/* Node 7 R&D annotation — separate from role badge so it stays visible
+   even if Node 7 graduates to production later (just delete the span). */
+.lifecycle-node__rd-flag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+  padding: 4px 10px;
+  border: 1px dashed var(--ink-low);
+}
+.lifecycle-node__architecture {
+  max-width: 720px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.lifecycle-node__architecture p {
+  margin: 0 0 16px;
+}
+.lifecycle-node__architecture p:last-child {
+  margin-bottom: 0;
+}
+/* Trace line: mono register, dimmed — reads as a routing/signature line,
+   not body copy. Matches the trace-row styling in the telemetry section.
+   Selector specificity matches the .lifecycle-node__architecture p rule
+   above so margin-top wins without needing !important. */
+.lifecycle-node__architecture .lifecycle-node__trace {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink-low);
+  margin: 24px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--ink-rule);
+}
+
+/* ───────────────────────────────────────────────────────────────────────
    DAG schematic  (task B.5 — index.html signature visual)
    Industrial / Aicher / Lufthansa technical-drawing register: thin ink
    strokes, sharp corners, IBM Plex Mono labels, semantic accent fill on
