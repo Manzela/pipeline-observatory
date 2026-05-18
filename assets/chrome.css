@@ -13,6 +13,7 @@
   --ink-rule: rgba(26, 26, 26, 0.12);
   --det-green: #2D5A2F;     /* deterministic nodes — drafting forest */
   --prob-blue: #1B3A5C;     /* probabilistic nodes — drafting navy */
+  --prob-blue-rgb: 27, 58, 92;     /* RGB channels of #1B3A5C — used for rgba(var(--prob-blue-rgb), x) in glows / focus rings / selection */
   --signal: #B83216;        /* surgical warning accent — Aicher red */
   --font-sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', monospace;
@@ -29,6 +30,7 @@
     --ink-rule: rgba(232, 230, 224, 0.12);
     --det-green: #6FAF6B;
     --prob-blue: #6FA0CC;
+    --prob-blue-rgb: 111, 160, 204;  /* RGB channels of #6FA0CC */
     --signal: #E07A5F;
   }
 }
@@ -48,7 +50,7 @@ html, body {
 code, pre, .mono { font-family: var(--font-mono); }
 
 ::selection {
-  background: rgba(27, 58, 92, 0.25);
+  background: rgba(var(--prob-blue-rgb), 0.25);
   color: var(--ink);
 }
 
@@ -163,7 +165,7 @@ code, pre, .mono { font-family: var(--font-mono); }
   border-left: 2px solid transparent;
 }
 .trace-row:focus-visible {
-  outline: 2px solid rgba(27, 58, 92, 0.6);
+  outline: 2px solid rgba(var(--prob-blue-rgb), 0.6);
   outline-offset: -1px;
 }
 .telemetry-stage[data-active-beat="1"] [data-trace-line]:not([data-highlight~="b1"]),
@@ -178,7 +180,7 @@ code, pre, .mono { font-family: var(--font-mono); }
 .telemetry-stage[data-active-beat="3"] [data-highlight~="b3"],
 .telemetry-stage[data-active-beat="4"] [data-highlight~="b4"],
 .telemetry-stage[data-active-beat="5"] [data-highlight~="b5"] {
-  background: rgba(27, 58, 92, 0.10);
+  background: rgba(var(--prob-blue-rgb), 0.10);
   border-left-color: var(--prob-blue);
 }
 
@@ -253,7 +255,7 @@ code, pre, .mono { font-family: var(--font-mono); }
 .dag-stage[data-active-node="6"] .dag-node[data-node="6"],
 .dag-stage[data-active-node="7"] .dag-node[data-node="7"] {
   border-color: var(--prob-blue);
-  box-shadow: 0 0 14px rgba(27, 58, 92, 0.3);
+  box-shadow: 0 0 14px rgba(var(--prob-blue-rgb), 0.3);
 }
 .dag-stage__card {
   min-height: 80vh;
@@ -292,7 +294,7 @@ code, pre, .mono { font-family: var(--font-mono); }
 }
 .expert.active {
   background: var(--prob-blue);
-  box-shadow: 0 0 12px rgba(27, 58, 92, 0.4);
+  box-shadow: 0 0 12px rgba(var(--prob-blue-rgb), 0.4);
   transform: scale(1.5);
 }
 @media (max-width: 768px) {
@@ -353,7 +355,7 @@ code, pre, .mono { font-family: var(--font-mono); }
 .spine[data-active-case="03"] li[data-id="03"] .dot {
   border-color: var(--prob-blue);
   background: var(--prob-blue);
-  box-shadow: 0 0 8px rgba(27, 58, 92, 0.35);
+  box-shadow: 0 0 8px rgba(var(--prob-blue-rgb), 0.35);
 }
 .spine[data-active-case="01"] li[data-id="01"] .label,
 .spine[data-active-case="02"] li[data-id="02"] .label,
