@@ -3,12 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pipeline — Daniel Manzela</title>
-    <meta name="description" content="The autonomous pipeline that scales organic traffic. 11 tenants, 5 countries, 234 surfaces, $0.0006/page on self-hosted Gemma 4 MoE.">
-    <meta property="og:title" content="Pipeline — Daniel Manzela">
-    <meta property="og:description" content="11 tenants · 5 countries · 234 surfaces · $0.0006 per page. Autonomous, fail-closed, self-hosted.">
+    <title>Pipeline — Multi-agent DAG, Mixture-of-Experts serving, live trace — Daniel Manzela</title>
+    <meta name="description" content="A 7-node multi-agent pipeline serving 11 enterprise retailers across 5 countries at $0.0006/PDP. MoE serving, deterministic O-R-A-V validation, live trace.">
+    <link rel="canonical" href="https://manzela.github.io/pipeline-observatory/">
+    <meta property="og:title" content="Pipeline — Multi-agent DAG, MoE serving, live trace">
+    <meta property="og:description" content="A 7-node multi-agent pipeline serving 11 enterprise retailers across 5 countries at $0.0006/PDP.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://manzela.github.io/pipeline-observatory/">
+    <meta property="og:image" content="https://manzela.github.io/pipeline-observatory/assets/og-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pipeline — Daniel Manzela">
+    <meta name="twitter:description" content="A 7-node multi-agent pipeline at $0.0006/PDP. Live trace, deterministic O-R-A-V validation.">
+    <meta name="twitter:image" content="https://manzela.github.io/pipeline-observatory/assets/og-card.png">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Pipeline — Multi-agent DAG, Mixture-of-Experts serving, live trace",
+      "description": "A 7-node multi-agent pipeline serving 11 enterprise retailers across 5 countries at $0.0006/PDP. Mixture-of-Experts serving with per-tenant Multi-LoRA adapters, deterministic O-R-A-V validation at 68.9% pass rate by design, live execution telemetry.",
+      "url": "https://manzela.github.io/pipeline-observatory/",
+      "author": {
+        "@type": "Person",
+        "name": "Daniel Manzela",
+        "url": "https://manzela.github.io/"
+      },
+      "datePublished": "2024-01-01",
+      "dateModified": "2026-05-18",
+      "publisher": {
+        "@type": "Person",
+        "name": "Daniel Manzela"
+      },
+      "about": [
+        "Multi-agent systems",
+        "Mixture-of-Experts language models",
+        "Directed Acyclic Graph pipelines",
+        "Deterministic LLM validation",
+        "Production AI observability"
+      ],
+      "keywords": "Multi-agent DAG, Mixture-of-Experts, Gemma 4, Multi-LoRA, O-R-A-V validation, Google ADK, Vertex AI, DEMAS audit",
+      "inLanguage": "en"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "TNG Shopper Pipeline (Pipeline Observatory dashboard)",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web (live dashboard); Production runs on Vertex AI + Google ADK + Modal serverless",
+      "description": "Autonomous 7-node content generation pipeline serving 11 enterprise retailers. Gemma 4 26B-A4B-it Mixture-of-Experts with per-tenant LoRA adapters. Deterministic O-R-A-V validation gating at 68.9% pass rate by design. ~10.5M product detail pages per cycle at $0.0006/PDP.",
+      "url": "https://manzela.github.io/pipeline-observatory/",
+      "author": {
+        "@type": "Person",
+        "name": "Daniel Manzela"
+      },
+      "programmingLanguage": ["Python", "JavaScript"],
+      "softwareRequirements": "Google Agent Development Kit, Vertex AI, vLLM, Modal serverless, Langfuse observability",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.0006",
+        "priceCurrency": "USD",
+        "description": "Cost per product detail page produced"
+      }
+    }
+    </script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
