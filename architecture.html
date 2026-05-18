@@ -1,465 +1,84 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Architecture — Daniel Manzela</title>
-<meta name="description" content="Architecture deep-dive: 7-node DAG with MoE sparse routing, per-tenant LoRA adapters, O-R-A-V deterministic validation, DEMAS JIT audit, and closed-loop DPO dataset curation.">
-<meta property="og:title" content="Architecture — Daniel Manzela">
-<meta property="og:description" content="7 nodes. 80% deterministic. 11 tenants. One DAG.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://manzela.github.io/pipeline-observatory/architecture.html">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="assets/tokens.js"></script>
-<link rel="stylesheet" href="assets/chrome.css">
-</head>
-<body class="bg-paper text-ink antialiased selection:bg-probBlue/30 pb-32">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture — moved to Pipeline · Daniel Manzela</title>
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://manzela.github.io/pipeline-observatory/">
+<!--
+  This file is a redirect proxy. The content that used to live here has been
+  merged into / (the Pipeline lifecycle page). The 5 historical anchor IDs
+  (#dag-h, #moe-h, #orav-h, #flow-h, #tenants-h) are mapped to the
+  corresponding anchors on the merged page (#dag, #moe, #orav, #flywheel,
+  #multi-tenant) by the inline script below. Visitors with JavaScript
+  disabled fall through to the meta-refresh target (the merged page root
+  with #dag fallback). The page returns HTTP 200 (not 404) so search
+  engines treat it as a 301-equivalent redirect.
 
-<a href="#main" class="skip-link">Skip to main content</a>
-
-<!-- BEGIN NAV -->
-<nav class="top-nav" aria-label="Primary">
-  <div class="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
-    <a href="index.html" class="text-sm font-semibold tracking-tight text-ink">
-      Autonomous <span class="text-inkLow font-medium ml-1">pipeline</span>
-    </a>
-    <ul class="hidden md:flex gap-8 list-none m-0 p-0">
-      <li><a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors">Profile</a></li>
-      <li><a href="index.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="pipeline">Pipeline</a></li>
-      <li><a href="architecture.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="architecture">Architecture</a></li>
-      <li><a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="case-studies">Case Studies</a></li>
-    </ul>
-    <button id="navToggle" class="md:hidden text-inkLow hover:text-ink transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
-    </button>
-  </div>
-  <div id="mobileNav" class="md:hidden hidden border-t border-inkRule px-6 py-4 flex flex-col gap-3">
-    <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2">Profile</a>
-    <a href="index.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="pipeline">Pipeline</a>
-    <a href="architecture.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="architecture">Architecture</a>
-    <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="case-studies">Case Studies</a>
-  </div>
-</nav>
-<!-- END NAV -->
-
-<main id="main" class="max-w-4xl mx-auto px-6 pt-14">
-
-  <!-- Hero -->
-  <header class="py-24 md:py-32 text-center border-b border-inkRule">
-    <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-tight">
-      7 nodes. 80% deterministic.<br>11 tenants. One DAG.
-    </h1>
-    <div class="flex flex-wrap justify-center items-center gap-3 mb-4">
-      <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-4 py-2 rounded-full">Active since 2024</span>
-      <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-4 py-2 rounded-full">Human-supervised</span>
-    </div>
-    <div class="text-xs text-inkLow tracking-wide">
-      One page over: <a href="index.html" class="text-ink hover:text-probBlue transition-colors">Pipeline</a>
-      &middot; <a href="case-studies.html" class="text-ink hover:text-probBlue transition-colors">Case Studies</a>
-      &middot; Daniel Manzela
-    </div>
-  </header>
-
-  <!-- DAG sticky-stage (signature moment) -->
-  <section class="py-20 border-b border-inkRule reveal" id="dag" aria-labelledby="dag-h">
-    <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4 font-medium">Execution DAG</div>
-    <h2 id="dag-h" class="text-3xl font-bold tracking-tight mb-4">7 nodes, in order.</h2>
-    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
-      Each node pairs a deterministic gate with an execution agent. The gate fires first; the agent activates only if the gate passes. DEMAS intercepts at every boundary for JIT validation. Nodes 4 and 6 are pure Python &mdash; no LLM invoked. Scroll to walk node-by-node.
-    </p>
-
-    <div class="dag-stage" data-active-node="1">
-      <div class="dag-stage__pinned">
-        <div class="card p-4 md:p-6">
-          <div class="dag-stage__overview" id="dagOverview"></div>
-        </div>
-      </div>
-      <div id="nodeSeq" class="flex flex-col gap-12"></div>
-    </div>
-
-    <div class="bg-paperDeep border border-inkRule p-4 rounded-xl mt-12 text-left">
-      <div class="font-mono text-[10px] text-ink font-bold mb-1 tracking-widest">DEMAS &middot; JIT Audit Layer</div>
-      <div class="text-[10px] text-inkLow leading-relaxed">Deterministic Evaluation &amp; Monitoring Audit System &mdash; intercepts at every node boundary. Validates data integrity, schema compliance, and output quality in real time. 68.9% pass rate &middot; fail-closed &mdash; rejected outputs never propagate downstream.</div>
-    </div>
-  </section>
-
-  <!-- MoE Sparse Activation -->
-  <section class="py-20 border-b border-inkRule reveal" id="moe" aria-labelledby="moe-h">
-    <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4 font-medium">Sparse Activation &amp; Routing</div>
-    <h2 id="moe-h" class="text-3xl font-bold tracking-tight mb-4">Multi-LoRA serving engine.</h2>
-    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
-      Base model: Gemma 4 MoE (128 experts, 4 active per token). Only 4B parameters fire per forward pass despite 26B total — cost-efficient sparse inference without sacrificing capacity. Multi-LoRA serving enables fast adapter switching at inference time.
-    </p>
-
-    <div class="card p-8 text-center overflow-hidden">
-      <div class="font-mono text-[10px] text-inkLow mb-6 tracking-widest uppercase">Base model: Gemma 4 26B-A4B MoE</div>
-
-      <div class="moe-grid" id="moeGrid" aria-label="MoE expert grid: 128 experts, 4 active per token"></div>
-
-      <div class="w-px h-10 mx-auto bg-gradient-to-b from-probBlue/50 to-transparent my-4" aria-hidden="true"></div>
-
-      <div class="font-mono text-[10px] text-probBlue mb-6 tracking-widest uppercase">LoRA adapters &middot; 18 prompts per tenant &middot; 8 of 11 tenants shown</div>
-
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full" id="loraFan"></div>
-
-      <div class="mt-8 pt-6 border-t border-inkRule">
-        <h3 class="text-sm font-semibold mb-4">Isolation stack</h3>
-        <div class="grid md:grid-cols-4 gap-3">
-          <div class="bg-paperDeep border border-inkRule rounded-lg p-3 text-center text-xs hover:border-ink/20 transition-colors">
-            <div class="font-semibold mb-1">Tenant</div><div class="font-mono text-[10px] text-inkLow">adapter_id binding</div>
-          </div>
-          <div class="bg-paperDeep border border-inkRule rounded-lg p-3 text-center text-xs hover:border-ink/20 transition-colors">
-            <div class="font-semibold mb-1">Prompt</div><div class="font-mono text-[10px] text-inkLow">scoped system cache</div>
-          </div>
-          <div class="bg-paperDeep border border-inkRule rounded-lg p-3 text-center text-xs hover:border-ink/20 transition-colors">
-            <div class="font-semibold mb-1">Task</div><div class="font-mono text-[10px] text-inkLow">DAG node boundaries</div>
-          </div>
-          <div class="bg-paperDeep border border-inkRule rounded-lg p-3 text-center text-xs hover:border-ink/20 transition-colors">
-            <div class="font-semibold mb-1">KV cache</div><div class="font-mono text-[10px] text-inkLow">PagedAttention</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- O-R-A-V Validation Engine -->
-  <section class="py-20 border-b border-inkRule reveal" id="orav" aria-labelledby="orav-h">
-    <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4 font-medium">Deterministic Quality Gate</div>
-    <h2 id="orav-h" class="text-3xl font-bold tracking-tight mb-4">O-R-A-V validation engine.</h2>
-    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
-      O-R-A-V is a control-flow pattern. Node 6 executes deterministic validation across every content block: <strong>O</strong>bserve diagnostics, <strong>R</strong>eason about severity, <strong>A</strong>ct with corrections, <strong>V</strong>alidate the final output. Zero LLM calls — pure rule-based defense-in-depth.
-    </p>
-
-    <div class="card p-6 mb-6">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-paperDeep border border-inkRule rounded-xl p-4 text-center border-l-2 border-l-detGreen transition-colors hover:border-ink/30">
-          <div class="text-3xl font-bold mb-2">O</div><div class="text-xs font-semibold mb-1">Observe</div><div class="font-mono text-[9px] text-inkLow">scan diagnostics</div>
-        </div>
-        <div class="bg-paperDeep border border-inkRule rounded-xl p-4 text-center border-l-2 border-l-detGreen transition-colors hover:border-ink/30">
-          <div class="text-3xl font-bold mb-2">R</div><div class="text-xs font-semibold mb-1">Reason</div><div class="font-mono text-[9px] text-inkLow">assess severity</div>
-        </div>
-        <div class="bg-paperDeep border border-inkRule rounded-xl p-4 text-center border-l-2 border-l-detGreen transition-colors hover:border-ink/30">
-          <div class="text-3xl font-bold mb-2">A</div><div class="text-xs font-semibold mb-1">Act</div><div class="font-mono text-[9px] text-inkLow">apply corrections</div>
-        </div>
-        <div class="bg-paperDeep border border-inkRule rounded-xl p-4 text-center border-l-2 border-l-detGreen transition-colors hover:border-ink/30">
-          <div class="text-3xl font-bold mb-2">V</div><div class="text-xs font-semibold mb-1">Validate</div><div class="font-mono text-[9px] text-inkLow">final gate decision</div>
-        </div>
-      </div>
-
-      <div class="mt-6 pt-4 border-t border-inkRule">
-        <div class="text-[10px] uppercase tracking-widest text-inkLow mb-3 font-medium">Deterministic checks (Node 6)</div>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-          <div class="text-[10px] text-inkLow bg-paper border border-inkRule rounded-lg px-3 py-2">Template variable leak detection</div>
-          <div class="text-[10px] text-inkLow bg-paper border border-inkRule rounded-lg px-3 py-2">Transactional language blocklist</div>
-          <div class="text-[10px] text-inkLow bg-paper border border-inkRule rounded-lg px-3 py-2">Character length bounds</div>
-          <div class="text-[10px] text-inkLow bg-paper border border-inkRule rounded-lg px-3 py-2">Internal label leak detection</div>
-          <div class="text-[10px] text-inkLow bg-paper border border-inkRule rounded-lg px-3 py-2">Empty field validation</div>
-          <div class="text-[10px] text-inkLow bg-paper border border-inkRule rounded-lg px-3 py-2">Schema compliance enforcement</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="p-4 border border-signal/30 bg-signal/5 rounded-xl text-center">
-      <strong class="text-signal font-mono text-xs tracking-widest block mb-2">FAIL-CLOSED POLICY</strong>
-      <div class="text-[10px] text-inkLow">Below threshold &rarr; halt &rarr; Firestore trace &rarr; downstream block &rarr; retry with corrected prompt</div>
-    </div>
-  </section>
-
-  <!-- Self-improving data flow (merged: 3-tier + DPO loop) -->
-  <section class="py-20 border-b border-inkRule reveal" id="flow" aria-labelledby="flow-h">
-    <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4 font-medium">Self-improving Data Flow</div>
-    <h2 id="flow-h" class="text-3xl font-bold tracking-tight mb-4">Every run becomes training data.</h2>
-    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
-      Production runs write to a 3-tier dataset. O-R-A-V scores and DEMAS verdicts route each output into a tier. DPO preference pairs are assembled automatically from the spread between tiers and queued for offline LoRA fine-tuning.
-    </p>
-
-    <div class="card p-8 mb-8">
-      <div class="flex flex-col gap-6 mb-10">
-        <div class="flex items-center gap-4 p-4 border border-detGreen/20 bg-detGreen/5 rounded-xl">
-          <div class="w-10 h-10 shrink-0 bg-detGreen/10 text-detGreen font-mono font-bold flex items-center justify-center rounded-lg">T1</div>
-          <div><div class="text-sm font-semibold">production-baseline</div><div class="text-[10px] text-inkLow mt-1">All production runs ingested. Raw I/O pairs across 18 prompt-specific partitions.</div></div>
-        </div>
-        <div class="text-center text-inkLow font-mono text-[10px]">&darr; O-R-A-V &ge; 0.7 &amp;&amp; DEMAS PASS</div>
-        <div class="flex items-center gap-4 p-4 border border-probBlue/20 bg-probBlue/5 rounded-xl">
-          <div class="w-10 h-10 shrink-0 bg-probBlue/10 text-probBlue font-mono font-bold flex items-center justify-center rounded-lg">T2</div>
-          <div><div class="text-sm font-semibold">quality-approved</div><div class="text-[10px] text-inkLow mt-1">High-quality outputs curated as <span class="text-probBlue font-medium">chosen</span> examples for DPO training pairs.</div></div>
-        </div>
-        <div class="text-center text-inkLow font-mono text-[10px]">&darr; O-R-A-V &lt; 0.5 || DEMAS FAIL</div>
-        <div class="flex items-center gap-4 p-4 border border-signal/20 bg-signal/5 rounded-xl">
-          <div class="w-10 h-10 shrink-0 bg-signal/10 text-signal font-mono font-bold flex items-center justify-center rounded-lg">T3</div>
-          <div><div class="text-sm font-semibold">failure-cases</div><div class="text-[10px] text-inkLow mt-1">Rejected outputs curated as <span class="text-signal font-medium">rejected</span> examples. Includes DEMAS failures + node errors.</div></div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
-        <div class="bg-paperDeep border border-inkRule rounded-xl p-4 text-center">
-          <div class="w-6 h-6 rounded-full border border-probBlue text-probBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">1</div>
-          <div class="text-xs font-semibold mb-1">Ingest</div><div class="text-[9px] text-inkLow">Tenant data</div>
-        </div>
-        <div class="bg-paperDeep border border-inkRule rounded-xl p-4 text-center">
-          <div class="w-6 h-6 rounded-full border border-probBlue text-probBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">2</div>
-          <div class="text-xs font-semibold mb-1">Generate</div><div class="text-[9px] text-inkLow">DAG execution</div>
-        </div>
-        <div class="bg-paperDeep border border-inkRule rounded-xl p-4 text-center">
-          <div class="w-6 h-6 rounded-full border border-probBlue text-probBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">3</div>
-          <div class="text-xs font-semibold mb-1">Evaluate</div><div class="text-[9px] text-inkLow">O-R-A-V judging</div>
-        </div>
-        <div class="bg-paperDeep border border-signal/50 rounded-xl p-4 text-center">
-          <div class="w-6 h-6 rounded-full border border-signal text-signal font-mono text-[10px] flex items-center justify-center mx-auto mb-3">4</div>
-          <div class="text-xs font-semibold mb-1">Label</div><div class="text-[9px] text-inkLow">Chosen vs rejected</div>
-        </div>
-        <div class="bg-paperDeep border border-inkRule rounded-xl p-4 text-center">
-          <div class="w-6 h-6 rounded-full border border-probBlue text-probBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">5</div>
-          <div class="text-xs font-semibold mb-1">Curate</div><div class="text-[9px] text-inkLow">DPO dataset</div>
-        </div>
-        <div class="bg-paperDeep border border-inkRule rounded-xl p-4 text-center">
-          <div class="w-6 h-6 rounded-full border border-probBlue text-probBlue font-mono text-[10px] flex items-center justify-center mx-auto mb-3">6</div>
-          <div class="text-xs font-semibold mb-1">Fine-tune</div><div class="text-[9px] text-inkLow">LoRA update</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="p-4 border border-signal/20 bg-signal/5 rounded-xl text-center">
-      <strong class="text-signal font-mono text-[10px] tracking-widest uppercase block mb-2">DPO preference pairs &rarr; LoRA fine-tuning &rarr; model update</strong>
-      <div class="text-[10px] text-inkLow">Margin-maximized (chosen, rejected) pairs with score gap &ge; 0.15 feed curriculum-based LoRA training.</div>
-    </div>
-  </section>
-
-  <!-- Multi-tenant pipeline architecture -->
-  <section class="py-20 border-b border-inkRule reveal" id="tenants" aria-labelledby="tenants-h">
-    <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4 font-medium">Execution Model</div>
-    <h2 id="tenants-h" class="text-3xl font-bold tracking-tight mb-4">Multi-tenant pipeline architecture.</h2>
-    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
-      Each tenant runs an independent, auto-scaling pipeline with dedicated compute. 18 prompts auto-bind with LoRA adapters per <code>client_id</code>. Previous successful runs serve as tuned few-shot context for every sub-agent execution.
-    </p>
-
-    <div class="grid md:grid-cols-3 gap-4 mb-8">
-      <div class="card p-6">
-        <div class="text-[9px] uppercase tracking-widest text-detGreen font-bold mb-3">Compute isolation</div>
-        <div class="text-sm font-semibold mb-2">Auto-scaling pipeline</div>
-        <div class="text-xs text-inkLow leading-relaxed">Each tenant gets a parallel, independent pipeline with dedicated GPU/CPU. Resources auto-configure based on data volume, epoch count, batch count, and batch size.</div>
-      </div>
-      <div class="card p-6">
-        <div class="text-[9px] uppercase tracking-widest text-probBlue font-bold mb-3">Adapter binding</div>
-        <div class="text-sm font-semibold mb-2">18 prompts &times; client_id</div>
-        <div class="text-xs text-inkLow leading-relaxed">Each of 18 pipeline prompts auto-binds with a tenant-specific LoRA adapter at inference time. No cross-tenant contamination. Previous successful runs feed tuned few-shot context per prompt.</div>
-      </div>
-      <div class="card p-6">
-        <div class="text-[9px] uppercase tracking-widest text-signal font-bold mb-3">Hybrid execution</div>
-        <div class="text-sm font-semibold mb-2">Deterministic + agentic</div>
-        <div class="text-xs text-inkLow leading-relaxed">Each tenant pipeline mixes deterministic Python logic (Nodes 4, 6) with agentic inference (Gemma 4 MoE, Gemini). Nodes 4 and 6 are fully deterministic.</div>
-      </div>
-    </div>
-
-    <div class="card p-6">
-      <div class="text-[10px] uppercase tracking-widest text-inkLow mb-4">Tenant pipeline lifecycle</div>
-      <div class="flex flex-col gap-3">
-        <div class="flex items-center gap-4 bg-paperDeep border border-inkRule rounded-lg p-4">
-          <div class="w-8 h-8 shrink-0 rounded-full border border-probBlue text-probBlue font-mono text-[10px] font-bold flex items-center justify-center">1</div>
-          <div><div class="text-xs font-semibold">Pipeline initialization</div><div class="text-[10px] text-inkLow">Tenant data volume determines compute allocation. GPU/CPU auto-scaled per batch size and epoch count.</div></div>
-        </div>
-        <div class="flex items-center gap-4 bg-paperDeep border border-inkRule rounded-lg p-4">
-          <div class="w-8 h-8 shrink-0 rounded-full border border-probBlue text-probBlue font-mono text-[10px] font-bold flex items-center justify-center">2</div>
-          <div><div class="text-xs font-semibold">Adapter binding</div><div class="text-[10px] text-inkLow">18 LoRA adapters auto-bind per <code>client_id</code>. Each adapter carries tuned weights from previous successful runs.</div></div>
-        </div>
-        <div class="flex items-center gap-4 bg-paperDeep border border-inkRule rounded-lg p-4">
-          <div class="w-8 h-8 shrink-0 rounded-full border border-probBlue text-probBlue font-mono text-[10px] font-bold flex items-center justify-center">3</div>
-          <div><div class="text-xs font-semibold">Few-shot context injection</div><div class="text-[10px] text-inkLow">Previous high-scoring outputs serve as few-shot examples per prompt, per task, per sub-agent. Context is tenant-scoped.</div></div>
-        </div>
-        <div class="flex items-center gap-4 bg-paperDeep border border-inkRule rounded-lg p-4">
-          <div class="w-8 h-8 shrink-0 rounded-full border border-detGreen text-detGreen font-mono text-[10px] font-bold flex items-center justify-center">4</div>
-          <div><div class="text-xs font-semibold">DAG execution</div><div class="text-[10px] text-inkLow">Pipeline runs autonomously through all DAG nodes. Deterministic gates and agentic nodes execute in sequence. DEMAS audits every boundary.</div></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<!-- BEGIN FOOTER -->
-<footer class="py-12 px-6 max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 border-t border-inkRule mt-12" role="contentinfo">
-  <div class="text-sm font-semibold text-ink"><span data-page-title>Architecture</span> &middot; Daniel Manzela</div>
-  <ul class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-inkLow list-none m-0 p-0">
-    <li><a href="index.html" class="hover:text-ink transition-colors">Pipeline</a></li>
-    <li><a href="architecture.html" class="hover:text-ink transition-colors">Architecture</a></li>
-    <li><a href="case-studies.html" class="hover:text-ink transition-colors">Case Studies</a></li>
-    <li><a href="https://manzela.github.io/Manzela/" class="hover:text-ink transition-colors">Profile</a></li>
-    <li><a href="https://manzela.github.io/Manzela/elysium/" class="hover:text-ink transition-colors">Elysium</a></li>
-    <li><a href="https://github.com/Manzela" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">GitHub</a></li>
-    <li><a href="https://linkedin.com/in/danielmanzela" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">LinkedIn</a></li>
-  </ul>
-</footer>
-<!-- END FOOTER -->
-
-<!-- Sticky bottom anchor nav (desktop) -->
-<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 nav-glass rounded-full px-4 py-3 hidden md:flex gap-3 md:gap-5 text-[10px] uppercase tracking-widest font-medium text-inkLow z-50" aria-label="Section anchors">
-  <a href="#dag" class="hover:text-ink transition-colors">DAG</a>
-  <a href="#moe" class="hover:text-ink transition-colors">MoE</a>
-  <a href="#orav" class="hover:text-ink transition-colors">O-R-A-V</a>
-  <a href="#flow" class="hover:text-ink transition-colors">Flow</a>
-  <a href="#tenants" class="hover:text-ink transition-colors">Tenants</a>
-</nav>
-
-<!-- Mobile bottom anchor nav -->
-<nav class="fixed bottom-4 right-4 md:hidden z-50" aria-label="Section anchors (mobile)">
-  <details class="relative">
-    <summary class="w-12 h-12 rounded-full nav-glass flex items-center justify-center cursor-pointer text-ink text-lg list-none">
-      <span aria-hidden="true">☰</span>
-      <span class="sr-only">Toggle section anchors</span>
-    </summary>
-    <div class="absolute bottom-14 right-0 nav-glass rounded-xl p-3 flex flex-col gap-2 min-w-[140px]">
-      <a href="#dag" class="text-[10px] uppercase tracking-widest text-inkLow hover:text-ink transition-colors py-2">DAG</a>
-      <a href="#moe" class="text-[10px] uppercase tracking-widest text-inkLow hover:text-ink transition-colors py-2">MoE</a>
-      <a href="#orav" class="text-[10px] uppercase tracking-widest text-inkLow hover:text-ink transition-colors py-2">O-R-A-V</a>
-      <a href="#flow" class="text-[10px] uppercase tracking-widest text-inkLow hover:text-ink transition-colors py-2">Flow</a>
-      <a href="#tenants" class="text-[10px] uppercase tracking-widest text-inkLow hover:text-ink transition-colors py-2">Tenants</a>
-    </div>
-  </details>
-</nav>
-
-<script src="assets/dag-data.js"></script>
-<script src="assets/stage.js"></script>
+  See docs/superpowers/specs/2026-05-18-merge-architecture-observability-design.md
+  §3 (URL strategy) and §7.3 (Components — redirect proxy).
+-->
 <script>
-PO.setActiveNav('architecture');
-
 (function () {
-  const nodeData = [1, 2, 3, 4, 5, 6, 7].map(function (id) {
-    return PO.DAG_NODES[id];
-  });
-
-  // Pinned overview: 7 small node tiles.
-  const dagOverview = document.getElementById('dagOverview');
-  nodeData.forEach(function (n, i) {
-    if (i > 0) {
-      const arr = document.createElement('span');
-      arr.className = 'dag-arr';
-      arr.setAttribute('aria-hidden', 'true');
-      arr.textContent = '→';
-      dagOverview.appendChild(arr);
-    }
-    const tile = document.createElement('a');
-    tile.href = '#node-' + n.id;
-    tile.dataset.node = String(n.id);
-    tile.className = 'dag-node hover:border-probBlue/50';
-    tile.innerHTML =
-      '<div class="text-[9px] font-mono text-probBlue mb-1">' + n.id + '</div>' +
-      '<div class="text-xs font-semibold mb-1">' + n.nm + '</div>' +
-      '<div class="text-[9px] font-mono text-inkLow">' + n.role.split(' ')[0] + '</div>';
-    dagOverview.appendChild(tile);
-  });
-
-  // Scrolling cards (one per node).
-  const nodeSeq = document.getElementById('nodeSeq');
-  nodeData.forEach(function (n) {
-    const item = document.createElement('article');
-    item.id = 'node-' + n.id;
-    item.dataset.node = String(n.id);
-    item.dataset.beat = String(n.id);
-    item.className = 'dag-stage__card card p-8 reveal';
-    const agentLabel = n.det ? 'Deterministic Logic' : 'Probabilistic Agent';
-    const agentColor = n.det ? 'detGreen' : 'probBlue';
-    item.innerHTML =
-      '<div class="flex items-center gap-4 mb-6 pb-4 border-b border-inkRule">' +
-        '<div class="w-8 h-8 rounded-full border-2 border-probBlue text-probBlue flex items-center justify-center font-mono text-xs font-bold">' + n.id + '</div>' +
-        '<div class="text-lg font-bold">Node ' + n.id + ' &mdash; ' + n.nm + '</div>' +
-        '<div class="ml-auto text-[9px] uppercase tracking-widest font-semibold bg-' + agentColor + '/10 text-' + agentColor + ' border border-' + agentColor + '/20 px-3 py-1 rounded-full">' + n.role + '</div>' +
-      '</div>' +
-      '<div class="grid md:grid-cols-2 gap-6">' +
-        '<div class="bg-paper border border-inkRule rounded-xl p-6 transition-colors hover:border-detGreen/50">' +
-          '<div class="text-[9px] uppercase tracking-widest font-bold text-detGreen bg-detGreen/10 border border-detGreen/20 inline-block px-2 py-0.5 rounded mb-3">Deterministic Gate</div>' +
-          '<div class="font-bold text-sm mb-2">' + n.gate.nm + '</div>' +
-          '<div class="text-xs text-inkLow mb-4">' + n.gate.desc + '</div>' +
-          '<div class="flex gap-2 flex-wrap">' + n.gate.tools.map(function (t) { return '<span class="text-[10px] px-2 py-1 rounded border border-inkRule bg-paperDeep text-inkLow">' + t + '</span>'; }).join('') + '</div>' +
-        '</div>' +
-        '<div class="bg-paper border border-inkRule rounded-xl p-6 transition-colors hover:border-' + agentColor + '/50">' +
-          '<div class="text-[9px] uppercase tracking-widest font-bold text-' + agentColor + ' bg-' + agentColor + '/10 border border-' + agentColor + '/20 inline-block px-2 py-0.5 rounded mb-3">' + agentLabel + '</div>' +
-          '<div class="font-bold text-sm mb-2">' + n.agent.nm + '</div>' +
-          '<div class="text-xs text-inkLow mb-4">' + n.agent.desc + '</div>' +
-          '<div class="flex gap-2 flex-wrap">' + n.agent.tools.map(function (t) { return '<span class="text-[10px] px-2 py-1 rounded border border-inkRule bg-paperDeep text-inkLow">' + t + '</span>'; }).join('') + '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="text-center mt-6 pt-4 border-t border-inkRule font-mono text-[10px] text-inkLow">' + n.trace + '</div>';
-    nodeSeq.appendChild(item);
-  });
-
-  PO.attachReveals(nodeSeq);
-  PO.attachStage({
-    stageSelector: '.dag-stage',
-    beatSelector: '.dag-stage__card',
-    attr: 'data-active-node'
-  });
-})();
-
-(function () {
-  // MoE expert grid — one-shot pulse on intersection, settles to a static "4 active" frame.
-  const moeGrid = document.getElementById('moeGrid');
-  if (!moeGrid) return;
-  const experts = [];
-  for (let i = 0; i < 128; i++) {
-    const ex = document.createElement('div');
-    ex.className = 'expert';
-    ex.setAttribute('aria-hidden', 'true');
-    moeGrid.appendChild(ex);
-    experts.push(ex);
-  }
-  // Deterministic settle indices (so the static composition is reproducible).
-  PO.pulseOnce({
-    container: moeGrid,
-    items: experts,
-    count: 3,
-    settleIndices: [12, 47, 89, 113],
-    intervalMs: 600
-  });
-})();
-
-(function () {
-  // LoRA adapter tiles — static (no infinite reshuffle, no fluid membrane decoration).
-  const tenants = [
-    { id: 'adapter_1', nm: 'Tenant A (ES)' },
-    { id: 'adapter_2', nm: 'Tenant B (ES)' },
-    { id: 'adapter_3', nm: 'Tenant C (PT)' },
-    { id: 'adapter_4', nm: 'Tenant D (IL)' },
-    { id: 'adapter_5', nm: 'Tenant E (US)' },
-    { id: 'adapter_6', nm: 'Tenant F (MX)' },
-    { id: 'adapter_7', nm: 'Tenant G (ES)' },
-    { id: 'adapter_8', nm: 'Tenant H (ES)' }
-  ];
-  const lf = document.getElementById('loraFan');
-  if (!lf) return;
-  tenants.forEach(function (t) {
-    const d = document.createElement('div');
-    d.className = 'bg-paperDeep border border-inkRule rounded-xl p-4 text-center transition-colors hover:border-probBlue/40';
-    d.innerHTML = '<div class="font-mono text-[9px] text-probBlue mb-1">' + t.id + '</div>' +
-                  '<div class="text-xs font-semibold">' + t.nm + '</div>' +
-                  '<div class="font-mono text-[8px] text-inkLow/60 mt-2">18 prompt adapters</div>';
-    lf.appendChild(d);
-  });
-})();
-
-(function () {
-  // Active section highlight in bottom anchor nav.
-  const sections = document.querySelectorAll('section[id]');
-  const links = document.querySelectorAll('nav[aria-label="Section anchors"] a');
-  const linkMap = {};
-  links.forEach(function (l) {
-    const id = l.getAttribute('href').slice(1);
-    linkMap[id] = l;
-  });
-  if (!sections.length || PO.reduced) return;
-  const obs = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) {
-        Object.keys(linkMap).forEach(function (k) {
-          linkMap[k].classList.toggle('text-ink', k === e.target.id);
-          linkMap[k].classList.toggle('text-inkLow', k !== e.target.id);
-        });
-      }
-    });
-  }, { threshold: 0.3, rootMargin: '-20% 0px -60% 0px' });
-  sections.forEach(function (s) { obs.observe(s); });
+  // Run before meta-refresh so JS-enabled visitors land on the right anchor
+  // instead of the meta-refresh fallback. Map the original fragment to the
+  // merged-page anchor; default to #dag for the bare URL and any unknown
+  // fragment (the page anchor most aligned with "the architecture explainer").
+  var REDIRECTS = {
+    '':             '#dag',
+    '#dag-h':       '#dag',
+    '#moe-h':       '#moe',
+    '#orav-h':      '#orav',
+    '#flow-h':      '#flywheel',
+    '#tenants-h':   '#multi-tenant'
+  };
+  var target = REDIRECTS[location.hash] || '#dag';
+  // Compute base prefix: works both locally (/architecture.html -> /) and on
+  // GitHub Pages (/pipeline-observatory/architecture.html -> /pipeline-observatory/).
+  var base = location.pathname.replace(/architecture\.html$/, '');
+  // location.replace so the deprecated URL doesn't pollute back-button history.
+  location.replace(base + target);
 })();
 </script>
+<meta http-equiv="refresh" content="0; url=/#dag">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F8F6F1; --ink: #1A1A1A; --ink-low: #8A8A8A;
+    --ink-rule: rgba(26, 26, 26, 0.12); --prob-blue: #1B3A5C;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0F1418; --ink: #E8E6E0; --ink-low: #7A786E;
+      --ink-rule: rgba(232, 230, 224, 0.12); --prob-blue: #6FA0CC;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px;
+    background: var(--paper); color: var(--ink);
+    font: 400 15px/1.5 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  }
+  main { max-width: 520px; text-align: center; }
+  p { margin: 0 0 16px; }
+  .label {
+    color: var(--ink-low); font-size: 12px;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 24px;
+  }
+  a {
+    color: var(--prob-blue); text-decoration: none;
+    border-bottom: 1px solid var(--ink-rule); padding-bottom: 1px;
+  }
+  a:hover, a:focus-visible { border-color: var(--prob-blue); }
+  a:focus-visible { outline: 2px solid var(--prob-blue); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <p class="label">Moved</p>
+  <p>The architecture content is now part of <a href="/">Pipeline</a>.</p>
+</main>
 </body>
 </html>

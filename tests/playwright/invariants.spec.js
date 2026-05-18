@@ -1,6 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
-const PAGES = ['/index.html', '/architecture.html', '/case-studies.html'];
+// architecture.html is now a redirect proxy (no <main>, no <h1>, no skip-link),
+// so it's intentionally excluded from this content-page invariants iteration.
+// Redirect-proxy behavior is tested in lifecycle.redirects.spec.js.
+const PAGES = ['/index.html', '/case-studies.html'];
 
 for (const path of PAGES) {
   test.describe(path, () => {
