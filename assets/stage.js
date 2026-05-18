@@ -123,8 +123,8 @@
   // Active-nav indicator. Per-page caller selects the link via [data-nav=...].
   function setActiveNav(key) {
     document.querySelectorAll(`[data-nav="${key}"]`).forEach((el) => {
-      el.classList.remove('text-appleGray');
-      el.classList.add('text-appleLight', 'border-b-2', 'border-appleLight', 'pb-1');
+      el.classList.remove('text-inkLow');
+      el.classList.add('text-ink', 'border-b-2', 'border-ink', 'pb-1');
       el.setAttribute('aria-current', 'page');
     });
   }

@@ -1,24 +1,25 @@
 /* Shared Tailwind CDN config — loaded by all three pages before page-specific scripts.
-   Tokens are immutable across pages (Principle 11). Per-page motifs live in page-specific styles. */
+   Tokens are immutable across pages (Principle 11). Per-page motifs live in page-specific styles.
+   Industrial / utilitarian register: paper + ink + 2 semantic accents.
+   Mirrors the CSS custom properties in assets/chrome.css (single source of truth). */
 window.tailwind = window.tailwind || {};
 tailwind.config = {
   theme: {
     extend: {
       colors: {
-        appleBg:      '#000000',
-        appleSurface: '#1d1d1f',
-        appleDarker:  '#151516',
-        appleBorder:  '#424245',
-        appleLight:   '#f5f5f7',
-        appleGray:    '#86868b',
-        appleBlue:    '#2997ff',
-        appleGreen:   '#34d399',
-        appleRed:     '#f87171',
-        appleAmber:   '#fbbf24'
+        paper:     '#F8F6F1',
+        paperDeep: '#F2EFE7',
+        ink:       '#1A1A1A',
+        inkMid:    '#4A4A4A',
+        inkLow:    '#8A8A8A',
+        inkRule:   'rgba(26, 26, 26, 0.12)',
+        detGreen:  '#2D5A2F',
+        probBlue:  '#1B3A5C',
+        signal:    '#B83216'
       },
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
+        sans: ['IBM Plex Sans', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['IBM Plex Mono', 'ui-monospace', 'Cascadia Code', 'monospace']
       }
     }
   }
