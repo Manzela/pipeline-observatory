@@ -202,6 +202,43 @@ code, pre, .mono { font-family: var(--font-mono); }
 }
 
 /* ───────────────────────────────────────────────────────────────────────
+   Detail legend — typographic active-node summary; positioned alongside
+   schematic in B.5. Subscriber to po:active-node-change (assets/lifecycle.js).
+   ─────────────────────────────────────────────────────────────────────── */
+.detail-legend {
+  margin: 32px 0;
+  padding: 16px 24px;
+  border: 1px solid var(--ink-rule);
+  background: var(--paper-deep);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.detail-legend__inner { display: grid; gap: 8px; }
+.detail-legend__row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 16px;
+  align-items: baseline;
+}
+.detail-legend__label {
+  color: var(--ink-low);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.detail-legend__role-badge {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--ink-rule);
+  border-radius: 0; /* sharp corners, industrial register */
+}
+.detail-legend[data-role="deterministic"] .detail-legend__role-badge { color: var(--det-green); border-color: var(--det-green); }
+.detail-legend[data-role="probabilistic"] .detail-legend__role-badge { color: var(--prob-blue); border-color: var(--prob-blue); }
+
+/* ───────────────────────────────────────────────────────────────────────
    DAG sticky-stage  (architecture.html signature)
    ─────────────────────────────────────────────────────────────────────── */
 .dag-stage {

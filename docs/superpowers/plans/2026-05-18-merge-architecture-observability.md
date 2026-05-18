@@ -314,7 +314,14 @@ npx playwright test lifecycle.scroll-sync.spec.js
 /* Lifecycle scroll-sync orchestrator.
    Single shared IntersectionObserver targets .lifecycle-node[data-node-id] sections.
    When the most-visible node changes, mutates [data-lifecycle-container][data-active-node]
-   and dispatches po:active-node-change for subscribers (rail, decoder, trace caption). */
+   and dispatches po:active-node-change for subscribers (rail, decoder, trace caption).
+
+   Idempotent: initLifecycle() early-returns if container is already initialized
+   (container.dataset.lifecycleInitialized === '1') so a second call does NOT
+   attach a second IntersectionObserver. Events bubble so subscribers can listen
+   on the container OR on document — both work. An initial event fires at the end
+   of init so subscribers attached after DOMContentLoaded still get the starting
+   state without having to read the attribute themselves. */
 
 (function () {
   window.PO = window.PO || {};
@@ -323,6 +330,10 @@ npx playwright test lifecycle.scroll-sync.spec.js
     const container = document.querySelector('[data-lifecycle-container]');
     const nodes = document.querySelectorAll('.lifecycle-node[data-node-id]');
     if (!container || !nodes.length) return;
+
+    // Idempotence guard: bail if already initialized.
+    if (container.dataset.lifecycleInitialized === '1') return;
+    container.dataset.lifecycleInitialized = '1';
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) {
@@ -337,16 +348,23 @@ npx playwright test lifecycle.scroll-sync.spec.js
     function setActive(nodeId) {
       if (container.getAttribute('data-active-node') === String(nodeId)) return;
       container.setAttribute('data-active-node', String(nodeId));
-      document.dispatchEvent(new CustomEvent('po:active-node-change', {
+      // Dispatch on the container so the event bubbles up to document —
+      // listeners on either the container or document both receive it.
+      container.dispatchEvent(new CustomEvent('po:active-node-change', {
+        bubbles: true,
         detail: { nodeId: Number(nodeId) }
       }));
     }
 
     const obs = new IntersectionObserver((entries) => {
-      // Pick the entry with the largest intersectionRatio (or highest data-node-id when tied for stability)
+      // Pick the entry with the largest intersectionRatio; ties broken by higher
+      // data-node-id (later in document order — feels more "current" on scroll-down).
       const visible = entries
         .filter((e) => e.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        .sort((a, b) => {
+          if (b.intersectionRatio !== a.intersectionRatio) return b.intersectionRatio - a.intersectionRatio;
+          return Number(b.target.dataset.nodeId) - Number(a.target.dataset.nodeId);
+        });
       if (!visible.length) return;
       const id = visible[0].target.dataset.nodeId;
       if (pending) cancelAnimationFrame(pending);
@@ -358,6 +376,12 @@ npx playwright test lifecycle.scroll-sync.spec.js
     });
 
     nodes.forEach((n) => obs.observe(n));
+
+    // Fire initial event so late subscribers know the starting state.
+    container.dispatchEvent(new CustomEvent('po:active-node-change', {
+      bubbles: true,
+      detail: { nodeId: Number(nodes[0].dataset.nodeId) }
+    }));
   }
 
   window.PO.initLifecycle = initLifecycle;

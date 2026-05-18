@@ -34,7 +34,11 @@ test.describe('Lifecycle scroll-sync', () => {
     });
     await page.locator('#node-3').scrollIntoViewIfNeeded();
     await page.locator('#node-5').scrollIntoViewIfNeeded();
-    await page.waitForTimeout(500);
+    // Poll until we've collected the transitions instead of sleeping a fixed
+    // wall-clock interval — symmetry with the other scroll-sync tests and no
+    // flakiness on slow CI. The initial-event-fire from initLifecycle adds 1
+    // to __events at page load, so we expect >= 2 after both scrolls land.
+    await page.waitForFunction(() => window.__events.length >= 2, null, { timeout: 2000 });
     const events = await page.evaluate(() => window.__events);
     expect(events).toEqual(expect.arrayContaining([3, 5]));
   });
