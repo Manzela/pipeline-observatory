@@ -12,6 +12,7 @@
   --ink-low: #8A8A8A;
   --ink-rule: rgba(26, 26, 26, 0.12);
   --det-green: #2D5A2F;     /* deterministic nodes — drafting forest */
+  --det-green-rgb: 45, 90, 47;   /* RGB channels of #2D5A2F — for rgba() use */
   --prob-blue: #1B3A5C;     /* probabilistic nodes — drafting navy */
   --prob-blue-rgb: 27, 58, 92;     /* RGB channels of #1B3A5C — used for rgba(var(--prob-blue-rgb), x) in glows / focus rings / selection */
   --signal: #B83216;        /* surgical warning accent — Aicher red */
@@ -29,6 +30,7 @@
     --ink-low: #7A786E;
     --ink-rule: rgba(232, 230, 224, 0.12);
     --det-green: #6FAF6B;
+    --det-green-rgb: 111, 175, 107;   /* RGB channels of #6FAF6B */
     --prob-blue: #6FA0CC;
     --prob-blue-rgb: 111, 160, 204;  /* RGB channels of #6FA0CC */
     --signal: #E07A5F;
@@ -641,43 +643,61 @@ code, pre, .mono { font-family: var(--font-mono); }
   font-family: var(--font-mono);
   font-weight: 400;
   fill: var(--ink);
-  /* Keep text non-selectable; the figure reads as a diagram, not copy. */
   user-select: none;
   -webkit-user-select: none;
 }
+/* Perimeter label anchored to the top-left CORNER of the rect (Aicher
+   convention — labels integrated with the figure, not floating). */
 .dag-schematic__perimeter-label {
   font-size: 10px;
   letter-spacing: 0.14em;
   fill: var(--ink-low);
+  text-transform: uppercase;
+  /* paint-order trick: draw a paper-colored "halo" beneath the text so the
+     dashed perimeter stroke breaks where the label sits — Aicher convention. */
+  paint-order: stroke fill;
+  stroke: var(--paper);
+  stroke-width: 4;
 }
 .dag-schematic__num {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
   fill: var(--ink);
 }
 .dag-schematic__name {
-  font-size: 9px;
-  letter-spacing: 0.10em;
-  fill: var(--ink-low);
-  text-transform: uppercase;
-}
-.dag-schematic__role {
-  font-size: 7px;
-  letter-spacing: 0.14em;
-  fill: var(--ink-low);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  fill: var(--ink);
   text-transform: uppercase;
 }
 .dag-schematic__rd-label {
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.14em;
   fill: var(--ink-low);
   text-transform: uppercase;
 }
 
-/* Node group: clickable, keyboard-focusable. */
+/* FIG. caption underneath the figure — Aicher/Braun convention. */
+.dag-schematic__caption {
+  margin: 12px auto 0;
+  max-width: 1024px;
+  padding: 0 24px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+  text-align: center;
+}
+
+/* Node group: clickable, keyboard-focusable, hovers telegraph clickability. */
 .dag-schematic__node {
   cursor: pointer;
   outline: none;
+}
+.dag-schematic__node:hover .dag-schematic__box {
+  stroke: var(--ink-mid);
+  stroke-width: 1.5;
 }
 .dag-schematic__node:focus-visible .dag-schematic__box {
   stroke: var(--prob-blue);
@@ -685,21 +705,28 @@ code, pre, .mono { font-family: var(--font-mono); }
 }
 .dag-schematic__box {
   transition: fill 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 0.25s cubic-bezier(0.4, 0, 0.2, 1),
               stroke-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Active-node fill — semantic by role. JS sets data-role on each node. */
+/* Active-node — restrained: 15% tint fill + 1.5px colored border.
+   Type stays in ink (no inversion); the color is an accent, not blockwork. */
 .dag-schematic__node[data-active="true"][data-role="probabilistic"] .dag-schematic__box {
-  fill: var(--prob-blue);
+  fill: rgba(var(--prob-blue-rgb), 0.15);
+  stroke: var(--prob-blue);
+  stroke-width: 1.5;
 }
 .dag-schematic__node[data-active="true"][data-role="deterministic"] .dag-schematic__box {
-  fill: var(--det-green);
+  fill: rgba(var(--det-green-rgb), 0.15);
+  stroke: var(--det-green);
+  stroke-width: 1.5;
 }
-/* Invert text against the filled box so labels stay legible. */
-.dag-schematic__node[data-active="true"] .dag-schematic__num,
-.dag-schematic__node[data-active="true"] .dag-schematic__name,
-.dag-schematic__node[data-active="true"] .dag-schematic__role {
-  fill: var(--paper);
+/* Active number gets bolder weight + semantic color — type carries the accent. */
+.dag-schematic__node[data-active="true"][data-role="probabilistic"] .dag-schematic__num {
+  fill: var(--prob-blue);
+}
+.dag-schematic__node[data-active="true"][data-role="deterministic"] .dag-schematic__num {
+  fill: var(--det-green);
 }
 
 /* Reduced-motion: kill the fill/stroke transition; instant swap. */
