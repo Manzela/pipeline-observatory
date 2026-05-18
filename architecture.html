@@ -319,41 +319,15 @@
   </details>
 </nav>
 
+<script src="assets/dag-data.js"></script>
 <script src="assets/stage.js"></script>
 <script>
 PO.setActiveNav('architecture');
 
 (function () {
-  const nodeData = [
-    { id: 1, nm: 'City DNA',   role: 'Context Injection', det: false,
-      gate:  { nm: 'Locale Resolver', desc: 'Validates ISO locale codes and timezone offsets. Rejects malformed location data.', tools: ['ISO-3166', 'Timezone DB'] },
-      agent: { nm: 'Grounded Search', desc: 'Fetches factual, up-to-date data from verified .gov sources per locale.', tools: ['Gemini', 'Gov Sources'] },
-      trace: 'Locale → Gate → Web Search → Context' },
-    { id: 2, nm: 'Normalizer', role: 'Data Cleansing', det: false,
-      gate:  { nm: 'Schema Validator', desc: 'Enforces strict JSON schema. Fails on mismatch.', tools: ['Pydantic', 'AST'] },
-      agent: { nm: 'Vision + Classifier', desc: 'Text classification for taxonomy mapping. Vision model extracts context from product images.', tools: ['Classification', 'Vision'] },
-      trace: 'Input → Schema → Classification → Record' },
-    { id: 3, nm: 'Synonyms',   role: 'Expansion', det: false,
-      gate:  { nm: 'Dedup Filter', desc: 'Exact-match and fuzzy deduplication across the synonym set.', tools: ['SimHash', 'Levenshtein'] },
-      agent: { nm: 'LPN Generator', desc: 'Text classification model generating locale-aware synonyms and landing page name variants.', tools: ['Classification', 'Tenant Dict'] },
-      trace: 'Terms → Dedup → Classification → Set' },
-    { id: 4, nm: 'SV Gate',    role: 'Volume Filter', det: true,
-      gate:  { nm: 'Volume Fetcher', desc: 'Queries Google Ads API for keyword search volume per synonym per location.', tools: ['Google Ads API', 'BigQuery'] },
-      agent: { nm: 'Keyword Ranker', desc: 'Algorithmic scoring ranks keywords by commercial value per city. No LLM invoked.', tools: ['NumPy', 'Custom Math'] },
-      trace: 'Set → API Query → Math Ranking → Qualified' },
-    { id: 5, nm: 'Writer',     role: 'Generation', det: false,
-      gate:  { nm: 'Template Selector', desc: 'Enforces structural constraints: length, heading count, content block schema.', tools: ['Jinja2', 'Constraints'] },
-      agent: { nm: 'Content Generator', desc: 'Generates 10 SEO-optimized content blocks per product-location pair.', tools: ['Gemma 4 MoE', 'LoRA'] },
-      trace: 'Qualified → Template → LoRA → 10 Blocks' },
-    { id: 6, nm: 'Validator',  role: 'Deterministic QA', det: true,
-      gate:  { nm: 'Format Check', desc: 'Validates format, word count, blocks forbidden patterns. O(1) deterministic checks.', tools: ['Regex', 'Blocklist'] },
-      agent: { nm: 'O-R-A-V Engine', desc: 'Observe diagnostics, reason about severity, act with corrections, validate final output. Zero LLM calls — pure rule-based validation.', tools: ['Python', 'Pydantic'] },
-      trace: 'Draft → Format → O-R-A-V → PASS / RETRY / FAIL' },
-    { id: 7, nm: 'Evaluator',  role: 'DEMAS JIT', det: false,
-      gate:  { nm: 'Quality Threshold', desc: 'Validates minimum O-R-A-V scores before SLM evaluation.', tools: ['Threshold', 'Guard'] },
-      agent: { nm: 'SLM-as-Judge', desc: 'DEMAS JIT evaluator runs per-block qualitative auditing inline within Node 5. Language-agnostic content quality assessment.', tools: ['Gemma 4 SLM', 'Langfuse'] },
-      trace: 'Content → Threshold → SLM Audit → Accept/Reject' }
-  ];
+  const nodeData = [1, 2, 3, 4, 5, 6, 7].map(function (id) {
+    return PO.DAG_NODES[id];
+  });
 
   // Pinned overview: 7 small node tiles.
   const dagOverview = document.getElementById('dagOverview');

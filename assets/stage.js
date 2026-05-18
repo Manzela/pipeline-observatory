@@ -129,7 +129,7 @@
     });
   }
 
-  window.PO = { attachReveals, attachStage, animateCount, pulseOnce, attachNavToggle, setActiveNav, reduced };
+  window.PO = Object.assign(window.PO || {}, { attachReveals, attachStage, animateCount, pulseOnce, attachNavToggle, setActiveNav, reduced, MOBILE_BREAKPOINT_PX: 767 });
 
   document.addEventListener('DOMContentLoaded', () => {
     attachReveals();

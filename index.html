@@ -165,9 +165,18 @@
       </div>
 
       <div class="telemetry-stage__pinned">
-        <div class="card p-4 bg-appleDarker overflow-y-auto h-full">
-          <div class="text-[9px] uppercase tracking-widest text-appleGray mb-3 px-2">Trace log &middot; sample</div>
-          <div id="traces" class="space-y-1"></div>
+        <div class="card p-4 bg-appleDarker h-full flex flex-col gap-4 overflow-hidden">
+          <!-- Top: trace log -->
+          <div class="flex-1 min-h-0 overflow-y-auto telemetry-stage__trace-region">
+            <div class="text-[9px] uppercase tracking-widest text-appleGray mb-3 px-2">Trace log &middot; sample</div>
+            <div id="traces" class="space-y-1"></div>
+          </div>
+          <!-- Divider + bottom: caption + decoder -->
+          <div class="border-t border-appleBorder pt-4 flex-shrink-0 telemetry-stage__decoder-region">
+            <div class="text-[9px] uppercase tracking-widest text-appleGray mb-3 px-2">Intent decoder</div>
+            <p id="telemetryCaption" class="text-[11px] md:text-xs text-appleGray leading-relaxed px-2 mb-3" aria-live="polite"></p>
+            <div id="intentDecoder" class="grid grid-cols-1 sm:grid-cols-2 gap-2" aria-live="polite" aria-label="Per-node intent decoder"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -232,6 +241,7 @@
 </footer>
 <!-- END FOOTER -->
 
+<script src="assets/dag-data.js"></script>
 <script src="assets/stage.js"></script>
 <script>
 PO.setActiveNav('pipeline');
@@ -258,22 +268,22 @@ PO.setActiveNav('pipeline');
 
 (function () {
   const traces = [
-    { ts: '11:45:24Z', st: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1 b3' },
-    { ts: '11:45:23Z', st: 'node7', ev: 'judge_consensus',       s: 'ok',   dur: '842ms', hl: 'b2' },
-    { ts: '11:45:22Z', st: 'node6', ev: 'deterministic_scoring', s: 'ok',   dur: '1ms',   hl: 'b2' },
-    { ts: '11:45:21Z', st: 'node5', ev: 'content_generation',    s: 'ok',   dur: '11.3s', hl: 'b2' },
-    { ts: '11:45:10Z', st: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1' },
-    { ts: '11:45:09Z', st: 'node4', ev: 'search_volume_gate',    s: 'ok',   dur: '5.3s',  hl: '' },
-    { ts: '11:45:04Z', st: 'node3', ev: 'synonym_expansion',     s: 'ok',   dur: '51ms',  hl: '' },
-    { ts: '11:45:03Z', st: 'node2', ev: 'taxonomy_classify',     s: 'ok',   dur: '3.8s',  hl: '' },
-    { ts: '11:44:59Z', st: 'node2', ev: 'vision_extraction',     s: 'ok',   dur: '3.7s',  hl: '' },
-    { ts: '11:44:56Z', st: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1' },
-    { ts: '11:44:55Z', st: 'node1', ev: 'city_context_inject',   s: 'ok',   dur: '498ms', hl: '' },
-    { ts: '11:44:55Z', st: 'demas', ev: 'jit_audit',             s: 'fail', dur: '1ms',   hl: 'b3' },
-    { ts: '11:44:54Z', st: 'node5', ev: 'content_generation',    s: 'ok',   dur: '11.9s', hl: 'b2' },
-    { ts: '11:44:42Z', st: 'node4', ev: 'search_volume_gate',    s: 'ok',   dur: '5.1s',  hl: '' },
-    { ts: '11:44:37Z', st: 'node3', ev: 'synonym_expansion',     s: 'ok',   dur: '52ms',  hl: '' },
-    { ts: '11:44:36Z', st: 'node1', ev: 'city_context_inject',   s: 'ok',   dur: '503ms', hl: '' }
+    { ts: '11:45:24Z', st: 'demas', nodeId: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1 b3' },
+    { ts: '11:45:23Z', st: 'node7', nodeId: 7,       ev: 'judge_consensus',       s: 'ok',   dur: '842ms', hl: 'b2' },
+    { ts: '11:45:22Z', st: 'node6', nodeId: 6,       ev: 'deterministic_scoring', s: 'ok',   dur: '1ms',   hl: 'b2' },
+    { ts: '11:45:21Z', st: 'node5', nodeId: 5,       ev: 'content_generation',    s: 'ok',   dur: '11.3s', hl: 'b2' },
+    { ts: '11:45:10Z', st: 'demas', nodeId: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1' },
+    { ts: '11:45:09Z', st: 'node4', nodeId: 4,       ev: 'search_volume_gate',    s: 'ok',   dur: '5.3s',  hl: '' },
+    { ts: '11:45:04Z', st: 'node3', nodeId: 3,       ev: 'synonym_expansion',     s: 'ok',   dur: '51ms',  hl: '' },
+    { ts: '11:45:03Z', st: 'node2', nodeId: 2,       ev: 'taxonomy_classify',     s: 'ok',   dur: '3.8s',  hl: '' },
+    { ts: '11:44:59Z', st: 'node2', nodeId: 2,       ev: 'vision_extraction',     s: 'ok',   dur: '3.7s',  hl: '' },
+    { ts: '11:44:56Z', st: 'demas', nodeId: 'demas', ev: 'jit_audit',             s: 'pass', dur: '1ms',   hl: 'b1' },
+    { ts: '11:44:55Z', st: 'node1', nodeId: 1,       ev: 'city_context_inject',   s: 'ok',   dur: '498ms', hl: '' },
+    { ts: '11:44:55Z', st: 'demas', nodeId: 'demas', ev: 'jit_audit',             s: 'fail', dur: '1ms',   hl: 'b3' },
+    { ts: '11:44:54Z', st: 'node5', nodeId: 5,       ev: 'content_generation',    s: 'ok',   dur: '11.9s', hl: 'b2' },
+    { ts: '11:44:42Z', st: 'node4', nodeId: 4,       ev: 'search_volume_gate',    s: 'ok',   dur: '5.1s',  hl: '' },
+    { ts: '11:44:37Z', st: 'node3', nodeId: 3,       ev: 'synonym_expansion',     s: 'ok',   dur: '52ms',  hl: '' },
+    { ts: '11:44:36Z', st: 'node1', nodeId: 1,       ev: 'city_context_inject',   s: 'ok',   dur: '503ms', hl: '' }
   ];
   const tEl = document.getElementById('traces');
   if (!tEl) return;
@@ -281,13 +291,21 @@ PO.setActiveNav('pipeline');
     const l = document.createElement('div');
     l.dataset.traceLine = '';
     if (t.hl) l.dataset.highlight = t.hl;
+    l.dataset.nodeId = String(t.nodeId);
+    l.dataset.status = t.s;
     l.className = 'trace-row font-mono text-[10px] md:text-xs py-2 px-3 flex gap-2 md:gap-4 items-center rounded';
+    l.setAttribute('tabindex', '0');
     const sc = (t.s === 'ok' || t.s === 'pass') ? 'text-appleLight font-semibold' : 'text-appleRed font-semibold';
     l.innerHTML = '<span class="text-appleGray w-20 md:w-24 shrink-0">' + t.ts + '</span>' +
                   '<span class="text-appleBlue w-16 md:w-20 shrink-0">' + t.st + '</span>' +
                   '<span class="text-appleGray flex-1 truncate">' + t.ev + '</span>' +
                   '<span class="text-appleGray/60 w-16 text-right">' + t.dur + '</span>' +
                   '<span class="' + sc + ' w-12 text-right">' + t.s.toUpperCase() + '</span>';
+    var __n = PO.DAG_NODES[t.nodeId];
+    if (__n) {
+      var __gate = (__n.gate && __n.gate.nm) || '';
+      l.setAttribute('title', __n.role + (__gate ? ' · ' + __gate : ''));
+    }
     tEl.appendChild(l);
   });
 
@@ -295,6 +313,126 @@ PO.setActiveNav('pipeline');
     stageSelector: '.telemetry-stage',
     beatSelector: '.telemetry-stage__beat',
     attr: 'data-active-beat'
+  });
+
+  // --- Intent Decoder panel ---
+
+  var BEAT_CAPTIONS = {
+    '1': 'DEMAS sits between nodes — not inside them. It can reject a perfectly-formed output if it violates a downstream contract, before the next node is invoked.',
+    '2': 'Nodes 1–4 deterministically narrow the candidate set; Node 5 generates against a small qualified input; Nodes 6–7 deterministically validate. The probabilistic surface is one node wide.',
+    '3': 'FAIL → Firestore trace written → downstream nodes for this PDP halt → orchestrator schedules a corrected-prompt retry. Below-threshold output never reaches production.',
+    '4': '11 tenants × 7 nodes × ~10.5M PDPs. Telemetry density is by design — every boundary writes one row so the failure of any one PDP is traceable in isolation.',
+    '5': 'Trace excerpted from the most recent full-pipeline run. Single-PDP slice; the full run carries the same row shape across all 73.5M events.'
+  };
+
+  var ALL_NODE_IDS = [1, 2, 3, 4, 5, 6, 7, 'demas'];
+
+  var stage = document.querySelector('.telemetry-stage');
+  var captionEl = document.getElementById('telemetryCaption');
+  var decoderEl = document.getElementById('intentDecoder');
+
+  function isMobileViewport() {
+    return window.matchMedia('(max-width: ' + PO.MOBILE_BREAKPOINT_PX + 'px)').matches;
+  }
+
+  function nodeIdsForActiveBeat(beat) {
+    if (!beat) return [];
+    var rows = document.querySelectorAll('[data-trace-line][data-highlight~="b' + beat + '"]');
+    var seen = {};
+    var ordered = [];
+    for (var i = 0; i < rows.length; i++) {
+      var n = rows[i].dataset.nodeId;
+      if (n === undefined) continue;
+      var key = (n === 'demas') ? 'demas' : Number(n);
+      var k = String(key);
+      if (!seen[k]) {
+        seen[k] = true;
+        ordered.push(key);
+      }
+    }
+    return ordered;
+  }
+
+  // renderCard assumes PO.DAG_NODES is dev-controlled, HTML-safe data.
+  // Do not pass user-supplied input through this function.
+  function renderCard(nodeId, includeFailRoute) {
+    var node = PO.DAG_NODES[nodeId];
+    if (!node) return '';
+    var isDet = !!node.det;
+    var color = isDet ? 'appleGreen' : 'appleBlue';
+    var roleLabel = isDet ? 'Deterministic' : 'Probabilistic';
+    var gateName = (node.gate && node.gate.nm) || '';
+    var agentName = (node.agent && node.agent.nm) || '';
+    var tools = (node.agent && node.agent.tools) || [];
+    var toolChips = tools.map(function (t) {
+      return '<span class="text-[9px] px-1.5 py-0.5 rounded border border-appleBorder bg-appleBg text-appleGray">' + t + '</span>';
+    }).join('');
+    var failChip = '';
+    if (includeFailRoute && node.failureRoute) {
+      failChip = '<div class="mt-2 pt-2 border-t border-appleRed/30 text-[9px] text-appleRed leading-snug">' + node.failureRoute + '</div>';
+    }
+    var label = (nodeId === 'demas') ? 'DEMAS' : ('Node ' + nodeId);
+    return '' +
+      '<article class="intent-card bg-appleBg border border-appleBorder rounded-lg p-3" data-node-id="' + nodeId + '">' +
+        '<div class="flex items-center gap-2 mb-2">' +
+          '<span class="font-mono text-[10px] text-' + color + ' font-semibold">' + label + '</span>' +
+          '<span class="text-[9px] uppercase tracking-widest font-semibold bg-' + color + '/10 text-' + color + ' border border-' + color + '/20 px-1.5 py-0.5 rounded">' + roleLabel + '</span>' +
+        '</div>' +
+        '<div class="font-mono text-[10px] text-appleLight mb-1 truncate" title="' + gateName + ' → ' + agentName + '">' + gateName + ' → ' + agentName + '</div>' +
+        '<div class="text-[10px] text-appleGray leading-relaxed mb-2">' + (node.intent || '') + '</div>' +
+        (toolChips ? '<div class="flex gap-1 flex-wrap">' + toolChips + '</div>' : '') +
+        failChip +
+      '</article>';
+  }
+
+  function nodeIdsToRender(beat) {
+    if (isMobileViewport()) return ALL_NODE_IDS;
+    return nodeIdsForActiveBeat(beat);
+  }
+
+  function shouldShowFailRouteForDemas(beat) {
+    if (!beat || isMobileViewport()) {
+      return true;
+    }
+    var rows = document.querySelectorAll('[data-trace-line][data-highlight~="b' + beat + '"]');
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].dataset.status === 'fail') return true;
+    }
+    return false;
+  }
+
+  function renderDecoder(beat) {
+    if (captionEl) {
+      captionEl.textContent = BEAT_CAPTIONS[beat] || '';
+    }
+    if (!decoderEl) return;
+    var ids = nodeIdsToRender(beat);
+    var includeFail = shouldShowFailRouteForDemas(beat);
+    var html = '';
+    for (var i = 0; i < ids.length; i++) {
+      var id = ids[i];
+      html += renderCard(id, id === 'demas' && includeFail);
+    }
+    decoderEl.innerHTML = html;
+  }
+
+  renderDecoder(stage ? stage.getAttribute('data-active-beat') : '1');
+
+  if (stage && window.MutationObserver) {
+    var obs = new MutationObserver(function (mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        if (mutations[i].attributeName === 'data-active-beat') {
+          renderDecoder(stage.getAttribute('data-active-beat'));
+          break;
+        }
+      }
+    });
+    obs.observe(stage, { attributes: true, attributeFilter: ['data-active-beat'] });
+  }
+
+  var mq = window.matchMedia('(max-width: ' + PO.MOBILE_BREAKPOINT_PX + 'px)');
+  mq.addEventListener('change', function () {
+    renderDecoder(stage ? stage.getAttribute('data-active-beat') : '1');
   });
 })();
 </script>

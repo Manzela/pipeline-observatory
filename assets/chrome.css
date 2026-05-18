@@ -128,6 +128,10 @@ html, body {
   transition: background-color 0.25s ease, opacity 0.25s ease, border-color 0.25s ease;
   border-left: 2px solid transparent;
 }
+.trace-row:focus-visible {
+  outline: 2px solid rgba(41, 151, 255, 0.6);
+  outline-offset: -1px;
+}
 .telemetry-stage[data-active-beat="1"] [data-trace-line]:not([data-highlight~="b1"]),
 .telemetry-stage[data-active-beat="2"] [data-trace-line]:not([data-highlight~="b2"]),
 .telemetry-stage[data-active-beat="3"] [data-trace-line]:not([data-highlight~="b3"]),
@@ -142,6 +146,23 @@ html, body {
 .telemetry-stage[data-active-beat="5"] [data-highlight~="b5"] {
   background: rgba(41, 151, 255, 0.18);
   border-left-color: #2997ff;
+}
+
+/* Intent decoder cards — fade transition synced to existing stage rhythm. */
+.intent-card { transition: opacity 0.25s ease, border-color 0.25s ease; }
+
+/* Reduced-motion: instant swap, no fade. */
+@media (prefers-reduced-motion: reduce) {
+  .intent-card { transition: none; }
+}
+
+/* Mobile reduced-motion / static stage: hide the divider so the decoder
+   reads as a continuation of the trace card. */
+/* Mobile breakpoint — synced to PO.MOBILE_BREAKPOINT_PX in assets/stage.js. */
+@media (max-width: 767px) {
+  .telemetry-stage__decoder-region {
+    border-top-color: rgba(255,255,255,0.06);
+  }
 }
 
 /* ───────────────────────────────────────────────────────────────────────
