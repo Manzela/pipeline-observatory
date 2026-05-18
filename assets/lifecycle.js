@@ -157,9 +157,90 @@
     }
   }
 
+  /* ────────────────────────────────────────────────────────────────────
+   * DAG Schematic init (task B.5).
+   * Hydrates the inline SVG schematic from PO.DAG_NODES (no hardcoded
+   * names), wires click + keyboard activation (scroll to #node-N), and
+   * subscribes to po:active-node-change to flip active-state on the
+   * matching node in BOTH the horizontal and vertical SVG variants so
+   * the two stay in sync across viewport resizes.
+   * ──────────────────────────────────────────────────────────────────── */
+  function initSchematic() {
+    const schematic = document.querySelector('[data-dag-schematic]');
+    if (!schematic) return;
+    const dagNodes = (window.PO && window.PO.DAG_NODES) || null;
+    if (!dagNodes) return;
+
+    const nodes = schematic.querySelectorAll('.dag-schematic__node[data-node-id]');
+    if (!nodes.length) return;
+
+    // ── Hydrate label text + data-role from PO.DAG_NODES.
+    // Node 7's role is overridden to "R&D" in the schematic (the diagram
+    // tells the R&D story via dashed border + perimeter exclusion, not via
+    // the literal `role` string from DAG_NODES which is "DEMAS JIT").
+    nodes.forEach((n) => {
+      const id = n.dataset.nodeId;
+      const data = dagNodes[id];
+      if (!data) return;
+
+      n.setAttribute('data-role', data.det ? 'deterministic' : 'probabilistic');
+
+      const nameEl = n.querySelector('.dag-schematic__name');
+      const roleEl = n.querySelector('.dag-schematic__role');
+      if (nameEl) nameEl.textContent = (data.nm || '').toUpperCase();
+      if (roleEl) {
+        if (id === '7') {
+          roleEl.textContent = 'R&D';
+        } else {
+          roleEl.textContent = data.det ? 'DET' : 'PROB';
+        }
+      }
+    });
+
+    // ── Click + keyboard activation: scroll to corresponding lifecycle section.
+    function activateNode(id) {
+      const target = document.getElementById('node-' + id);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    nodes.forEach((n) => {
+      n.addEventListener('click', () => activateNode(n.dataset.nodeId));
+      n.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          activateNode(n.dataset.nodeId);
+        }
+      });
+    });
+
+    // ── Subscribe to lifecycle's active-node-change. Update BOTH SVG variants
+    // (horizontal + vertical) so resizing the viewport never shows a stale
+    // active-state on the freshly-shown variant.
+    document.addEventListener('po:active-node-change', (e) => {
+      const nodeId = e.detail && e.detail.nodeId;
+      if (nodeId === undefined || nodeId === null) return;
+      // Clear active on all schematic nodes; set on the matching id(s).
+      nodes.forEach((n) => n.removeAttribute('data-active'));
+      schematic
+        .querySelectorAll('.dag-schematic__node[data-node-id="' + Number(nodeId) + '"]')
+        .forEach((n) => n.setAttribute('data-active', 'true'));
+    });
+
+    // ── Initial render: if lifecycle's initial-fire already ran before we
+    // subscribed, read the container's current data-active-node as fallback.
+    const container = document.querySelector('[data-lifecycle-container]');
+    const active = container && container.getAttribute('data-active-node');
+    if (active && active !== 'static') {
+      schematic
+        .querySelectorAll('.dag-schematic__node[data-node-id="' + Number(active) + '"]')
+        .forEach((n) => n.setAttribute('data-active', 'true'));
+    }
+  }
+
   window.PO.initLifecycle = initLifecycle;
   window.PO.initDetailLegend = initDetailLegend;
+  window.PO.initSchematic = initSchematic;
 
   document.addEventListener('DOMContentLoaded', initLifecycle);
   document.addEventListener('DOMContentLoaded', initDetailLegend);
+  document.addEventListener('DOMContentLoaded', initSchematic);
 })();

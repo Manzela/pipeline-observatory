@@ -251,6 +251,222 @@
   </aside>
   <!-- END DETAIL LEGEND -->
 
+  <!-- BEGIN DAG SCHEMATIC (Task B.5)
+       Two SVG variants in one <figure>: horizontal (Layout A) ≥768px,
+       vertical (Layout C) <768px. CSS toggles display per breakpoint.
+       Class namespace `dag-schematic__*` avoids collision with the dead
+       `.dag-node` rule still in chrome.css (from architecture.html, now a
+       redirect proxy). All node names/roles populated by initSchematic()
+       in assets/lifecycle.js — DOM here is a clean structural baseline. -->
+  <figure class="dag-schematic" data-dag-schematic role="img"
+          aria-label="Pipeline DAG schematic: 7 nodes with DEMAS audit perimeter around production nodes 1-6, Node 7 in R&D outside the perimeter">
+
+    <!-- ───────── Layout A: HORIZONTAL — desktop ≥768px ───────── -->
+    <svg class="dag-schematic__svg dag-schematic__svg--horizontal"
+         viewBox="0 0 1024 280" xmlns="http://www.w3.org/2000/svg"
+         preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="dag-arrow-h" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="6" markerHeight="6" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/>
+        </marker>
+        <marker id="dag-arrow-h-low" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="6" markerHeight="6" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-low)"/>
+        </marker>
+      </defs>
+
+      <!-- DEMAS perimeter label + boundary rect -->
+      <text x="30" y="40" class="dag-schematic__perimeter-label">DEMAS — JIT AUDIT BOUNDARY</text>
+      <rect class="dag-schematic__perimeter" x="30" y="60" width="880" height="180"
+            fill="none" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 4"/>
+
+      <!-- Nodes 1-6: box width 80, x positions 60, 200, 340, 480, 620, 760 -->
+      <!-- y=110, height=80. Centers: x = 100, 240, 380, 520, 660, 800; y = 150 -->
+      <g class="dag-schematic__node" data-node-id="1" tabindex="0" role="button"
+         aria-label="Node 1, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="60" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="100" y="142" text-anchor="middle">1</text>
+        <text class="dag-schematic__name" x="100" y="162" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="100" y="178" text-anchor="middle"></text>
+      </g>
+      <line x1="140" y1="150" x2="200" y2="150" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-h)"/>
+
+      <g class="dag-schematic__node" data-node-id="2" tabindex="0" role="button"
+         aria-label="Node 2, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="200" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="240" y="142" text-anchor="middle">2</text>
+        <text class="dag-schematic__name" x="240" y="162" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="240" y="178" text-anchor="middle"></text>
+      </g>
+      <line x1="280" y1="150" x2="340" y2="150" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-h)"/>
+
+      <g class="dag-schematic__node" data-node-id="3" tabindex="0" role="button"
+         aria-label="Node 3, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="340" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="380" y="142" text-anchor="middle">3</text>
+        <text class="dag-schematic__name" x="380" y="162" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="380" y="178" text-anchor="middle"></text>
+      </g>
+      <line x1="420" y1="150" x2="480" y2="150" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-h)"/>
+
+      <g class="dag-schematic__node" data-node-id="4" tabindex="0" role="button"
+         aria-label="Node 4, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="480" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="520" y="142" text-anchor="middle">4</text>
+        <text class="dag-schematic__name" x="520" y="162" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="520" y="178" text-anchor="middle"></text>
+      </g>
+      <line x1="560" y1="150" x2="620" y2="150" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-h)"/>
+
+      <g class="dag-schematic__node" data-node-id="5" tabindex="0" role="button"
+         aria-label="Node 5, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="620" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="660" y="142" text-anchor="middle">5</text>
+        <text class="dag-schematic__name" x="660" y="162" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="660" y="178" text-anchor="middle"></text>
+      </g>
+      <line x1="700" y1="150" x2="760" y2="150" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-h)"/>
+
+      <g class="dag-schematic__node" data-node-id="6" tabindex="0" role="button"
+         aria-label="Node 6, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="760" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="800" y="142" text-anchor="middle">6</text>
+        <text class="dag-schematic__name" x="800" y="162" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="800" y="178" text-anchor="middle"></text>
+      </g>
+
+      <!-- Dotted R&D handoff: Node 6 → Node 7 (crosses the perimeter) -->
+      <line x1="840" y1="150" x2="920" y2="150" stroke="var(--ink-low)" stroke-width="1"
+            stroke-dasharray="2 4" marker-end="url(#dag-arrow-h-low)"/>
+
+      <!-- Node 7 OUTSIDE the perimeter — dashed border, R&D annotation -->
+      <g class="dag-schematic__node dag-schematic__node--rd" data-node-id="7" tabindex="0" role="button"
+         aria-label="Node 7, in R&D, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="924" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 4"/>
+        <text class="dag-schematic__num"  x="964" y="142" text-anchor="middle">7</text>
+        <text class="dag-schematic__name" x="964" y="162" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="964" y="178" text-anchor="middle"></text>
+      </g>
+      <text class="dag-schematic__rd-label" x="964" y="208" text-anchor="middle">R&amp;D · LANGFUSE</text>
+    </svg>
+
+    <!-- ───────── Layout C: VERTICAL — mobile <768px ───────── -->
+    <svg class="dag-schematic__svg dag-schematic__svg--vertical"
+         viewBox="0 0 360 980" xmlns="http://www.w3.org/2000/svg"
+         preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="dag-arrow-v" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="6" markerHeight="6" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/>
+        </marker>
+        <marker id="dag-arrow-v-low" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="6" markerHeight="6" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-low)"/>
+        </marker>
+      </defs>
+
+      <!-- DEMAS perimeter label + boundary rect -->
+      <text x="40" y="25" class="dag-schematic__perimeter-label">DEMAS — JIT AUDIT BOUNDARY</text>
+      <rect class="dag-schematic__perimeter" x="40" y="40" width="280" height="780"
+            fill="none" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 4"/>
+
+      <!-- Nodes 1-6: box centered horizontally, x=140 (box w=80) -->
+      <!-- y positions: 70, 200, 330, 460, 590, 720. Gap between boxes = 50px (arrow fits). -->
+      <g class="dag-schematic__node" data-node-id="1" tabindex="0" role="button"
+         aria-label="Node 1, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="70" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="102" text-anchor="middle">1</text>
+        <text class="dag-schematic__name" x="180" y="122" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="180" y="138" text-anchor="middle"></text>
+      </g>
+      <line x1="180" y1="150" x2="180" y2="200" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-v)"/>
+
+      <g class="dag-schematic__node" data-node-id="2" tabindex="0" role="button"
+         aria-label="Node 2, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="200" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="232" text-anchor="middle">2</text>
+        <text class="dag-schematic__name" x="180" y="252" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="180" y="268" text-anchor="middle"></text>
+      </g>
+      <line x1="180" y1="280" x2="180" y2="330" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-v)"/>
+
+      <g class="dag-schematic__node" data-node-id="3" tabindex="0" role="button"
+         aria-label="Node 3, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="330" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="362" text-anchor="middle">3</text>
+        <text class="dag-schematic__name" x="180" y="382" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="180" y="398" text-anchor="middle"></text>
+      </g>
+      <line x1="180" y1="410" x2="180" y2="460" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-v)"/>
+
+      <g class="dag-schematic__node" data-node-id="4" tabindex="0" role="button"
+         aria-label="Node 4, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="460" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="492" text-anchor="middle">4</text>
+        <text class="dag-schematic__name" x="180" y="512" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="180" y="528" text-anchor="middle"></text>
+      </g>
+      <line x1="180" y1="540" x2="180" y2="590" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-v)"/>
+
+      <g class="dag-schematic__node" data-node-id="5" tabindex="0" role="button"
+         aria-label="Node 5, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="590" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="622" text-anchor="middle">5</text>
+        <text class="dag-schematic__name" x="180" y="642" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="180" y="658" text-anchor="middle"></text>
+      </g>
+      <line x1="180" y1="670" x2="180" y2="720" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-v)"/>
+
+      <g class="dag-schematic__node" data-node-id="6" tabindex="0" role="button"
+         aria-label="Node 6, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="720" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="752" text-anchor="middle">6</text>
+        <text class="dag-schematic__name" x="180" y="772" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="180" y="788" text-anchor="middle"></text>
+      </g>
+
+      <!-- Dotted R&D handoff: Node 6 → Node 7 (crosses the perimeter) -->
+      <line x1="180" y1="800" x2="180" y2="870" stroke="var(--ink-low)" stroke-width="1"
+            stroke-dasharray="2 4" marker-end="url(#dag-arrow-v-low)"/>
+
+      <!-- Node 7 OUTSIDE the perimeter — dashed border, R&D annotation -->
+      <g class="dag-schematic__node dag-schematic__node--rd" data-node-id="7" tabindex="0" role="button"
+         aria-label="Node 7, in R&D, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="870" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 4"/>
+        <text class="dag-schematic__num"  x="180" y="902" text-anchor="middle">7</text>
+        <text class="dag-schematic__name" x="180" y="922" text-anchor="middle"></text>
+        <text class="dag-schematic__role" x="180" y="938" text-anchor="middle"></text>
+      </g>
+      <text class="dag-schematic__rd-label" x="180" y="970" text-anchor="middle">R&amp;D · LANGFUSE</text>
+    </svg>
+  </figure>
+  <!-- END DAG SCHEMATIC -->
+
   <!-- BEGIN LIFECYCLE SCAFFOLDING (task A.2 — placeholder sections; real content in Section B) -->
   <div data-lifecycle-container data-active-node="1">
     <section class="lifecycle-node" id="node-1" data-node-id="1" style="min-height:100vh;padding:48px 24px;border-top:1px solid var(--ink-rule)">

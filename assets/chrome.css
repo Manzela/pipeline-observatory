@@ -239,6 +239,105 @@ code, pre, .mono { font-family: var(--font-mono); }
 .detail-legend[data-role="probabilistic"] .detail-legend__role-badge { color: var(--prob-blue); border-color: var(--prob-blue); }
 
 /* ───────────────────────────────────────────────────────────────────────
+   DAG schematic  (task B.5 — index.html signature visual)
+   Industrial / Aicher / Lufthansa technical-drawing register: thin ink
+   strokes, sharp corners, IBM Plex Mono labels, semantic accent fill on
+   the active node. Two SVG variants in one <figure>:
+     · --horizontal (Layout A): desktop ≥768px, 1024×280 viewBox
+     · --vertical   (Layout C): mobile  <768px, 360×980 viewBox
+   Class namespace `dag-schematic__*` avoids collision with the older
+   `.dag-node` rule above (kept for the architecture.html stage, now a
+   redirect proxy — left in place to avoid dead-code churn in this pass).
+   ─────────────────────────────────────────────────────────────────────── */
+.dag-schematic {
+  margin: 48px auto;
+  padding: 0;
+}
+.dag-schematic__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+/* Default: horizontal visible, vertical hidden. */
+.dag-schematic__svg--horizontal { display: block; }
+.dag-schematic__svg--vertical   { display: none;  }
+@media (max-width: 767px) {
+  .dag-schematic__svg--horizontal { display: none;  }
+  .dag-schematic__svg--vertical   { display: block; }
+}
+
+/* All schematic text uses the mono register. fill (not color) for SVG. */
+.dag-schematic text {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  fill: var(--ink);
+  /* Keep text non-selectable; the figure reads as a diagram, not copy. */
+  user-select: none;
+  -webkit-user-select: none;
+}
+.dag-schematic__perimeter-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  fill: var(--ink-low);
+}
+.dag-schematic__num {
+  font-size: 20px;
+  font-weight: 600;
+  fill: var(--ink);
+}
+.dag-schematic__name {
+  font-size: 9px;
+  letter-spacing: 0.10em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+}
+.dag-schematic__role {
+  font-size: 7px;
+  letter-spacing: 0.14em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+}
+.dag-schematic__rd-label {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+}
+
+/* Node group: clickable, keyboard-focusable. */
+.dag-schematic__node {
+  cursor: pointer;
+  outline: none;
+}
+.dag-schematic__node:focus-visible .dag-schematic__box {
+  stroke: var(--prob-blue);
+  stroke-width: 2;
+}
+.dag-schematic__box {
+  transition: fill 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Active-node fill — semantic by role. JS sets data-role on each node. */
+.dag-schematic__node[data-active="true"][data-role="probabilistic"] .dag-schematic__box {
+  fill: var(--prob-blue);
+}
+.dag-schematic__node[data-active="true"][data-role="deterministic"] .dag-schematic__box {
+  fill: var(--det-green);
+}
+/* Invert text against the filled box so labels stay legible. */
+.dag-schematic__node[data-active="true"] .dag-schematic__num,
+.dag-schematic__node[data-active="true"] .dag-schematic__name,
+.dag-schematic__node[data-active="true"] .dag-schematic__role {
+  fill: var(--paper);
+}
+
+/* Reduced-motion: kill the fill/stroke transition; instant swap. */
+@media (prefers-reduced-motion: reduce) {
+  .dag-schematic__box { transition: none; }
+}
+
+/* ───────────────────────────────────────────────────────────────────────
    DAG sticky-stage  (architecture.html signature)
    ─────────────────────────────────────────────────────────────────────── */
 .dag-stage {
