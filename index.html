@@ -532,9 +532,31 @@
       <div class="lifecycle-node__architecture">
         <p>This is the only sustained inference path in the pipeline. ~80% of run cost lives in this ~11-second window. Every other node is either deterministic Python or a short-call classifier &mdash; the probabilistic surface is one node wide and pinned here on purpose.</p>
         <p>Template Selector (Jinja2 + constraint set) enforces structural bounds before generation: length, heading count, content block schema. If the template gate passes, the Content Generator produces 10 SEO-optimized content blocks per product-location pair on Gemma 4 MoE with per-tenant LoRA adapters.</p>
-        <p>Multi-LoRA serving keeps adapter switching at inference time cheap. Tenant isolation runs through the adapter binding, not through separate model weights. Detailed serving topology lands in the inline deep-dive below in a later pass.</p>
+        <p>Multi-LoRA serving keeps adapter switching at inference time cheap. Tenant isolation runs through the adapter binding, not through separate model weights. Detailed serving topology in the inline deep-dive below.</p>
         <p class="lifecycle-node__trace">Qualified &rarr; Template &rarr; LoRA &rarr; 10 Blocks</p>
       </div>
+
+      <details class="node-deep-dive" id="moe" data-default-open="desktop">
+        <summary class="node-deep-dive__summary">
+          <span class="node-deep-dive__label">Inline deep-dive</span>
+          <span class="node-deep-dive__title">Mixture-of-Experts &middot; Multi-LoRA serving engine</span>
+        </summary>
+        <div class="node-deep-dive__body">
+          <p>Base model: <strong>Gemma 4 26B-A4B-it</strong>, a Mixture-of-Experts transformer. The naming convention is literal &mdash; <span class="font-mono">26B</span> total parameters, <span class="font-mono">A4B</span> means ~4B parameters fire per forward pass. A learned router selects 4 experts of 128 per token; the other 124 stay cold. The serving cost matches a dense 4B model; the capacity matches a dense 26B model.</p>
+          <p>That sparsity is what makes Node 5 affordable at production volume. ~10.5M product detail pages per cycle pass through this node. At a dense 26B equivalent, the unit economics break. At ~4B active, the pipeline lands at <span class="font-mono">$0.0006/PDP</span> end-to-end &mdash; ~80% of which is spent right here.</p>
+          <p>Multi-LoRA serving handles tenant specialization. The base MoE weights stay frozen and shared; per-tenant LoRA adapters layer on top, one per <span class="font-mono">client_id</span>. 11 enterprise retailers across 5 countries means 11 adapters bound at inference time, each carrying tuned weights from previous successful runs of that tenant&rsquo;s 18 pipeline prompts. Adapter swap is a sparse matrix load, not a model reload &mdash; one server, many tenants, no cross-contamination.</p>
+
+          <figure class="moe-mini" aria-label="MoE expert routing: 128 expert slots, 4 active per token">
+            <svg viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false">
+              <!-- 128 expert slots: 16 cols x 8 rows, 18px square + 2px gap. Active slots picked to read as "sparse routing", not adjacent. -->
+              <g class="moe-mini__grid"></g>
+            </svg>
+            <figcaption class="moe-mini__caption">128 experts &middot; 4 active per token &middot; ~4B of 26B parameters fire</figcaption>
+          </figure>
+
+          <p>The isolation stack the engine enforces: <strong>tenant</strong> (<span class="font-mono">adapter_id</span> binding), <strong>prompt</strong> (scoped system cache), <strong>task</strong> (DAG node boundaries), <strong>KV cache</strong> (PagedAttention). Each layer is a separate guarantee &mdash; tenant data cannot leak across adapters, and the deterministic Nodes 4 + 6 either side of this one re-validate the contract anyway.</p>
+        </div>
+      </details>
     </section>
 
     <section class="lifecycle-node" id="node-6" data-node-id="6">
@@ -545,9 +567,32 @@
       <div class="lifecycle-node__architecture">
         <p>Pure deterministic Python &mdash; the final structural defense before output ships. Zero LLM calls. The probabilistic surface ended at Node 5; Node 6 enforces the contracts on what came out.</p>
         <p>Format Check runs O(1) checks (regex + blocklist): format, word count, forbidden patterns. Past that gate, the O-R-A-V engine observes diagnostics, reasons about severity, acts with corrections, and validates the final output. Each step is a rule, not a model.</p>
-        <p>Outcomes are <span class="font-mono">PASS</span>, <span class="font-mono">RETRY</span>, or <span class="font-mono">FAIL</span>. Fail-closed: below-threshold blocks halt downstream, Firestore captures the trace, the orchestrator retries with a corrected prompt. The O-R-A-V mechanism is documented in the inline deep-dive below in a later pass.</p>
+        <p>Outcomes are <span class="font-mono">PASS</span>, <span class="font-mono">RETRY</span>, or <span class="font-mono">FAIL</span>. Fail-closed: below-threshold blocks halt downstream, Firestore captures the trace, the orchestrator retries with a corrected prompt. The O-R-A-V mechanism and the boundary-level DEMAS contract are documented inline below.</p>
         <p class="lifecycle-node__trace">Draft &rarr; Format &rarr; O-R-A-V &rarr; PASS / RETRY / FAIL</p>
       </div>
+
+      <details class="node-deep-dive" id="orav" data-default-open="desktop">
+        <summary class="node-deep-dive__summary">
+          <span class="node-deep-dive__label">Inline deep-dive</span>
+          <span class="node-deep-dive__title">O-R-A-V Engine &middot; Observe / Reason / Act / Validate</span>
+        </summary>
+        <div class="node-deep-dive__body">
+          <p>O-R-A-V is a control-flow pattern, not a model. Node 6 executes it across every content block produced by Node 5. Zero LLM calls &mdash; pure rule-based defense-in-depth. The four axes are sequential gates, not parallel scores:</p>
+          <p><strong>O &middot; Observe</strong> &mdash; scan diagnostics across the block. Template variable leaks, internal label leaks, transactional language blocklist hits, schema deviations, character-length bounds, empty fields.<br>
+          <strong>R &middot; Reason</strong> &mdash; assign a severity tier to each diagnostic. A leaked Jinja token is a fatal; a borderline word count is a corrective; a stylistic deviation is a soft signal.<br>
+          <strong>A &middot; Act</strong> &mdash; apply deterministic corrections where the severity allows it (strip a leak, truncate to bound, retry the block with a corrected prompt). The act layer never re-prompts Node 5 with raw failure noise &mdash; only with the diagnostic the rule named.<br>
+          <strong>V &middot; Validate</strong> &mdash; final gate. The block either ships, retries, or falls through to the failure tier. There is no probabilistic appeal.</p>
+          <p>The <strong>68.9% pass rate</strong> is by design, not by accident. The thresholds are tuned so the failure tier is large enough to feed the DPO data flywheel downstream with a real <span class="font-mono">chosen</span>/<span class="font-mono">rejected</span> spread. A 99% pass rate would starve the loop; a 50% rate would burn cost. 68.9% is where the curve sits in production across 11 tenants and ~10.5M PDPs per cycle.</p>
+        </div>
+      </details>
+
+      <aside class="demas-callout" id="demas" aria-labelledby="demas-h">
+        <span class="demas-callout__label">Boundary callout</span>
+        <strong class="demas-callout__title" id="demas-h">DEMAS &middot; Deterministic Evaluation &amp; Monitoring Audit System</strong>
+        <p>DEMAS is not a node &mdash; it is the dashed perimeter around the production DAG. It intercepts at <em>every</em> node boundary, not just at Node 6, validating data integrity and schema compliance in real time. Node 6 is where the contract is most visible because the validator and DEMAS share the same <strong>68.9% pass rate</strong> metric: when a block clears O-R-A-V, DEMAS already cleared its hand-off.</p>
+        <p>Fail-closed: rejected outputs never propagate downstream. The boundary halts on a violation; the orchestrator routes the failure based on tier. <strong>Block-level</strong> failures take ~2&times; JIT retry with a corrected prompt against the same DEMAS contract. <strong>Product-level</strong> failures route to Firestore for requeue on the next CRON cycle &mdash; the run does not block on a single product&rsquo;s recovery.</p>
+        <p>Routing tools: Pydantic + schema for the gate, Langfuse + Firestore for the failure trace. The full failure flow is the audit surface that makes the multi-tenant pipeline auditable across 234 managed websites without per-tenant operator intervention.</p>
+      </aside>
     </section>
 
     <section class="lifecycle-node" id="node-7" data-node-id="7">

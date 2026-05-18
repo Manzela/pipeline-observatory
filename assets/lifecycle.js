@@ -236,11 +236,67 @@
     }
   }
 
+  /* ────────────────────────────────────────────────────────────────────
+   * Inline deep-dive default-open behavior (task B.4).
+   *  · <details data-default-open="desktop"> → open on viewports ≥768px,
+   *    closed on mobile so the node trace stays above the fold.
+   *  · 'always' / no attribute → leave as authored.
+   * Also paints the small MoE mini-grid (128 cells, 4 active) inside the
+   * #moe deep-dive so the markup stays tiny and the SVG renders even when
+   * JS is the only way to know the active-cell positions.
+   * ──────────────────────────────────────────────────────────────────── */
+  function initDeepDives() {
+    const dds = document.querySelectorAll('details[data-default-open]');
+    dds.forEach((d) => {
+      const mode = d.getAttribute('data-default-open');
+      if (mode === 'desktop' && window.matchMedia('(min-width: 768px)').matches) {
+        d.setAttribute('open', '');
+      }
+      // 'always' / no attribute → leave as authored
+    });
+
+    // MoE mini-diagram hydrator. 128 expert slots laid out 16×8.
+    // Active positions chosen to read as "sparse routing" (not clustered).
+    const moeGrid = document.querySelector('.moe-mini__grid');
+    if (moeGrid && !moeGrid.children.length) {
+      const COLS = 16;
+      const ROWS = 8;
+      const CELL = 16;
+      const GAP = 2;
+      const STRIDE = CELL + GAP;
+      const totalW = COLS * STRIDE - GAP;
+      const totalH = ROWS * STRIDE - GAP;
+      const offsetX = (320 - totalW) / 2;
+      const offsetY = (80 - totalH) / 2;
+      // Pick 4 active cells spread across the grid (not adjacent).
+      const active = new Set(['r1c3', 'r3c11', 'r5c6', 'r6c14']);
+      const ns = 'http://www.w3.org/2000/svg';
+      const frag = document.createDocumentFragment();
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const rect = document.createElementNS(ns, 'rect');
+          rect.setAttribute('class', 'moe-mini__cell');
+          rect.setAttribute('x', offsetX + c * STRIDE);
+          rect.setAttribute('y', offsetY + r * STRIDE);
+          rect.setAttribute('width', CELL);
+          rect.setAttribute('height', CELL);
+          if (active.has('r' + r + 'c' + c)) {
+            rect.setAttribute('data-active', 'true');
+          }
+          frag.appendChild(rect);
+        }
+      }
+      moeGrid.appendChild(frag);
+    }
+  }
+
   window.PO.initLifecycle = initLifecycle;
   window.PO.initDetailLegend = initDetailLegend;
   window.PO.initSchematic = initSchematic;
+  window.PO.initDeepDives = initDeepDives;
 
   document.addEventListener('DOMContentLoaded', initLifecycle);
   document.addEventListener('DOMContentLoaded', initDetailLegend);
   document.addEventListener('DOMContentLoaded', initSchematic);
+  document.addEventListener('DOMContentLoaded', initDeepDives);
 })();
