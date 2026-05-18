@@ -251,6 +251,47 @@
   </aside>
   <!-- END DETAIL LEGEND -->
 
+  <!-- BEGIN FRAMING STRIP (Task B.2)
+       Five one-line cross-cutting callouts that preview the concepts
+       introduced inline in the lifecycle below. Each row jumps to its
+       deep-dive: #multi-tenant (here), #moe (Node 5), #orav + #demas
+       (Node 6), #flywheel (lands in B.6). Spec §5 + §7.3. -->
+  <section class="framing-strip" id="framing" aria-label="Cross-cutting concepts">
+    <ul class="framing-strip__list">
+      <li class="framing-strip__item">
+        <a href="#multi-tenant" id="multi-tenant" class="framing-strip__anchor">
+          <span class="framing-strip__label">Multi-tenant</span>
+          <span class="framing-strip__value">11 enterprise retailers &middot; 5 countries &middot; 234 surfaces<!-- source: Resume CV/00-GROUND-SOURCE-OF-TRUTH.md L59 (retailers/countries) + L60 (234 managed websites) --></span>
+        </a>
+      </li>
+      <li class="framing-strip__item">
+        <a href="#moe" class="framing-strip__anchor">
+          <span class="framing-strip__label">MoE &middot; Multi-LoRA</span>
+          <span class="framing-strip__value">Gemma 4 26B-A4B-it &middot; ~4B active per token &middot; per-tenant LoRA</span>
+        </a>
+      </li>
+      <li class="framing-strip__item">
+        <a href="#orav" class="framing-strip__anchor">
+          <span class="framing-strip__label">O-R-A-V validation</span>
+          <span class="framing-strip__value">Observe &middot; Reason &middot; Act &middot; Validate &middot; 68.9% pass by design<!-- source: Resume CV/00-GROUND-SOURCE-OF-TRUTH.md L60 (68.9% O-R-A-V pass rate) --></span>
+        </a>
+      </li>
+      <li class="framing-strip__item">
+        <a href="#demas" class="framing-strip__anchor">
+          <span class="framing-strip__label">DEMAS boundary</span>
+          <span class="framing-strip__value">Deterministic check at every node &middot; fail-closed &middot; JIT retry &middot; Firestore requeue</span>
+        </a>
+      </li>
+      <li class="framing-strip__item">
+        <a href="#flywheel" class="framing-strip__anchor">
+          <span class="framing-strip__label">Data flywheel</span>
+          <span class="framing-strip__value">Every run becomes training data &middot; DPO &middot; RLAIF</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+  <!-- END FRAMING STRIP -->
+
   <!-- BEGIN DAG SCHEMATIC (Task B.5)
        Two SVG variants in one <figure>: horizontal (Layout A) ≥768px,
        vertical (Layout C) <768px. CSS toggles display per breakpoint.
@@ -258,7 +299,7 @@
        `.dag-node` rule still in chrome.css (from architecture.html, now a
        redirect proxy). All node names/roles populated by initSchematic()
        in assets/lifecycle.js — DOM here is a clean structural baseline. -->
-  <figure class="dag-schematic" data-dag-schematic role="img"
+  <figure class="dag-schematic" id="dag" data-dag-schematic role="img"
           aria-label="Pipeline DAG schematic: 7 nodes with DEMAS audit perimeter around production nodes 1-6, Node 7 in R&D outside the perimeter">
 
     <!-- ───────── Layout A: HORIZONTAL — desktop ≥768px ───────── -->

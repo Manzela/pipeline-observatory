@@ -239,6 +239,98 @@ code, pre, .mono { font-family: var(--font-mono); }
 .detail-legend[data-role="probabilistic"] .detail-legend__role-badge { color: var(--prob-blue); border-color: var(--prob-blue); }
 
 /* ───────────────────────────────────────────────────────────────────────
+   Framing strip — top-of-page horizontal cross-cutting callouts (task B.2).
+   Industrial register: ink rules above and below, vertical separators
+   between items, mono labels (uppercase + tracking), sans values.
+   Spec §5 (IA — #framing between Problem and Lifecycle) + §7.3.
+   ─────────────────────────────────────────────────────────────────────── */
+.framing-strip {
+  margin: 32px auto;
+  max-width: 1024px;
+  padding: 0 24px;
+}
+.framing-strip__list {
+  list-style: none;
+  margin: 0;
+  padding: 16px 0;
+  border-top: 1px solid var(--ink-rule);
+  border-bottom: 1px solid var(--ink-rule);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+}
+.framing-strip__item {
+  border-left: 1px solid var(--ink-rule);
+  padding-left: 16px;
+}
+.framing-strip__item:first-child {
+  border-left: none;
+  padding-left: 0;
+}
+.framing-strip__anchor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+}
+.framing-strip__anchor:hover .framing-strip__label,
+.framing-strip__anchor:focus-visible .framing-strip__label {
+  color: var(--prob-blue);
+}
+.framing-strip__anchor:focus-visible {
+  outline: 2px solid var(--prob-blue);
+  outline-offset: 4px;
+}
+.framing-strip__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+  transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.framing-strip__value {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+/* Responsive: stack on mobile, two-up on tablet */
+@media (max-width: 767px) {
+  .framing-strip__list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .framing-strip__item {
+    border-left: none;
+    padding-left: 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ink-rule);
+  }
+  .framing-strip__item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .framing-strip__list {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 16px;
+  }
+  .framing-strip__item:nth-child(2n+1) {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+/* Mono utility class — B.4 used `.font-mono` inline in several places;
+   without this definition it fell back to body sans. One-line fix. */
+.font-mono { font-family: var(--font-mono); }
+
+/* ───────────────────────────────────────────────────────────────────────
    Lifecycle node sections  (task B.3 — real content per spec §7.3)
    One section per DAG node. Header (number + name·role + DET/PROB badge)
    then architecture body (problem · gate→agent · result). Industrial
