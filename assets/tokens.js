@@ -11,7 +11,7 @@ tailwind.config = {
         paperDeep: '#F2EFE7',
         ink:       '#1A1A1A',
         inkMid:    '#4A4A4A',
-        inkLow:    '#8A8A8A',
+        inkLow:    '#6A6A6A',   /* darkened from #8A8A8A (3.19:1) to meet WCAG AA 4.5:1 on paper / paper-deep */
         inkRule:   'rgba(26, 26, 26, 0.12)',
         detGreen:  '#2D5A2F',
         probBlue:  '#1B3A5C',
