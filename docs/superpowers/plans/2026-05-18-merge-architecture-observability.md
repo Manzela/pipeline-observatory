@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Collapse `pipeline-observatory/index.html` (live observability) and `pipeline-observatory/architecture.html` (static architecture explainer) into a single deductive-lifecycle page; delete `architecture.html`; coordinate external-ref updates across `Manzela/` and `Resume CV/`.
+**Goal:** Collapse `pipeline-observatory/index.html` (live observability) and `pipeline-observatory/architecture.html` (static architecture explainer) into a single deductive-lifecycle page; **replace `architecture.html` with a thin redirect proxy** (HTTP 200, meta-refresh + fragment-aware JS); coordinate external-ref updates across `Manzela/` and `Resume CV/`. *(Goal updated 2026-05-18 during execution: original goal was to delete `architecture.html` and rely on a 404.html JS redirect. Redirect-proxy approach returns 200 not 404, is search-engine-friendly, and never shows visitors an error page even briefly. See Appendix C "Pivot 2" below.)*
 
 **Architecture:** Hybrid plan matched to the work's actual character — **Section A** drives the 5 behavior-critical surfaces via strict TDD (404 redirect, scroll-sync orchestration, keyboard/a11y, link integrity, no-JS/reduced-motion); **Section B** builds the visual rewrite iteratively in a worktree with the visual-companion server as oracle; **Section C** is a checklist for mechanical content moves and external-ref updates; **Section D** is the quality-gate matrix that gates the PR.
 
@@ -19,9 +19,9 @@
 | Action | Path | Responsibility |
 |---|---|---|
 | Rewrite | `index.html` | The merged page. Hero · Problem · Framing strip · Lifecycle (7 node sections) · Flywheel · Economics. Anchored Decoder sticky-wrapped. |
-| Create | `404.html` | Smart client-side redirect: maps deprecated `architecture.html` paths/fragments to merged-page anchors. Pure HTML+JS. |
+| Create | `404.html` | Generic page-not-found fallback for unknown paths. No architecture-specific logic (that's in `architecture.html` proxy itself per Appendix C Pivot 2). |
 | Modify | `case-studies.html` | Nav-only: remove the `Architecture` link (lines 31, 41). |
-| Delete | `architecture.html` | Replaced by merged page. |
+| Replace | `architecture.html` | Original 465-line architecture explainer replaced with ~85-line redirect proxy: HTTP 200 + meta-refresh + inline JS that maps the 5 historical fragment IDs to merged-page anchors. See Appendix C "Pivot 2." |
 | Modify | `assets/chrome.css` | Add: z-index scale custom properties, `.lifecycle-rail`, `.lifecycle-node`, `.framing-strip`, sticky positioning rules, responsive breakpoints, bottom-sheet decoder styles. |
 | Create | `assets/lifecycle.js` | New module. Owns: single shared `IntersectionObserver` for lifecycle sections, `data-active-node` mutation, custom event dispatch, rail click + keyboard handlers, decoder re-targeting glue. Idempotent `window.PO` pattern. |
 | Modify | `assets/stage.js` | Likely no change — `attachStage` reused as-is. If lifecycle.js needs a new shared helper, add to stage.js (not lifecycle.js). |
@@ -29,7 +29,7 @@
 | Modify | `README.md` | Line 55: fix O-R-A-V expansion. Page list: remove architecture.html. |
 | Modify | `CHANGELOG.md` | New `[3.0.0]` entry: Added / Changed / Removed / Migration notes. |
 | Modify | `ROADMAP.md` | Update / remove items now shipped. |
-| Create | `tests/playwright/lifecycle.404.spec.js` | Smart-redirect verification (Section A). |
+| Create | `tests/playwright/lifecycle.redirects.spec.js` | Redirect-proxy + 404-fallback verification per Appendix C Pivot 2 (Section A). |
 | Create | `tests/playwright/lifecycle.scroll-sync.spec.js` | Active-node mutation under scroll (Section A). |
 | Create | `tests/playwright/lifecycle.rail.spec.js` | Rail click + arrow keys + focus management (Section A). |
 | Create | `tests/playwright/lifecycle.keyboard.spec.js` | Tab order, focus-visible, skip links, no traps (Section A). |
@@ -1527,3 +1527,36 @@ This re-direction was driven by review against `bencium-innovative-ux-designer` 
 - Tone: Industrial / utilitarian (user-selected, 2026-05-18).
 - Constraints: vanilla HTML/CSS/JS + Tailwind CDN + WCAG AA + Lighthouse mobile ≥95 (from spec §9).
 - Differentiation: "the pipeline as a technical schematic" — Aicher / Lufthansa identity manual register (user-selected, 2026-05-18).
+
+---
+
+## Appendix C — Pivot 2: Redirect proxy instead of 404 (2026-05-18, during execution)
+
+**Trigger:** During execution of Task A.1, user pointed out the chosen approach (delete `architecture.html` → rely on GitHub Pages' `404.html` fallback to JS-redirect to the merged page) returns HTTP 404 to clients. That is worse than the alternative: keep `architecture.html` as a thin redirect proxy file that returns HTTP 200 with a `<meta http-equiv="refresh">` + inline JS. The proxy approach is search-engine-friendly (Google treats meta-refresh + canonical as a 301-equivalent and flows link equity to the canonical), and visitors never see a "not found" page even briefly.
+
+**Implemented in commit `db0d634`** (supersedes the Task A.1 implementation in commit `5ef8c28`).
+
+**File changes from Pivot 2:**
+
+- `architecture.html` is **rewritten** (not deleted) as a redirect proxy. Original 465-line content gone; new ~85-line proxy with inline JS + meta-refresh + Plex-styled visible-fallback message. The same 5 fragment mappings as before (`#dag-h → #dag`, `#moe-h → #moe`, `#orav-h → #orav`, `#flow-h → #flywheel`, `#tenants-h → #multi-tenant`) plus a bare-URL → `#dag` plus an unknown-fragment → `#dag` fallback. Runtime path detection (no build-step substitution) for local + GitHub Pages parity.
+- `404.html` is **demoted** to a generic page-not-found fallback. No architecture-specific logic. Pure "back to /" message.
+- `tests/playwright/lifecycle.404.spec.js` → renamed `lifecycle.redirects.spec.js`. New tests:
+  - 7 proxy redirect assertions (5 fragments + bare + unknown fallback)
+  - HTTP 200 on `/architecture.html` (verifies the proxy isn't a 404)
+  - `robots: noindex,follow` declared
+  - `<link rel="canonical">` points to `https://manzela.github.io/pipeline-observatory/`
+  - `<meta http-equiv="refresh">` fallback for JS-disabled
+  - 404.html still works for unknown paths and contains no architecture-specific logic
+  - Three meta-tag checks use `request.get()` (raw HTTP) rather than `page.goto()` to avoid a `location.replace` race that breaks `response.text()`.
+- `tests/playwright/invariants.spec.js`: `/architecture.html` removed from `PAGES` (the proxy has no `<main>`, no `<h1>`, no skip-link — it's not a content page).
+- `scripts/verify-chrome.sh`: architecture.html excluded from the nav/footer chrome comparison.
+
+**Spec edits in commit `<next commit>`:** §3 row 5 (URL strategy), §7.3 (Components — proxy + generic 404), §7.4 (Removed list), §11 (External coordination), §12 (Test matrix), §13.4 (DoD).
+
+**Task C.1 ("Delete architecture.html + case-studies nav") is now superseded** by this pivot. The remaining action in C.1 is just the case-studies.html nav update (remove the *Architecture* link). The `git rm architecture.html` step from C.1 is no-op'd by this pivot. The full Playwright suite + chrome-verify still need to pass at C.1's gate.
+
+**Net effect on the rest of the plan:**
+
+- Section A.1 is now considered complete by commits `5ef8c28` (initial 404 approach, partial work) + `db0d634` (pivot to proxy). The proxy works in dev (`npx http-server`) and is expected to behave identically on GitHub Pages.
+- Section C.1's `git rm architecture.html` becomes a one-line case-studies.html nav fix.
+- Sections B (craft), C.2–C.6 (mechanical), D (gates) unaffected.

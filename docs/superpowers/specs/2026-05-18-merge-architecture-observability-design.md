@@ -43,7 +43,7 @@ A separate, parallel concern surfaced during red-team review (§13): O-R-A-V ter
 | 2 | **Narrative arc**: lifecycle — one PDP end-to-end through the 7 nodes | Most cinematic; binds architecture and trace into a single timeline |
 | 3 | **Cross-cutting concepts**: hybrid — brief framing strip + inline at the relevant node + flywheel epilogue | Honors the reader's progressive understanding without front-loading |
 | 4 | **Orientation device**: sticky left rail on desktop; horizontal scrubber on tablet; horizontal scrubber on mobile | Strongest "documentation site" feel; scales down gracefully |
-| 5 | **URL strategy**: delete `architecture.html`; update all external refs | Cleanest URL story; one canonical source of truth |
+| 5 | **URL strategy**: replace `architecture.html` with a thin redirect proxy file (HTTP 200 with meta-refresh + JS); update external refs to point to the merged-page anchors | Proxy returns 200 (search engines treat as 301-equivalent, link equity flows to canonical) instead of 404. Visitors never see a "not found" message even briefly. Fragment-aware: 5 historical anchor IDs map to the merged-page anchors. *(Updated 2026-05-18 during execution: original decision was to delete the file and rely on a 404.html JS redirect; user feedback pointed out this returns HTTP 404, which is worse for SEO and visible to visitors as a brief error page. Proxy approach is the production-grade implementation.)* |
 | 6 | **Component spine**: Anchored Decoder — one central Intent Decoder, sticky in viewport, scroll-syncs to the active node section | Reuses the most existing JS; honors the deductive lifecycle arc |
 
 ## 4. Industrial Illustration Philosophy
@@ -172,8 +172,9 @@ Two sticky regions coexist (down from three after removing the lifecycle-rail in
 
 - *(Removed)* `.lifecycle-rail` and Anchored Decoder container — replaced by `.dag-schematic` + `.detail-legend` per §5.1, §5.2.
 
-- **`404.html`** — new file. Smart client-side redirect:
-  - Detects `architecture.html` in `location.pathname` and maps the five real fragment patterns currently on that page to the merged-page anchors:
+- **`architecture.html` (redirect proxy)** — replaces the original 465-line static architecture explainer with a ~85-line proxy file:
+  - Returns HTTP 200 (search engines treat the meta-refresh + canonical as a 301-equivalent; link equity flows to `/`).
+  - Inline JS runs synchronously before meta-refresh fires; maps the original `location.hash` to the merged-page anchor:
 
     | Deprecated URL | Redirects to |
     |---|---|
@@ -183,15 +184,23 @@ Two sticky regions coexist (down from three after removing the lifecycle-rail in
     | `/pipeline-observatory/architecture.html#orav-h` | `/pipeline-observatory/#orav` |
     | `/pipeline-observatory/architecture.html#flow-h` | `/pipeline-observatory/#flywheel` |
     | `/pipeline-observatory/architecture.html#tenants-h` | `/pipeline-observatory/#multi-tenant` |
+    | `/pipeline-observatory/architecture.html#anything-else` | `/pipeline-observatory/#dag` (fallback) |
 
   - Performs the jump via `location.replace` (no entry in browser history; back button works as if the user came directly).
-  - Falls back to `/pipeline-observatory/` with a one-sentence message *"That page is now part of Pipeline."* and a single link for any unmatched path.
-  - Pure HTML/JS, no framework. GitHub Pages' default `404.html` behavior catches all unmatched paths.
+  - JS-disabled fallback: `<meta http-equiv="refresh" content="0; url=/#dag">` + a visible link to `/` in the body.
+  - `<meta name="robots" content="noindex,follow">` so the deprecated URL drops from search indexes while still flowing link equity.
+  - `<link rel="canonical" href="https://manzela.github.io/pipeline-observatory/">` declares the merged page as the canonical URL.
+  - Uses the industrial design tokens (Plex Sans, paper-and-ink) inline so visitors who see the body for a frame don't experience a visual jolt.
+
+- **`404.html` (generic fallback)** — single-purpose file for genuinely unknown paths:
+  - Renders a short *"That page doesn't exist. Back to Pipeline."* message with a link to `/`.
+  - No architecture-specific redirect logic (that's now in `architecture.html` itself).
+  - Pure static HTML; GitHub Pages serves this for any unmatched path.
 
 ### 7.4 Removed
 
-- `architecture.html` (deleted; replaced by lifecycle node sections and inline cross-cutting expansions).
-- `architecture.html`'s page-specific sequential-reveal JS (currently inlined in the file) — superseded by `attachStage` scroll-sync to lifecycle sections.
+- `architecture.html`'s original 465-line content (architecture explainer) — content distributed across lifecycle node sections + inline cross-cutting expansions on the merged page. The file itself is REWRITTEN as a redirect proxy (see §7.3 above), NOT deleted, so external links survive with a clean HTTP 200 redirect.
+- `architecture.html`'s page-specific sequential-reveal JS (was inlined in the file) — superseded by `attachStage` scroll-sync to lifecycle sections.
 - `index.html`'s *"Self-Improving Generative AI Pipeline"* overview section — absorbed by the framing strip + lifecycle structure itself.
 
 ## 8. Data Flow
@@ -292,14 +301,15 @@ The merged page lives in `pipeline-observatory`. The external coordination spans
 
 | File | Change |
 |---|---|
-| `pipeline-observatory/architecture.html` | **Delete** |
+| `pipeline-observatory/architecture.html` | **Replace** with redirect proxy per §7.3 (HTTP 200, meta-refresh + JS, 5 fragment mappings, robots:noindex,follow) |
 | `pipeline-observatory/index.html` | Rewrite as merged page |
 | `pipeline-observatory/case-studies.html` | Nav: remove *Architecture* link (lines 31, 41) |
-| `pipeline-observatory/README.md` | Line 55: fix O-R-A-V expansion from "Originality, Relevance, Accuracy, Value" → "Observe, Reason, Act, Validate"; update page list to remove architecture.html reference |
+| `pipeline-observatory/README.md` | Line 55: fix O-R-A-V expansion from "Originality, Relevance, Accuracy, Value" → "Observe, Reason, Act, Validate"; update page list to note architecture.html is now a redirect proxy |
 | `pipeline-observatory/CHANGELOG.md` | New `[3.0.0]` entry documenting the merge, with `Added` / `Changed` / `Removed` / `Migration notes` |
 | `pipeline-observatory/ROADMAP.md` | Update / remove items now shipped |
-| `pipeline-observatory/404.html` | **New** — smart-redirect implementation per §7.3 |
-| `pipeline-observatory/tests/playwright/*.spec.js` | Update existing specs that scroll through `index.html` sections; add new specs per §12 |
+| `pipeline-observatory/404.html` | **New** — generic page-not-found fallback per §7.3 |
+| `pipeline-observatory/scripts/verify-chrome.sh` | Exclude `architecture.html` from the nav/footer chrome comparison (the proxy has no chrome) |
+| `pipeline-observatory/tests/playwright/*.spec.js` | Update existing specs that scroll through `index.html` sections; remove `/architecture.html` from `invariants.spec.js` PAGES iteration; add new specs per §12 |
 | `Manzela/index.html` | Lines 1059, 1103: change `architecture.html` href → `/pipeline-observatory/#dag` |
 | `Manzela/llms.txt` | Line 16: remove standalone "Architecture" entry; replace with anchor reference `/pipeline-observatory/#dag` |
 | `Manzela/sitemap.xml` | Line 40: remove architecture.html entry; update `lastmod` on root entry |
@@ -324,7 +334,7 @@ Existing harness is in `pipeline-observatory/tests/playwright/`. Config already 
 | `lifecycle.keyboard.spec.js` | Full keyboard traversal (Tab order, focus-visible outlines, both skip links, no keyboard traps) |
 | `lifecycle.no-js.spec.js` | With JS disabled: page renders, all sections in document order, schematic visible as static SVG, all detail legends visible per section, no broken layout |
 | `lifecycle.visual.spec.js` | Visual regression: snapshot at each of 11 viewport states (hero, framing, schematic + nodes 1–7, flywheel, economics) at 3 breakpoints |
-| `lifecycle.404.spec.js` | `404.html` correctly maps `/pipeline-observatory/architecture.html` and all 5 historical fragment patterns (`#dag-h`, `#moe-h`, `#orav-h`, `#flow-h`, `#tenants-h`) to the corresponding merged-page anchors per §7.3 |
+| `lifecycle.redirects.spec.js` | `architecture.html` proxy correctly maps all 5 historical fragment patterns (`#dag-h`, `#moe-h`, `#orav-h`, `#flow-h`, `#tenants-h`) + bare URL + unknown fragment to the corresponding merged-page anchors per §7.3. Proxy returns HTTP 200, declares robots:noindex,follow, has canonical link, and has meta-refresh fallback for JS-disabled visitors. `404.html` generic fallback responds for genuinely unknown paths and contains no architecture-specific logic. |
 | `lifecycle.detail-legend.spec.js` | Detail legend re-renders gate/agent/intent/trace/failureRoute for active node via `po:active-node-change`; preserves the semantic data of the existing Intent Decoder |
 | `lifecycle.link-integrity.spec.js` | All in-page anchor `href`s resolve; no internal 404s; canonical and `og:url` valid |
 
@@ -364,7 +374,7 @@ Lighthouse CI integration: run in Playwright `globalTeardown`. Fail the build if
 No items skipped. No "good enough."
 
 - [ ] All `architecture.html` content distributed correctly to merged page; nothing lost without explicit "absorbed" justification recorded in this spec.
-- [ ] `architecture.html` deleted; `404.html` redirect verified for all 5 historical fragment patterns (`#dag-h`, `#moe-h`, `#orav-h`, `#flow-h`, `#tenants-h`) and the no-fragment case.
+- [ ] `architecture.html` replaced with redirect proxy; redirect verified for all 5 historical fragment patterns (`#dag-h`, `#moe-h`, `#orav-h`, `#flow-h`, `#tenants-h`) + the no-fragment case + the unknown-fragment fallback; HTTP status returned is 200 (not 404); robots:noindex,follow declared; canonical link points to `/`.
 - [ ] All external refs updated. Verification command must return zero matches:
   ```bash
   grep -rE 'pipeline-observatory/architecture\.html' \
