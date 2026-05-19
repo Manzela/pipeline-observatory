@@ -98,17 +98,17 @@
     <a href="index.html" class="text-sm font-semibold tracking-tight text-ink">
       Autonomous <span class="text-inkLow font-medium ml-1">pipeline</span>
     </a>
-    <ul class="hidden md:flex gap-8 list-none m-0 p-0">
+    <ul class="hidden lg:flex gap-8 list-none m-0 p-0">
       <li><a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors">Profile</a></li>
       <li><a href="index.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="pipeline">Pipeline</a></li>
       <li><a href="index.html#dag" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="architecture">DAG schematic</a></li>
       <li><a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="case-studies">Case Studies</a></li>
     </ul>
-    <button id="navToggle" class="md:hidden text-inkLow hover:text-ink transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
+    <button id="navToggle" class="lg:hidden text-inkLow hover:text-ink transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
     </button>
   </div>
-  <div id="mobileNav" class="md:hidden hidden border-t border-inkRule px-6 py-4 flex flex-col gap-3">
+  <div id="mobileNav" class="lg:hidden hidden border-t border-inkRule px-6 py-4 flex flex-col gap-3">
     <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2">Profile</a>
     <a href="index.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="pipeline">Pipeline</a>
     <a href="index.html#dag" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="architecture">DAG schematic</a>
@@ -134,19 +134,19 @@
 
     <!-- Headline metrics: 2 hero KPIs + 4 supporting -->
   <div class="mt-12 text-left" aria-label="Headline metrics">
-    <div class="grid md:grid-cols-2 gap-px bg-inkRule mb-px overflow-hidden rounded-t-2xl">
+    <div class="grid lg:grid-cols-2 gap-px bg-inkRule mb-px overflow-hidden rounded-t-2xl">
       <div class="bg-paperDeep p-10 text-center">
-        <div class="font-mono text-4xl md:text-5xl font-semibold text-ink mb-2" id="kpiPdps">&mdash;</div>
+        <div class="font-mono text-3xl sm:text-4xl lg:text-5xl font-semibold text-ink mb-2" id="kpiPdps">&mdash;</div>
         <div class="text-[10px] uppercase tracking-widest text-inkLow">PDPs per month</div>
         <div class="text-[9px] text-inkLow mt-2">~10.5M product-location pages</div>
       </div>
       <div class="bg-paperDeep p-10 text-center">
-        <div class="font-mono text-4xl md:text-5xl font-semibold text-ink mb-2" id="kpiCost">&mdash;</div>
+        <div class="font-mono text-3xl sm:text-4xl lg:text-5xl font-semibold text-ink mb-2" id="kpiCost">&mdash;</div>
         <div class="text-[10px] uppercase tracking-widest text-inkLow">Cost per PDP</div>
         <div class="text-[9px] text-inkLow mt-2">Self-hosted Gemma 4 MoE on A100</div>
       </div>
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-inkRule overflow-hidden rounded-b-2xl">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-inkRule overflow-hidden rounded-b-2xl">
       <div class="bg-paperDeep p-6 text-center">
         <div class="font-mono text-xl font-semibold text-ink mb-1" id="kpiTenants">&mdash;</div>
         <div class="text-[9px] uppercase tracking-widest text-inkLow">Enterprise tenants</div>
@@ -1024,7 +1024,7 @@
       </div>
     </div>
 
-    <div class="card p-px bg-inkRule grid grid-cols-3 gap-px overflow-hidden mt-6">
+    <div class="card p-px bg-inkRule grid grid-cols-1 sm:grid-cols-3 gap-px overflow-hidden mt-6">
       <div class="bg-paperDeep p-6 text-center">
         <div class="font-mono text-lg font-semibold text-ink mb-1">80%</div>
         <div class="text-[9px] uppercase tracking-widest text-inkLow">Deterministic compute</div>

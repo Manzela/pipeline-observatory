@@ -61,6 +61,33 @@ for (const path of PAGES) {
       expect(overflow).toBeLessThanOrEqual(1);
     });
 
+    test('no horizontal scroll at 768×900 (tablet)', async ({ page }) => {
+      await page.setViewportSize({ width: 768, height: 900 });
+      await page.goto(path);
+      const overflow = await page.evaluate(() =>
+        document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+      expect(overflow).toBeLessThanOrEqual(1);
+    });
+
+    test('no horizontal scroll at 1024×900 (laptop)', async ({ page }) => {
+      await page.setViewportSize({ width: 1024, height: 900 });
+      await page.goto(path);
+      const overflow = await page.evaluate(() =>
+        document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+      expect(overflow).toBeLessThanOrEqual(1);
+    });
+
+    test('no horizontal scroll at 1180×900 (intermediate)', async ({ page }) => {
+      await page.setViewportSize({ width: 1180, height: 900 });
+      await page.goto(path);
+      const overflow = await page.evaluate(() =>
+        document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+      expect(overflow).toBeLessThanOrEqual(1);
+    });
+
     test('all target=_blank links carry rel=noopener', async ({ page }) => {
       await page.goto(path);
       const bad = await page.evaluate(() =>

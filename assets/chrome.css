@@ -187,12 +187,18 @@ code, pre, .mono { font-family: var(--font-mono); }
    ─────────────────────────────────────────────────────────────────────── */
 .telemetry-stage {
   display: grid;
-  grid-template-columns: 1fr;
+  /* minmax(0, 1fr) allows the column (and therefore the pinned trace card) to
+     shrink below the intrinsic min-content of its descendants — without this,
+     long mono trace lines force the entire grid column to ~474px even on
+     narrow viewports and the page overflows under html { overflow-x: clip }. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 32px;
+  min-width: 0;
 }
+.telemetry-stage__pinned { min-width: 0; }
 @media (min-width: 1024px) {
   .telemetry-stage {
-    grid-template-columns: 6fr 5fr;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
     gap: 48px;
     align-items: start;
   }
