@@ -226,15 +226,13 @@ code, pre, .mono { font-family: var(--font-mono); }
 .telemetry-stage[data-active-beat="1"] [data-trace-line]:not([data-highlight~="b1"]),
 .telemetry-stage[data-active-beat="2"] [data-trace-line]:not([data-highlight~="b2"]),
 .telemetry-stage[data-active-beat="3"] [data-trace-line]:not([data-highlight~="b3"]),
-.telemetry-stage[data-active-beat="4"] [data-trace-line]:not([data-highlight~="b4"]),
-.telemetry-stage[data-active-beat="5"] [data-trace-line]:not([data-highlight~="b5"]) {
+.telemetry-stage[data-active-beat="4"] [data-trace-line]:not([data-highlight~="b4"]) {
   opacity: 0.35;
 }
 .telemetry-stage[data-active-beat="1"] [data-highlight~="b1"],
 .telemetry-stage[data-active-beat="2"] [data-highlight~="b2"],
 .telemetry-stage[data-active-beat="3"] [data-highlight~="b3"],
-.telemetry-stage[data-active-beat="4"] [data-highlight~="b4"],
-.telemetry-stage[data-active-beat="5"] [data-highlight~="b5"] {
+.telemetry-stage[data-active-beat="4"] [data-highlight~="b4"] {
   background: rgba(var(--prob-blue-rgb), 0.10);
   border-left-color: var(--prob-blue);
 }

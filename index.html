@@ -205,22 +205,22 @@
     <div class="telemetry-stage" data-active-beat="1">
       <div class="telemetry-stage__beats">
         <article class="telemetry-stage__beat" data-beat="1">
-          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 1 of 5</div>
+          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 1 of 4</div>
           <h3 class="text-2xl font-semibold mb-3 tracking-tight">Every node fires through DEMAS.</h3>
           <p class="text-sm text-inkLow leading-relaxed max-w-md">Six gates, every block, fail-closed. The lines marked <code class="text-ink">demas</code> are the JIT audit layer intercepting at every node boundary.</p>
         </article>
         <article class="telemetry-stage__beat" data-beat="2">
-          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 2 of 5</div>
+          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 2 of 4</div>
           <h3 class="text-2xl font-semibold mb-3 tracking-tight">Node 5 is the only inference call.</h3>
           <p class="text-sm text-inkLow leading-relaxed max-w-md">~11 seconds of generation, ~1 millisecond of validation. The probabilistic surface is small and pinned at one node &mdash; every other node is deterministic.</p>
         </article>
         <article class="telemetry-stage__beat" data-beat="3">
-          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 3 of 5</div>
+          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 3 of 4</div>
           <h3 class="text-2xl font-semibold mb-3 tracking-tight">Failures don&rsquo;t propagate.</h3>
           <p class="text-sm text-inkLow leading-relaxed max-w-md">The line marked <span class="text-signal font-mono">FAIL</span> halts downstream. Firestore captures the trace; the orchestrator retries with a corrected prompt. Nothing below threshold reaches production.</p>
         </article>
         <article class="telemetry-stage__beat" data-beat="4">
-          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 4 of 5</div>
+          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 4 of 4</div>
           <h3 class="text-2xl font-semibold mb-3 tracking-tight">~73.5M of these lines per full run.</h3>
           <p class="text-sm text-inkLow leading-relaxed max-w-md">Eleven tenants, seven nodes, ~10.5M product-location pages &mdash; a full run writes about 73.5M telemetry events to Langfuse. The pipeline is silent everywhere else.</p>
         </article>
