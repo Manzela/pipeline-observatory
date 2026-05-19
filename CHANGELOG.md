@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - O-R-A-V wording locked to production expansion (**Observe / Reason / Act / Validate**) site-wide; README.md updated.
 - `case-studies.html` chrome (nav, footer, fonts, tokens) migrated to industrial register; stale `architecture.html` hrefs replaced with `index.html#dag` and re-labelled "DAG schematic".
+- Scale-figure cadence locked to **monthly** framing site-wide (Hero, KPI label, JSON-LD description, Node 5 MoE prose, Node 6 O-R-A-V prose, case-studies intro, README scale block). Replaces the prior ambiguous "per cycle" / "per run" wording. Numbers unchanged: 10.5M PDPs / month, 73.5M agent operations / month.
 
 ### Removed
 - `architecture.html`'s original 465-line content (architecture explainer) — distributed across the merged lifecycle. The file itself is replaced with an 84-line redirect proxy.

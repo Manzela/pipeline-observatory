@@ -57,8 +57,8 @@ graph LR
 
 ## Enterprise Scale
 Production throughput across 11 enterprise clients:
-- **~10.5M PDPs** (Product Detail Pages) per generation cycle.
-- **~73.5M Node operations** per cycle.
+- **~10.5M PDPs** (Product Detail Pages) per month.
+- **~73.5M Node operations** per month.
 - Auto-scaling up to 1,000 concurrent Modal workers.
 
 ## Project Documentation

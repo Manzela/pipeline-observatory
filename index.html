@@ -51,7 +51,7 @@
       "name": "TNG Shopper Pipeline (Pipeline Observatory dashboard)",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Web (live dashboard); Production runs on Vertex AI + Google ADK + Modal serverless",
-      "description": "Autonomous 7-node content generation pipeline serving 11 enterprise retailers. Gemma 4 26B-A4B-it Mixture-of-Experts with per-tenant LoRA adapters. Deterministic O-R-A-V validation gating at 68.9% pass rate by design. ~10.5M product detail pages per cycle at $0.0006/PDP.",
+      "description": "Autonomous 7-node content generation pipeline serving 11 enterprise retailers. Gemma 4 26B-A4B-it Mixture-of-Experts with per-tenant LoRA adapters. Deterministic O-R-A-V validation gating at 68.9% pass rate by design. ~10.5M product detail pages per month at $0.0006/PDP.",
       "url": "https://manzela.github.io/pipeline-observatory/",
       "author": {
         "@type": "Person",
@@ -107,13 +107,13 @@
   <!-- Hero — industrial register per spec §4: terse declarative voice, no CTAs,
        no superlatives. Numbers sourced from Resume CV/00-GROUND-SOURCE-OF-TRUTH.md
        L59 (11 enterprise retailers / 5 countries / 234 managed websites) and L60
-       (~10.5M PDPs/cycle, $0.0006/PDP, 68.9% O-R-A-V pass, 7-node DAG). -->
+       (~10.5M PDPs/month, $0.0006/PDP, 68.9% O-R-A-V pass, 7-node DAG). -->
   <header class="py-24 md:py-32 border-b border-inkRule" id="hero">
     <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-tight">
       Pipeline.
     </h1>
     <p class="text-base text-inkLow max-w-2xl leading-relaxed">
-      A 7-node autonomous content pipeline serving 11 enterprise retailers across 5 countries. Google ADK orchestration on Vertex AI; Gemma 4 26B-A4B-it Mixture-of-Experts with per-tenant LoRA adapters; deterministic O-R-A-V validation at 68.9% pass by design. $0.0006 per product detail page. ~10.5M PDPs per cycle, ~73.5M agent operations per run. Live trace below.
+      A 7-node autonomous content pipeline serving 11 enterprise retailers across 5 countries. Google ADK orchestration on Vertex AI; Gemma 4 26B-A4B-it Mixture-of-Experts with per-tenant LoRA adapters; deterministic O-R-A-V validation at 68.9% pass by design. $0.0006 per product detail page. ~10.5M PDPs per month, ~73.5M agent operations per month. Live trace below.
       <!-- numbers source: Resume CV/00-GROUND-SOURCE-OF-TRUTH.md L59-60 -->
     </p>
 
@@ -122,7 +122,7 @@
     <div class="grid md:grid-cols-2 gap-px bg-inkRule mb-px overflow-hidden rounded-t-2xl">
       <div class="bg-paperDeep p-10 text-center">
         <div class="font-mono text-4xl md:text-5xl font-semibold text-ink mb-2" id="kpiPdps">&mdash;</div>
-        <div class="text-[10px] uppercase tracking-widest text-inkLow">PDPs per cycle</div>
+        <div class="text-[10px] uppercase tracking-widest text-inkLow">PDPs per month</div>
         <div class="text-[9px] text-inkLow mt-2">~10.5M product-location pages</div>
       </div>
       <div class="bg-paperDeep p-10 text-center">
@@ -206,7 +206,7 @@
         </article>
         <article class="telemetry-stage__beat" data-beat="4">
           <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 4 of 5</div>
-          <h3 class="text-2xl font-semibold mb-3 tracking-tight">~73.5M of these lines per cycle.</h3>
+          <h3 class="text-2xl font-semibold mb-3 tracking-tight">~73.5M of these lines per month.</h3>
           <p class="text-sm text-inkLow leading-relaxed max-w-md">Eleven tenants, seven nodes, ~10.5M product-location pages &mdash; a full run writes about 73.5M telemetry events to Langfuse. The pipeline is silent everywhere else.</p>
         </article>
         <article class="telemetry-stage__beat" data-beat="5">
@@ -586,7 +586,7 @@
         </summary>
         <div class="node-deep-dive__body">
           <p>Base model: <strong>Gemma 4 26B-A4B-it</strong>, a Mixture-of-Experts transformer. The naming convention is literal &mdash; <span class="font-mono">26B</span> total parameters, <span class="font-mono">A4B</span> means ~4B parameters fire per forward pass. A learned router selects 4 experts of 128 per token; the other 124 stay cold. The serving cost matches a dense 4B model; the capacity matches a dense 26B model.</p>
-          <p>That sparsity is what makes Node 5 affordable at production volume. ~10.5M product detail pages per cycle pass through this node. At a dense 26B equivalent, the unit economics break. At ~4B active, the pipeline lands at <span class="font-mono">$0.0006/PDP</span> end-to-end &mdash; ~80% of which is spent right here.</p>
+          <p>That sparsity is what makes Node 5 affordable at production volume. ~10.5M product detail pages per month pass through this node. At a dense 26B equivalent, the unit economics break. At ~4B active, the pipeline lands at <span class="font-mono">$0.0006/PDP</span> end-to-end &mdash; ~80% of which is spent right here.</p>
           <p>Multi-LoRA serving handles tenant specialization. The base MoE weights stay frozen and shared; per-tenant LoRA adapters layer on top, one per <span class="font-mono">client_id</span>. 11 enterprise retailers across 5 countries means 11 adapters bound at inference time, each carrying tuned weights from previous successful runs of that tenant&rsquo;s 18 pipeline prompts. Adapter swap is a sparse matrix load, not a model reload &mdash; one server, many tenants, no cross-contamination.</p>
 
           <figure class="moe-mini" aria-label="MoE expert routing: 128 expert slots, 4 active per token">
@@ -625,7 +625,7 @@
           <strong>R &middot; Reason</strong> &mdash; assign a severity tier to each diagnostic. A leaked Jinja token is a fatal; a borderline word count is a corrective; a stylistic deviation is a soft signal.<br>
           <strong>A &middot; Act</strong> &mdash; apply deterministic corrections where the severity allows it (strip a leak, truncate to bound, retry the block with a corrected prompt). The act layer never re-prompts Node 5 with raw failure noise &mdash; only with the diagnostic the rule named.<br>
           <strong>V &middot; Validate</strong> &mdash; final gate. The block either ships, retries, or falls through to the failure tier. There is no probabilistic appeal.</p>
-          <p>The <strong>68.9% pass rate</strong> is by design, not by accident. The thresholds are tuned so the failure tier is large enough to feed the DPO data flywheel downstream with a real <span class="font-mono">chosen</span>/<span class="font-mono">rejected</span> spread. A 99% pass rate would starve the loop; a 50% rate would burn cost. 68.9% is where the curve sits in production across 11 tenants and ~10.5M PDPs per cycle.</p>
+          <p>The <strong>68.9% pass rate</strong> is by design, not by accident. The thresholds are tuned so the failure tier is large enough to feed the DPO data flywheel downstream with a real <span class="font-mono">chosen</span>/<span class="font-mono">rejected</span> spread. A 99% pass rate would starve the loop; a 50% rate would burn cost. 68.9% is where the curve sits in production across 11 tenants and ~10.5M PDPs per month.</p>
         </div>
       </details>
 
