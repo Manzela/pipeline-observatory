@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Migration notes
 - External links to `architecture.html` (and `#dag-h`, `#moe-h`, `#orav-h`, `#flow-h`, `#tenants-h`) are caught by the proxy and redirected to the corresponding anchors on `/`.
-- Sibling-repo updates (`Manzela/`, `Resume CV/`) ship in coordinated PRs.
+- Sibling-repo updates ship in coordinated PRs.
 
 ## [2.2.0] - 2026-05-17
 

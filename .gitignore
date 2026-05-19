@@ -9,3 +9,6 @@ playwright-report/
 Untitled-*
 .superpowers/
 .playwright-mcp/
+docs/superpowers/
+audit/
+update_pipeline.py
