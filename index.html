@@ -119,17 +119,12 @@
 
 <main id="main" class="max-w-4xl mx-auto px-6 pt-14">
 
-  <!-- Hero — industrial register per spec §4: terse declarative voice, no CTAs,
-       no superlatives. Numbers sourced from Resume CV/00-GROUND-SOURCE-OF-TRUTH.md
-       L59 (11 enterprise retailers / 5 countries / 234 managed websites) and L60
-       (~10.5M PDPs/month, $0.0006/PDP, 68.9% O-R-A-V pass, 7-node DAG). -->
   <header class="py-24 md:py-32 border-b border-inkRule" id="hero">
     <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-tight">
       Organic traffic at any scale.
     </h1>
     <p class="text-base text-inkLow max-w-2xl leading-relaxed">
       For multi-location brands losing organic traffic to AI search: an autonomous content pipeline that generates and publishes product-detail pages at any scale &mdash; 10 stores or 10,000, zero manual work. Built by <a href="https://tngshopper.com" class="text-ink underline underline-offset-2 hover:text-inkMid transition-colors" target="_blank" rel="noopener">TNG Shopper</a>. 11 enterprise retailers across 5 countries &middot; ~10.5M PDPs per month &middot; $0.0006 each. Live trace below.
-      <!-- numbers source: Resume CV/00-GROUND-SOURCE-OF-TRUTH.md L59-60 -->
     </p>
 
     <!-- Headline metrics: 2 hero KPIs + 4 supporting -->
@@ -191,9 +186,6 @@
     </div>
   </section>
 
-  <!-- "Self-Improving Generative AI Pipeline" overview section removed (Step 1):
-       absorbed by the framing strip + lifecycle structure per spec §10. -->
-
   <!-- Telemetry sticky-stage (signature moment) -->
   <section class="py-20 border-b border-inkRule reveal" id="telemetry" aria-labelledby="telemetry-h">
     <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4">Architecture Walkthrough</div>
@@ -228,9 +220,8 @@
 
       <div class="telemetry-stage__pinned">
         <div class="card p-4 bg-paperDeep h-full flex flex-col gap-4 overflow-hidden">
-          <!-- Trace log only — per-node Intent Decoder card cluster removed
-               (Step 1): replaced by the typographic Detail Legend below the
-               schematic per spec §5.2 + §7.3. Trace log preserved per §7.2. -->
+          <!-- Trace log only — per-node Intent Decoder card cluster removed;
+               replaced by the sticky DAG schematic. -->
           <div class="flex-1 min-h-0 overflow-y-auto telemetry-stage__trace-region">
             <div class="text-[9px] uppercase tracking-widest text-inkLow mb-3 px-2">Trace log &middot; sample</div>
             <div id="traces" class="space-y-1"></div>
@@ -240,26 +231,19 @@
     </div>
   </section>
 
-  <!-- Economics section moved to post-Flywheel per spec §5 IA order
-       (Hero → Problem → Framing → Lifecycle → Flywheel → Economics → Footer). -->
-
   <!-- Detail Legend removed (audit FIX 4, 2026-05-19): the aside re-rendered
        per-node info (number/name/role/gate/agent/intent/trace) that the
        lifecycle-node section header + body + trace line already show. The
        sticky DAG schematic now carries wayfinding; the lifecycle section
        carries content. No third surface needed. -->
 
-  <!-- BEGIN FRAMING STRIP (Task B.2)
-       Five one-line cross-cutting callouts that preview the concepts
-       introduced inline in the lifecycle below. Each row jumps to its
-       deep-dive: #multi-tenant (here), #moe (Node 5), #orav + #demas
-       (Node 6), #flywheel (lands in B.6). Spec §5 + §7.3. -->
+  <!-- Framing strip -->
   <section class="framing-strip" id="framing" aria-label="Cross-cutting concepts">
     <ul class="framing-strip__list">
       <li class="framing-strip__item">
         <a href="#multi-tenant" id="multi-tenant" class="framing-strip__anchor">
           <span class="framing-strip__label">Multi-tenant</span>
-          <span class="framing-strip__value">11 enterprise retailers &middot; 5 countries &middot; 234 surfaces<!-- source: Resume CV/00-GROUND-SOURCE-OF-TRUTH.md L59 (retailers/countries) + L60 (234 managed websites) --></span>
+          <span class="framing-strip__value">11 enterprise retailers &middot; 5 countries &middot; 234 surfaces</span>
         </a>
       </li>
       <li class="framing-strip__item">
@@ -271,7 +255,7 @@
       <li class="framing-strip__item">
         <a href="#orav" class="framing-strip__anchor">
           <span class="framing-strip__label">O-R-A-V validation</span>
-          <span class="framing-strip__value">Observe &middot; Reason &middot; Act &middot; Validate &middot; 68.9% pass by design<!-- source: Resume CV/00-GROUND-SOURCE-OF-TRUTH.md L60 (68.9% O-R-A-V pass rate) --></span>
+          <span class="framing-strip__value">Observe &middot; Reason &middot; Act &middot; Validate &middot; 68.9% pass by design</span>
         </a>
       </li>
       <li class="framing-strip__item">
@@ -288,15 +272,9 @@
       </li>
     </ul>
   </section>
-  <!-- END FRAMING STRIP -->
+  <!-- /Framing strip -->
 
-  <!-- BEGIN DAG SCHEMATIC (Task B.5)
-       Two SVG variants in one <figure>: horizontal (Layout A) ≥768px,
-       vertical (Layout C) <768px. CSS toggles display per breakpoint.
-       Class namespace `dag-schematic__*` avoids collision with the dead
-       `.dag-node` rule still in chrome.css (from architecture.html, now a
-       redirect proxy). All node names/roles populated by initSchematic()
-       in assets/lifecycle.js — DOM here is a clean structural baseline. -->
+  <!-- DAG schematic: horizontal at desktop (≥768px), vertical at mobile. -->
   <figure class="dag-schematic" id="dag" data-dag-schematic role="group"
           aria-label="Pipeline DAG schematic: 7 nodes with DEMAS audit perimeter around production nodes 1-6, Node 7 in R&D outside the perimeter">
 
@@ -495,13 +473,7 @@
   </figure>
   <!-- END DAG SCHEMATIC -->
 
-  <!-- BEGIN LIFECYCLE SECTIONS (task B.3 — replaces A.2 placeholder scaffolding)
-       Real content per spec §7.3 + §10. Each section: header (number + name·role + DET/PROB badge)
-       and architecture body (problem · gate→agent mechanism · result). Prose source:
-       PO.DAG_NODES (assets/dag-data.js) — the same data the original architecture.html stage
-       rendered into its 7 per-node cards (recovered from git ef8131a:architecture.html lines
-       322-393). Inline cross-cutting deep-dives at Node 5 (MoE) and Node 6 (O-R-A-V + DEMAS)
-       land in Task B.4; framing strip in B.2; flywheel epilogue in B.6. -->
+  <!-- Lifecycle node sections (nodes 1–7) -->
   <div data-lifecycle-container data-active-node="1">
 
     <section class="lifecycle-node reveal" id="node-1" data-node-id="1">
@@ -824,9 +796,9 @@
     </section>
 
   </div>
-  <!-- END LIFECYCLE SECTIONS -->
+  <!-- /Lifecycle node sections -->
 
-  <!-- BEGIN FLYWHEEL EPILOGUE (Task B.6) -->
+  <!-- Flywheel epilogue -->
   <section class="flywheel" id="flywheel" data-lifecycle-section data-node-id="flywheel" aria-labelledby="flywheel-h">
     <header class="flywheel__header">
       <span class="flywheel__label">Epilogue</span>
@@ -994,10 +966,7 @@
       <p>The <strong>68.9% pass rate</strong> at the O-R-A-V/DEMAS boundary is the engine of this loop. The thresholds are tuned so the failure tier stays large enough to feed DPO with a real <span class="font-mono">chosen</span>/<span class="font-mono">rejected</span> spread. A 99% pass rate would starve the loop; 50% would burn cost. 68.9% is the production setpoint. Failures aren&rsquo;t waste &mdash; they&rsquo;re the labelled half of the training signal, generated by the same deterministic gates that fail the production DAG closed. No human-in-the-loop annotation; the gates do the labelling.</p>
     </div>
   </section>
-  <!-- END FLYWHEEL EPILOGUE -->
-
-  <!-- Unit Economics: cost + throughput merged. Repositioned to post-Flywheel
-       per spec §5 IA order (Flywheel → Economics → Footer). -->
+  <!-- /Flywheel epilogue -->
   <section class="py-20 border-b border-inkRule reveal" id="economics" data-lifecycle-section data-node-id="economics" aria-labelledby="economics-h">
     <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4">Unit Economics</div>
     <h2 id="economics-h" class="text-3xl font-bold tracking-tight mb-4">$0.0006 per page. Here&rsquo;s the math.</h2>
@@ -1127,11 +1096,10 @@ PO.setActiveNav('pipeline');
     attr: 'data-active-beat'
   });
 
-  // Intent Decoder card cluster + scroll-synced caption removed (Step 1).
-  // The follow-on Detail Legend (an <aside> alongside the schematic) was
-  // also removed in the 2026-05-19 audit — it duplicated info already in
-  // each lifecycle-node header/body/trace line. Trace log + beat narration
-  // above are preserved; the panel shows the trace stream alone.
+  // Intent Decoder card cluster and Detail Legend removed — both duplicated
+  // info already in each lifecycle-node header/body/trace line.
+  // Trace log + beat narration above are preserved; the panel shows the
+  // trace stream alone.
 })();
 </script>
 </body>

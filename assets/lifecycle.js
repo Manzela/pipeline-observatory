@@ -6,7 +6,7 @@
  *   · [data-lifecycle-section][data-node-id]         (#flywheel, #economics)
  * When the most-visible section changes, mutates [data-lifecycle-container]
  * [data-active-node] and dispatches po:active-node-change for subscribers
- * (schematic, trace caption — added in later tasks).
+ * (schematic, trace caption).
  *
  * For numeric nodeIds (1..7) the event's detail.nodeId is a Number; for the
  * post-lifecycle string ids ("flywheel"/"economics") it stays a String so
@@ -25,8 +25,6 @@
  * end of initLifecycle() so subscribers attached after DOMContentLoaded still
  * receive the starting-state notification.
  *
- * See docs/superpowers/specs/2026-05-18-merge-architecture-observability-design.md
- * §8 (data flow) and §7.3 (components).
  */
 
 (function () {
@@ -42,7 +40,7 @@
     if (!container || !nodes.length) return;
 
     // Idempotence guard: bail if already initialized so a second call does
-    // not attach a second IntersectionObserver. A.2 code-review back-port.
+    // not attach a second IntersectionObserver.
     if (container.dataset.lifecycleInitialized === '1') return;
     container.dataset.lifecycleInitialized = '1';
 
@@ -109,7 +107,7 @@
     // Fire initial event so subscribers attached after DOMContentLoaded know
     // the starting active node without having to read the attribute themselves.
     // Dispatched on the container so it bubbles up to document — listeners on
-    // either receive it. A.2 code-review back-port. Apply the same numeric
+    // either receive it. Apply the same numeric
     // guard so string ids (e.g. "flywheel") pass through untouched.
     {
       const initialId = nodes[0].dataset.nodeId;
@@ -122,7 +120,7 @@
   }
 
   /* ────────────────────────────────────────────────────────────────────
-   * DAG Schematic init (task B.5).
+   * DAG Schematic init.
    * Hydrates the inline SVG schematic from PO.DAG_NODES (no hardcoded
    * names), wires click + keyboard activation (scroll to #node-N), and
    * subscribes to po:active-node-change to flip active-state on the
@@ -199,7 +197,7 @@
   }
 
   /* ────────────────────────────────────────────────────────────────────
-   * Inline deep-dive default-open behavior (task B.4).
+   * Inline deep-dive default-open behavior.
    *  · <details data-default-open="desktop"> → open on viewports ≥768px,
    *    closed on mobile so the node trace stays above the fold.
    *  · 'always' / no attribute → leave as authored.

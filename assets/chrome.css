@@ -259,10 +259,9 @@ code, pre, .mono { font-family: var(--font-mono); }
    index.html where the legend lived for rationale. */
 
 /* ───────────────────────────────────────────────────────────────────────
-   Framing strip — top-of-page horizontal cross-cutting callouts (task B.2).
+   Framing strip — top-of-page horizontal cross-cutting callouts.
    Industrial register: ink rules above and below, vertical separators
    between items, mono labels (uppercase + tracking), sans values.
-   Spec §5 (IA — #framing between Problem and Lifecycle) + §7.3.
    ─────────────────────────────────────────────────────────────────────── */
 .framing-strip {
   margin: 32px auto;
@@ -351,11 +350,10 @@ code, pre, .mono { font-family: var(--font-mono); }
 .font-mono { font-family: var(--font-mono); }
 
 /* ───────────────────────────────────────────────────────────────────────
-   Lifecycle node sections  (task B.3 — real content per spec §7.3)
+   Lifecycle node sections
    One section per DAG node. Header (number + name·role + DET/PROB badge)
    then architecture body (problem · gate→agent · result). Industrial
-   register: thin rules, sharp corners, no decoration. Inline cross-cutting
-   deep-dives at Node 5 and Node 6 land in B.4; framing strip in B.2.
+   register: thin rules, sharp corners, no decoration.
    ─────────────────────────────────────────────────────────────────────── */
 .lifecycle-node {
   padding: 64px 24px;
@@ -455,7 +453,7 @@ code, pre, .mono { font-family: var(--font-mono); }
 }
 
 /* ───────────────────────────────────────────────────────────────────────
-   Inline cross-cutting deep-dives at Nodes 5 + 6  (task B.4)
+   Inline cross-cutting deep-dives at Nodes 5 + 6
    Surfaces MoE (#moe) inside Node 5 and O-R-A-V (#orav) + DEMAS (#demas)
    inside Node 6. <details>/<summary> with a custom +/− indicator. Default
    open on desktop (≥768px) via lifecycle.js initDeepDives; closed on
@@ -670,11 +668,10 @@ code, pre, .mono { font-family: var(--font-mono); }
 .demas-callout p:last-child { margin-bottom: 0; }
 
 /* ───────────────────────────────────────────────────────────────────────
-   Flywheel epilogue  (task B.6)
+   Flywheel epilogue
    Post-lifecycle, pre-economics. Industrial register: ink-rule top border
    marks the close of the lifecycle cluster; mono label, sans display
    heading, body prose. No new motion, no new tokens.
-   See spec §5 IA, §7.3 components, §10 content mapping.
    ─────────────────────────────────────────────────────────────────────── */
 .flywheel {
   padding: 80px 24px 64px;
@@ -789,7 +786,7 @@ code, pre, .mono { font-family: var(--font-mono); }
 }
 
 /* ───────────────────────────────────────────────────────────────────────
-   DAG schematic  (task B.5 — index.html signature visual)
+   DAG schematic
    Industrial / Aicher / Lufthansa technical-drawing register: thin ink
    strokes, sharp corners, IBM Plex Mono labels, semantic accent fill on
    the active node. Two SVG variants in one <figure>:
@@ -800,8 +797,8 @@ code, pre, .mono { font-family: var(--font-mono); }
    redirect proxy — left in place to avoid dead-code churn in this pass).
    ─────────────────────────────────────────────────────────────────────── */
 .dag-schematic {
-  /* Sticky beneath top-nav while reader is inside the lifecycle region per
-     spec §5.1 + §6. The figure is a direct child of <main>; sticky scope
+  /* Sticky beneath top-nav while reader is inside the lifecycle region.
+     The figure is a direct child of <main>; sticky scope
      therefore lasts until <main> ends (i.e., through #node-1..#node-7 +
      #flywheel + #economics), then naturally scrolls away with <main>.
      Background must be paper so content scrolling underneath doesn't bleed. */
