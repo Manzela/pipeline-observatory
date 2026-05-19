@@ -88,12 +88,19 @@
       if (pending) cancelAnimationFrame(pending);
       pending = requestAnimationFrame(() => setActive(id));
     }, {
-      // Active node changes when a section's TOP enters the band — band is
-      // a thin horizontal slice ~15% from the top of the viewport. This makes
-      // the active-state change as soon as the section's title scrolls past
-      // the top nav, instead of waiting for the section to dominate the
-      // viewport (which caused off-by-1 drift on tall sections).
-      rootMargin: '-15% 0px -80% 0px',
+      // Active band sits JUST BELOW the sticky DAG schematic (top:56 + content
+      // ~284px + caption ~26px = ~366px bottom), not behind it. The schematic
+      // occupies viewport y=56 to ~y=366 when sticky; the band starts at
+      // y=360 so the active-state changes the moment a section's header
+      // appears below the schematic — matching what the reader actually sees.
+      // Before this: band was at y=135-180 (behind the schematic) which caused
+      // the active to lag — visible header below the schematic but active
+      // still showed previous node (the one still occupying y=135-180 behind
+      // the schematic).
+      // Bottom margin -45% pulls the band's bottom up to y≈495 on a 900vp,
+      // giving a ~135px-tall band — wide enough that the section with the
+      // most body in that band wins decisively at any natural scroll speed.
+      rootMargin: '-360px 0px -45% 0px',
       threshold: 0,
     });
 
