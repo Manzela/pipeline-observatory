@@ -52,7 +52,11 @@ test.describe('DAG schematic — behavior', () => {
   });
 
   test('scrolling to a node section sets data-active on the matching schematic node (sync)', async ({ page }) => {
-    await page.locator('#node-3').scrollIntoViewIfNeeded();
+    // Hard scroll-to-top: sticky schematic (FIX 1, 2026-05-19) means
+    // scrollIntoViewIfNeeded no longer fires the observer reliably.
+    await page.evaluate(() => {
+      document.getElementById('node-3').scrollIntoView({ behavior: 'instant', block: 'start' });
+    });
     await page.waitForFunction(() =>
       document.querySelector('[data-lifecycle-container]')?.getAttribute('data-active-node') === '3'
     );

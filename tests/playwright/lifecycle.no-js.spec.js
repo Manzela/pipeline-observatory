@@ -11,11 +11,6 @@ test.describe('No-JS rendering', () => {
     }
   });
 
-  test('detail legend element is present (even if empty)', async ({ page }) => {
-    await page.goto('/index.html');
-    await expect(page.locator('[data-detail-legend]')).toBeAttached();
-  });
-
   test('lifecycle container is present and structurally intact', async ({ page }) => {
     await page.goto('/index.html');
     const container = page.locator('[data-lifecycle-container]');

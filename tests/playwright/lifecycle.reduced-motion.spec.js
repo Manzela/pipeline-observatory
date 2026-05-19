@@ -22,14 +22,6 @@ test.describe('Reduced motion', () => {
     expect(value).toBe('static');
   });
 
-  test('detail legend still populates with Node 1 data (initial fire happens before short-circuit)', async ({ page }) => {
-    await page.goto('/index.html');
-    // The initial-fire from A.6 dispatches po:active-node-change for Node 1
-    // EVEN under reduced motion, so the legend reflects the initial state.
-    const legend = page.locator('[data-detail-legend]');
-    await expect(legend.locator('[data-legend-node-name]')).toContainText(/City DNA/i);
-  });
-
   test('po:active-node-change does NOT fire on scroll under reduced motion (only the initial-fire)', async ({ page }) => {
     await page.goto('/index.html');
     // Listen AFTER initial fire — only count events from now on

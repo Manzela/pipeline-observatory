@@ -250,34 +250,11 @@
   <!-- Economics section moved to post-Flywheel per spec §5 IA order
        (Hero → Problem → Framing → Lifecycle → Flywheel → Economics → Footer). -->
 
-  <!-- BEGIN DETAIL LEGEND (task A.6 — typographic re-render of Intent Decoder; positioning refined in B.5) -->
-  <aside class="detail-legend" data-detail-legend aria-live="polite" aria-label="Active node detail">
-    <div class="detail-legend__inner">
-      <div class="detail-legend__row">
-        <span class="detail-legend__label">Node</span>
-        <span data-legend-node-number></span>
-        <span data-legend-node-name></span>
-        <span data-legend-role class="detail-legend__role-badge"></span>
-      </div>
-      <div class="detail-legend__row">
-        <span class="detail-legend__label">Gate</span>
-        <span data-legend-gate-name></span>
-      </div>
-      <div class="detail-legend__row">
-        <span class="detail-legend__label">Agent</span>
-        <span data-legend-agent-name></span>
-      </div>
-      <div class="detail-legend__row">
-        <span class="detail-legend__label">Intent</span>
-        <span data-legend-intent></span>
-      </div>
-      <div class="detail-legend__row">
-        <span class="detail-legend__label">Trace</span>
-        <span data-legend-trace></span>
-      </div>
-    </div>
-  </aside>
-  <!-- END DETAIL LEGEND -->
+  <!-- Detail Legend removed (audit FIX 4, 2026-05-19): the aside re-rendered
+       per-node info (number/name/role/gate/agent/intent/trace) that the
+       lifecycle-node section header + body + trace line already show. The
+       sticky DAG schematic now carries wayfinding; the lifecycle section
+       carries content. No third surface needed. -->
 
   <!-- BEGIN FRAMING STRIP (Task B.2)
        Five one-line cross-cutting callouts that preview the concepts
@@ -857,7 +834,7 @@
   <!-- END LIFECYCLE SECTIONS -->
 
   <!-- BEGIN FLYWHEEL EPILOGUE (Task B.6) -->
-  <section class="flywheel" id="flywheel" aria-labelledby="flywheel-h">
+  <section class="flywheel" id="flywheel" data-lifecycle-section data-node-id="flywheel" aria-labelledby="flywheel-h">
     <header class="flywheel__header">
       <span class="flywheel__label">Epilogue</span>
       <h2 class="flywheel__title" id="flywheel-h">Every run becomes training data.</h2>
@@ -1029,7 +1006,7 @@
 
   <!-- Unit Economics: cost + throughput merged. Repositioned to post-Flywheel
        per spec §5 IA order (Flywheel → Economics → Footer). -->
-  <section class="py-20 border-b border-inkRule reveal" id="economics" aria-labelledby="economics-h">
+  <section class="py-20 border-b border-inkRule reveal" id="economics" data-lifecycle-section data-node-id="economics" aria-labelledby="economics-h">
     <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4">Unit Economics</div>
     <h2 id="economics-h" class="text-3xl font-bold tracking-tight mb-4">$0.0006 per page. Here&rsquo;s the math.</h2>
     <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
@@ -1159,10 +1136,10 @@ PO.setActiveNav('pipeline');
   });
 
   // Intent Decoder card cluster + scroll-synced caption removed (Step 1).
-  // The per-node decoder is now a typographic Detail Legend rendered alongside
-  // the DAG schematic — see lifecycle.js + the <aside data-detail-legend>
-  // block. Spec §5.2, §7.3, §10. Trace log + beat narration above are
-  // preserved; the panel now shows the trace stream alone.
+  // The follow-on Detail Legend (an <aside> alongside the schematic) was
+  // also removed in the 2026-05-19 audit — it duplicated info already in
+  // each lifecycle-node header/body/trace line. Trace log + beat narration
+  // above are preserved; the panel shows the trace stream alone.
 })();
 </script>
 </body>

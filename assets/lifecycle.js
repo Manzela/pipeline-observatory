@@ -1,14 +1,20 @@
 /* assets/lifecycle.js
- * Lifecycle scroll-sync orchestrator + Detail Legend subscriber.
+ * Lifecycle scroll-sync orchestrator + DAG Schematic subscriber.
  *
- * Single shared IntersectionObserver targets .lifecycle-node[data-node-id]
- * sections. When the most-visible node changes, mutates [data-lifecycle-container]
+ * Single shared IntersectionObserver targets two selectors merged:
+ *   · .lifecycle-node[data-node-id]                  (Nodes 1..7)
+ *   · [data-lifecycle-section][data-node-id]         (#flywheel, #economics)
+ * When the most-visible section changes, mutates [data-lifecycle-container]
  * [data-active-node] and dispatches po:active-node-change for subscribers
- * (schematic, detail legend, trace caption — added in later tasks).
+ * (schematic, trace caption — added in later tasks).
+ *
+ * For numeric nodeIds (1..7) the event's detail.nodeId is a Number; for the
+ * post-lifecycle string ids ("flywheel"/"economics") it stays a String so
+ * subscribers (initSchematic in particular) can guard and clear active state
+ * when the reader has exited the numbered-node region.
  *
  * Honors prefers-reduced-motion: when reduced, no observer attaches and the
- * container gets data-active-node="static" so subscribers can render their
- * static composition (all decoder cards stacked, all node sections visible).
+ * container gets data-active-node="static".
  *
  * Idempotent: initLifecycle() early-returns if container is already initialized
  * (container.dataset.lifecycleInitialized === '1'). Follows the
@@ -19,11 +25,6 @@
  * end of initLifecycle() so subscribers attached after DOMContentLoaded still
  * receive the starting-state notification.
  *
- * Detail Legend subscriber (initDetailLegend): reads PO.DAG_NODES[nodeId] and
- * re-renders the typographic legend on every po:active-node-change. See spec
- * §5.2 for the legend's role as the typographic re-render of the former
- * Intent Decoder card cluster.
- *
  * See docs/superpowers/specs/2026-05-18-merge-architecture-observability-design.md
  * §8 (data flow) and §7.3 (components).
  */
@@ -33,7 +34,11 @@
 
   function initLifecycle() {
     const container = document.querySelector('[data-lifecycle-container]');
-    const nodes = document.querySelectorAll('.lifecycle-node[data-node-id]');
+    // Broader selector: also picks up post-lifecycle sections (#flywheel,
+    // #economics) marked with [data-lifecycle-section][data-node-id] so the
+    // observer can reset the schematic's active state once the reader exits
+    // the numbered-node region. See FIX 3 in the 4-part audit.
+    const nodes = document.querySelectorAll('[data-lifecycle-section][data-node-id], .lifecycle-node[data-node-id]');
     if (!container || !nodes.length) return;
 
     // Idempotence guard: bail if already initialized so a second call does
@@ -56,30 +61,40 @@
       container.setAttribute('data-active-node', String(nodeId));
       // Dispatch on the container so the event bubbles up to document.
       // Listeners on either the container or document both receive it.
+      // Numeric nodes 1..7 dispatch as Number; string ids like "flywheel" /
+      // "economics" dispatch as the raw string so the schematic guard can
+      // distinguish them from numeric schematic nodes.
+      const detailId = /^[1-7]$/.test(String(nodeId)) ? Number(nodeId) : nodeId;
       container.dispatchEvent(new CustomEvent('po:active-node-change', {
         bubbles: true,
-        detail: { nodeId: Number(nodeId) }
+        detail: { nodeId: detailId }
       }));
     }
 
     const obs = new IntersectionObserver((entries) => {
       // Pick the entry with the largest intersectionRatio; ties broken by
-      // higher data-node-id (later in document order, which feels more "current"
-      // as the reader scrolls down).
+      // document order (later sections feel "more current" as the reader
+      // scrolls down). String ids like "flywheel"/"economics" coerce to NaN
+      // under Number() so we use compareDocumentPosition instead.
       const visible = entries
         .filter((e) => e.isIntersecting)
         .sort((a, b) => {
           if (b.intersectionRatio !== a.intersectionRatio) return b.intersectionRatio - a.intersectionRatio;
-          return Number(b.target.dataset.nodeId) - Number(a.target.dataset.nodeId);
+          // 0x04 = DOCUMENT_POSITION_FOLLOWING — b comes after a, so b is "later".
+          return (a.target.compareDocumentPosition(b.target) & 0x04) ? 1 : -1;
         });
       if (!visible.length) return;
       const id = visible[0].target.dataset.nodeId;
       if (pending) cancelAnimationFrame(pending);
       pending = requestAnimationFrame(() => setActive(id));
     }, {
-      // Band: upper-middle of viewport — matches existing stage.js pattern.
-      rootMargin: '-15% 0px -55% 0px',
-      threshold: [0, 0.25, 0.5, 0.75, 1],
+      // Active node changes when a section's TOP enters the band — band is
+      // a thin horizontal slice ~15% from the top of the viewport. This makes
+      // the active-state change as soon as the section's title scrolls past
+      // the top nav, instead of waiting for the section to dominate the
+      // viewport (which caused off-by-1 drift on tall sections).
+      rootMargin: '-15% 0px -80% 0px',
+      threshold: 0,
     });
 
     nodes.forEach((n) => obs.observe(n));
@@ -87,73 +102,15 @@
     // Fire initial event so subscribers attached after DOMContentLoaded know
     // the starting active node without having to read the attribute themselves.
     // Dispatched on the container so it bubbles up to document — listeners on
-    // either receive it. A.2 code-review back-port.
-    container.dispatchEvent(new CustomEvent('po:active-node-change', {
-      bubbles: true,
-      detail: { nodeId: Number(nodes[0].dataset.nodeId) }
-    }));
-  }
-
-  /* ────────────────────────────────────────────────────────────────────
-   * Detail Legend renderer (task A.6).
-   * Subscribes to po:active-node-change. On each change, reads
-   * PO.DAG_NODES[nodeId] and populates six [data-legend-*] spans + sets
-   * data-role on the legend root for the role-badge semantic color.
-   * ──────────────────────────────────────────────────────────────────── */
-  function initDetailLegend() {
-    const legend = document.querySelector('[data-detail-legend]');
-    if (!legend) return;
-
-    // Cache the six writable spans so we don't re-query on every event.
-    const targets = {
-      number: legend.querySelector('[data-legend-node-number]'),
-      name:   legend.querySelector('[data-legend-node-name]'),
-      role:   legend.querySelector('[data-legend-role]'),
-      gate:   legend.querySelector('[data-legend-gate-name]'),
-      agent:  legend.querySelector('[data-legend-agent-name]'),
-      intent: legend.querySelector('[data-legend-intent]'),
-      trace:  legend.querySelector('[data-legend-trace]'),
-    };
-
-    function renderLegend(nodeId) {
-      // Numeric coercion: events carry Number, container attr is a string.
-      // Both must resolve to the same DAG_NODES key.
-      const id = Number(nodeId);
-      const node = window.PO && window.PO.DAG_NODES && window.PO.DAG_NODES[id];
-      if (!node) return;
-
-      const isDet = !!node.det;
-      const roleLabel = isDet ? 'Deterministic' : 'Probabilistic';
-
-      legend.setAttribute('data-role', isDet ? 'deterministic' : 'probabilistic');
-      if (targets.number) targets.number.textContent = 'Node ' + id;
-      if (targets.name)   targets.name.textContent   = node.nm || '';
-      if (targets.role)   targets.role.textContent   = roleLabel;
-      if (targets.gate)   targets.gate.textContent   = (node.gate  && node.gate.nm)  || '';
-      if (targets.agent)  targets.agent.textContent  = (node.agent && node.agent.nm) || '';
-      if (targets.intent) targets.intent.textContent = node.intent || '';
-      if (targets.trace)  targets.trace.textContent  = node.trace  || '';
-    }
-
-    // Subscribe to lifecycle's node-change events (event bubbles, so document
-    // works regardless of where dispatchEvent was invoked).
-    document.addEventListener('po:active-node-change', (e) => {
-      renderLegend(e.detail && e.detail.nodeId);
-    });
-
-    // Initial render: if initLifecycle already fired its initial event before
-    // this subscriber attached, read the current container attribute as a
-    // fallback. (With initLifecycle on DOMContentLoaded and initDetailLegend
-    // on DOMContentLoaded after it, the initial-fire normally still reaches
-    // us — but this defensive read keeps the legend correct even if reordered
-    // or in reduced-motion mode where the initial-fire is skipped.)
-    const container = document.querySelector('[data-lifecycle-container]');
-    const active = container && container.getAttribute('data-active-node');
-    if (active && active !== 'static') {
-      renderLegend(active);
-    } else if (window.PO && window.PO.DAG_NODES && window.PO.DAG_NODES[1]) {
-      // Static / reduced-motion: default to Node 1 so the legend isn't empty.
-      renderLegend(1);
+    // either receive it. A.2 code-review back-port. Apply the same numeric
+    // guard so string ids (e.g. "flywheel") pass through untouched.
+    {
+      const initialId = nodes[0].dataset.nodeId;
+      const initialDetail = /^[1-7]$/.test(String(initialId)) ? Number(initialId) : initialId;
+      container.dispatchEvent(new CustomEvent('po:active-node-change', {
+        bubbles: true,
+        detail: { nodeId: initialDetail }
+      }));
     }
   }
 
@@ -175,9 +132,10 @@
     if (!nodes.length) return;
 
     // ── Hydrate label text + data-role from PO.DAG_NODES.
-    // Node 7's role is overridden to "R&D" in the schematic (the diagram
-    // tells the R&D story via dashed border + perimeter exclusion, not via
-    // the literal `role` string from DAG_NODES which is "DEMAS JIT").
+    // (.dag-schematic__role lookup removed 2026-05-19 — that selector did
+    // not exist in the SVG markup, so the branch was dead code. The role
+    // contrast is carried by data-role on the group + CSS, not a literal
+    // DET/PROB/R&D label.)
     nodes.forEach((n) => {
       const id = n.dataset.nodeId;
       const data = dagNodes[id];
@@ -186,15 +144,7 @@
       n.setAttribute('data-role', data.det ? 'deterministic' : 'probabilistic');
 
       const nameEl = n.querySelector('.dag-schematic__name');
-      const roleEl = n.querySelector('.dag-schematic__role');
       if (nameEl) nameEl.textContent = (data.nm || '').toUpperCase();
-      if (roleEl) {
-        if (id === '7') {
-          roleEl.textContent = 'R&D';
-        } else {
-          roleEl.textContent = data.det ? 'DET' : 'PROB';
-        }
-      }
     });
 
     // ── Click + keyboard activation: scroll to corresponding lifecycle section.
@@ -214,22 +164,27 @@
 
     // ── Subscribe to lifecycle's active-node-change. Update BOTH SVG variants
     // (horizontal + vertical) so resizing the viewport never shows a stale
-    // active-state on the freshly-shown variant.
+    // active-state on the freshly-shown variant. Guard: only apply data-active
+    // when nodeId is numeric (1..7). String ids like "flywheel" / "economics"
+    // clear all schematic highlights — those sections aren't schematic nodes.
     document.addEventListener('po:active-node-change', (e) => {
       const nodeId = e.detail && e.detail.nodeId;
       if (nodeId === undefined || nodeId === null) return;
-      // Clear active on all schematic nodes; set on the matching id(s).
+      // Always clear first; only set if nodeId resolves to a numeric 1..7.
       nodes.forEach((n) => n.removeAttribute('data-active'));
-      schematic
-        .querySelectorAll('.dag-schematic__node[data-node-id="' + Number(nodeId) + '"]')
-        .forEach((n) => n.setAttribute('data-active', 'true'));
+      if (typeof nodeId === 'number' || /^[1-7]$/.test(String(nodeId))) {
+        schematic
+          .querySelectorAll('.dag-schematic__node[data-node-id="' + Number(nodeId) + '"]')
+          .forEach((n) => n.setAttribute('data-active', 'true'));
+      }
     });
 
     // ── Initial render: if lifecycle's initial-fire already ran before we
     // subscribed, read the container's current data-active-node as fallback.
+    // Same numeric guard as the event handler above.
     const container = document.querySelector('[data-lifecycle-container]');
     const active = container && container.getAttribute('data-active-node');
-    if (active && active !== 'static') {
+    if (active && active !== 'static' && /^[1-7]$/.test(String(active))) {
       schematic
         .querySelectorAll('.dag-schematic__node[data-node-id="' + Number(active) + '"]')
         .forEach((n) => n.setAttribute('data-active', 'true'));
@@ -259,12 +214,10 @@
   }
 
   window.PO.initLifecycle = initLifecycle;
-  window.PO.initDetailLegend = initDetailLegend;
   window.PO.initSchematic = initSchematic;
   window.PO.initDeepDives = initDeepDives;
 
   document.addEventListener('DOMContentLoaded', initLifecycle);
-  document.addEventListener('DOMContentLoaded', initDetailLegend);
   document.addEventListener('DOMContentLoaded', initSchematic);
   document.addEventListener('DOMContentLoaded', initDeepDives);
 })();

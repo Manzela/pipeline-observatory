@@ -35,14 +35,6 @@ test.describe('DAG schematic — mobile (<768px)', () => {
     }
   });
 
-  test('detail legend renders inline within content (not floating)', async ({ page }) => {
-    const legend = page.locator('[data-detail-legend]');
-    await expect(legend).toBeVisible();
-    // position should be static/relative (not fixed or sticky)
-    const position = await legend.evaluate((el) => getComputedStyle(el).position);
-    expect(['static', 'relative']).toContain(position);
-  });
-
   test('vertical SVG R&D handoff line uses the 50px-rhythm compression', async ({ page }) => {
     // Confirm the handoff line ends at y=850 (not 870)
     const line = page.locator('.dag-schematic__svg--vertical line[stroke-dasharray="2 4"]');

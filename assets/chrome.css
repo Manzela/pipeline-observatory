@@ -250,86 +250,9 @@ code, pre, .mono { font-family: var(--font-mono); }
   }
 }
 
-/* ───────────────────────────────────────────────────────────────────────
-   Detail legend — typographic active-node summary; positioned alongside
-   schematic in B.5. Subscriber to po:active-node-change (assets/lifecycle.js).
-   ─────────────────────────────────────────────────────────────────────── */
-.detail-legend {
-  margin: 32px 0;
-  padding: 16px 24px;
-  border: 1px solid var(--ink-rule);
-  background: var(--paper-deep);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.6;
-}
-.detail-legend__inner { display: grid; gap: 8px; }
-.detail-legend__row {
-  display: grid;
-  /* 4 columns to accommodate the Node row's four children:
-     label (80px) · number (auto) · name (1fr — flexes) · role-badge (auto).
-     Non-Node rows have 2 children and grid-area them across via their own
-     selector below so the second cell still spans the rest of the row. */
-  grid-template-columns: 80px auto 1fr auto;
-  gap: 16px;
-  align-items: baseline;
-}
-/* Non-Node rows have exactly 2 children — let the second span columns 2–4
-   so the value text is free to occupy the full row width. */
-.detail-legend__row > .detail-legend__label + *:nth-last-child(1) {
-  grid-column: 2 / -1;
-}
-.detail-legend__label {
-  color: var(--ink-low);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.detail-legend__role-badge {
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border: 1px solid var(--ink-rule);
-  border-radius: 0; /* sharp corners, industrial register */
-  /* Industrial badge: full label (PROBABILISTIC / DETERMINISTIC) must not
-     wrap or clip. The legend row grid uses `auto` for the badge column —
-     nowrap forces the column to size to the full label width. */
-  white-space: nowrap;
-  /* Match .lifecycle-node__role-badge structurally so the two badge
-     surfaces read as the same component when stacked on the page. */
-  display: inline-block;
-  justify-self: end;
-}
-.detail-legend[data-role="deterministic"] .detail-legend__role-badge { color: var(--det-green); border-color: var(--det-green); }
-.detail-legend[data-role="probabilistic"] .detail-legend__role-badge { color: var(--prob-blue); border-color: var(--prob-blue); }
-
-/* Mobile: collapse the legend row to a single column. The 4-column grid
-   can't fit the node-name + full PROBABILISTIC badge at 390px without
-   clipping. Stack everything as label-on-top to keep the badge intact. */
-@media (max-width: 767px) {
-  .detail-legend__row {
-    grid-template-columns: 80px 1fr;
-    grid-template-areas:
-      "label  number"
-      "label  name"
-      "label  badge";
-  }
-  .detail-legend__row > .detail-legend__label { grid-area: label; }
-  .detail-legend__row > [data-legend-node-number] { grid-area: number; }
-  .detail-legend__row > [data-legend-node-name]   { grid-area: name; }
-  .detail-legend__row > .detail-legend__role-badge {
-    grid-area: badge;
-    justify-self: start;
-    margin-top: 6px;
-  }
-  /* Reset the nth-last-child rule for non-Node rows (which only have 2
-     children) so they fit the simpler 2-column grid. */
-  .detail-legend__row > .detail-legend__label + *:nth-last-child(1) {
-    grid-column: auto;
-    grid-area: auto;
-  }
-}
+/* Detail-legend styles removed (audit FIX 4, 2026-05-19) — the <aside>
+   it styled has been deleted from index.html. See the comment in
+   index.html where the legend lived for rationale. */
 
 /* ───────────────────────────────────────────────────────────────────────
    Framing strip — top-of-page horizontal cross-cutting callouts (task B.2).
@@ -873,8 +796,18 @@ code, pre, .mono { font-family: var(--font-mono); }
    redirect proxy — left in place to avoid dead-code churn in this pass).
    ─────────────────────────────────────────────────────────────────────── */
 .dag-schematic {
-  margin: 48px auto;
-  padding: 0;
+  /* Sticky beneath top-nav while reader is inside the lifecycle region per
+     spec §5.1 + §6. The figure is a direct child of <main>; sticky scope
+     therefore lasts until <main> ends (i.e., through #node-1..#node-7 +
+     #flywheel + #economics), then naturally scrolls away with <main>.
+     Background must be paper so content scrolling underneath doesn't bleed. */
+  position: sticky;
+  top: 56px;                       /* below top-nav (.top-nav padding 12px + ~32px content + 12px = ~56px) */
+  z-index: var(--z-schematic);
+  background: var(--paper);
+  margin: 48px auto 0;             /* top margin only; bottom 0 so caption hugs */
+  padding: 12px 0;                 /* breathing room within sticky band */
+  border-bottom: 1px solid var(--ink-rule);  /* hairline separator when sticky */
 }
 .dag-schematic__svg {
   width: 100%;
