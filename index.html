@@ -72,6 +72,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="assets/tokens.js"></script>
     <link rel="stylesheet" href="assets/chrome.css">
+    <noscript>
+      <style>
+        /* No-JS: collapse all .reveal animations so every section is visible.
+           Mirrors the prefers-reduced-motion fallback at the bottom of chrome.css. */
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .lifecycle-node.reveal .lifecycle-node__header,
+        .lifecycle-node.reveal .lifecycle-node__architecture,
+        .lifecycle-node.reveal .node-deep-dive,
+        .lifecycle-node.reveal .demas-callout {
+          opacity: 1 !important;
+          transform: none !important;
+          transition: none !important;
+        }
+      </style>
+    </noscript>
 </head>
 <body class="bg-paper text-ink antialiased selection:bg-probBlue/30">
 
@@ -519,7 +534,7 @@
        land in Task B.4; framing strip in B.2; flywheel epilogue in B.6. -->
   <div data-lifecycle-container data-active-node="1">
 
-    <section class="lifecycle-node" id="node-1" data-node-id="1">
+    <section class="lifecycle-node reveal" id="node-1" data-node-id="1">
       <header class="lifecycle-node__header">
         <h3 id="node-1-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 1</span> &middot; City DNA &middot; Context Injection</h3>
         <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
@@ -531,7 +546,7 @@
       </div>
     </section>
 
-    <section class="lifecycle-node" id="node-2" data-node-id="2">
+    <section class="lifecycle-node reveal" id="node-2" data-node-id="2">
       <header class="lifecycle-node__header">
         <h3 id="node-2-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 2</span> &middot; Normalizer &middot; Data Cleansing</h3>
         <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
@@ -543,7 +558,7 @@
       </div>
     </section>
 
-    <section class="lifecycle-node" id="node-3" data-node-id="3">
+    <section class="lifecycle-node reveal" id="node-3" data-node-id="3">
       <header class="lifecycle-node__header">
         <h3 id="node-3-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 3</span> &middot; Synonyms &middot; Expansion</h3>
         <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
@@ -555,7 +570,7 @@
       </div>
     </section>
 
-    <section class="lifecycle-node" id="node-4" data-node-id="4">
+    <section class="lifecycle-node reveal" id="node-4" data-node-id="4">
       <header class="lifecycle-node__header">
         <h3 id="node-4-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 4</span> &middot; SV Gate &middot; Volume Filter</h3>
         <span class="lifecycle-node__role-badge" data-role="deterministic">DET</span>
@@ -567,7 +582,7 @@
       </div>
     </section>
 
-    <section class="lifecycle-node" id="node-5" data-node-id="5">
+    <section class="lifecycle-node reveal" id="node-5" data-node-id="5">
       <header class="lifecycle-node__header">
         <h3 id="node-5-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 5</span> &middot; Writer &middot; Generation</h3>
         <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
@@ -589,12 +604,199 @@
           <p>That sparsity is what makes Node 5 affordable at production volume. ~10.5M product detail pages per month pass through this node. At a dense 26B equivalent, the unit economics break. At ~4B active, the pipeline lands at <span class="font-mono">$0.0006/PDP</span> end-to-end &mdash; ~80% of which is spent right here.</p>
           <p>Multi-LoRA serving handles tenant specialization. The base MoE weights stay frozen and shared; per-tenant LoRA adapters layer on top, one per <span class="font-mono">client_id</span>. 11 enterprise retailers across 5 countries means 11 adapters bound at inference time, each carrying tuned weights from previous successful runs of that tenant&rsquo;s 18 pipeline prompts. Adapter swap is a sparse matrix load, not a model reload &mdash; one server, many tenants, no cross-contamination.</p>
 
-          <figure class="moe-mini" aria-label="MoE expert routing: 128 expert slots, 4 active per token">
-            <svg viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false">
-              <!-- 128 expert slots: 16 cols x 8 rows, 18px square + 2px gap. Active slots picked to read as "sparse routing", not adjacent. -->
-              <g class="moe-mini__grid"></g>
+          <figure class="moe-multilora" aria-label="Multi-LoRA tenant-adapter architecture: 1 frozen Gemma 4 base bound at inference to 1 of 11 swappable per-tenant LoRA adapters">
+            <!-- ───────── Horizontal layout: desktop ≥768px ───────── -->
+            <svg class="moe-multilora__svg moe-multilora__svg--horizontal" viewBox="0 0 800 360"
+                 xmlns="http://www.w3.org/2000/svg"
+                 role="img" aria-hidden="true" focusable="false"
+                 preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <marker id="ml-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                        markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+                </marker>
+                <marker id="ml-arrow-low" viewBox="0 0 10 10" refX="9" refY="5"
+                        markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-low)"/>
+                </marker>
+              </defs>
+
+              <!-- Perimeter label -->
+              <text class="moe-multilora__perimeter-label" x="20" y="18">FIG · MULTI-LORA SERVING TOPOLOGY</text>
+
+              <!-- ── Base model rect (top) ── -->
+              <g class="moe-multilora__base">
+                <rect x="120" y="40" width="560" height="84" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__base-title" x="400" y="72" text-anchor="middle">
+                  GEMMA 4 26B-A4B-it · FROZEN BASE
+                </text>
+                <text class="moe-multilora__base-sub" x="400" y="98" text-anchor="middle">
+                  128 EXPERTS · 4 ACTIVE PER TOKEN · ~4B OF 26B FIRE
+                </text>
+              </g>
+
+              <!-- Bind arrow (slot → base) -->
+              <g class="moe-multilora__bind-arrow" color="var(--ink)">
+                <line x1="400" y1="200" x2="400" y2="132"
+                      stroke="currentColor" stroke-width="1"
+                      marker-end="url(#ml-arrow)"/>
+                <text class="moe-multilora__bind-label" x="408" y="172" text-anchor="start">
+                  BIND AT INFERENCE
+                </text>
+              </g>
+
+              <!-- ── Adapter slot rect (middle) ── -->
+              <g class="moe-multilora__slot">
+                <rect x="260" y="200" width="280" height="64" rx="0"
+                      fill="rgba(var(--prob-blue-rgb), 0.06)"
+                      stroke="var(--prob-blue)" stroke-width="1"/>
+                <text class="moe-multilora__slot-title" x="400" y="225" text-anchor="middle">
+                  ADAPTER SLOT · 1 OF 11
+                </text>
+                <text class="moe-multilora__slot-sub" x="400" y="248" text-anchor="middle">
+                  client_id = tenant_05
+                </text>
+              </g>
+
+              <!-- Routing arrow (active tenant → slot) -->
+              <g class="moe-multilora__route-arrow">
+                <line x1="400" y1="316" x2="400" y2="272"
+                      stroke="var(--prob-blue)" stroke-width="1"
+                      marker-end="url(#ml-arrow)" color="var(--prob-blue)"/>
+              </g>
+
+              <!-- ── 11 tenant rects (bottom row) ── -->
+              <g class="moe-multilora__tenants">
+                <!-- 11 tenants spread across x=80..720 (width 640); each rect w=44, gap=16
+                     11 * 44 = 484; 10 gaps * 16 = 160; total 644 ≈ 640. Start x=80. -->
+                <!-- t01 -->
+                <rect class="moe-multilora__tenant" x="80"  y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="102" y="336" text-anchor="middle">t01</text>
+                <!-- t02 -->
+                <rect class="moe-multilora__tenant" x="140" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="162" y="336" text-anchor="middle">t02</text>
+                <!-- t03 -->
+                <rect class="moe-multilora__tenant" x="200" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="222" y="336" text-anchor="middle">t03</text>
+                <!-- t04 -->
+                <rect class="moe-multilora__tenant" x="260" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="282" y="336" text-anchor="middle">t04</text>
+                <!-- t05 — ACTIVE -->
+                <rect class="moe-multilora__tenant" data-active="true"
+                      x="320" y="316" width="44" height="32" rx="0"
+                      fill="rgba(var(--prob-blue-rgb), 0.15)"
+                      stroke="var(--prob-blue)" stroke-width="1.5"/>
+                <text class="moe-multilora__tenant-label moe-multilora__tenant-label--active"
+                      x="342" y="336" text-anchor="middle">t05</text>
+                <!-- t06 -->
+                <rect class="moe-multilora__tenant" x="380" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="402" y="336" text-anchor="middle">t06</text>
+                <!-- t07 -->
+                <rect class="moe-multilora__tenant" x="440" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="462" y="336" text-anchor="middle">t07</text>
+                <!-- t08 -->
+                <rect class="moe-multilora__tenant" x="500" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="522" y="336" text-anchor="middle">t08</text>
+                <!-- t09 -->
+                <rect class="moe-multilora__tenant" x="560" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="582" y="336" text-anchor="middle">t09</text>
+                <!-- t10 -->
+                <rect class="moe-multilora__tenant" x="620" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="642" y="336" text-anchor="middle">t10</text>
+                <!-- t11 -->
+                <rect class="moe-multilora__tenant" x="680" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="702" y="336" text-anchor="middle">t11</text>
+              </g>
             </svg>
-            <figcaption class="moe-mini__caption">128 experts &middot; 4 active per token &middot; ~4B of 26B parameters fire</figcaption>
+
+            <!-- ───────── Vertical layout: mobile <768px ─────────
+                 Same content as the horizontal variant, but the tenant row
+                 is split into 2 stacked rows (6 + 5) and the diagram is
+                 more vertical so the mono labels stay legible at 320–390px
+                 viewport widths. Active adapter is still t05. -->
+            <svg class="moe-multilora__svg moe-multilora__svg--vertical" viewBox="0 0 360 560"
+                 xmlns="http://www.w3.org/2000/svg"
+                 role="img" aria-hidden="true" focusable="false"
+                 preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <marker id="ml-arrow-v" viewBox="0 0 10 10" refX="9" refY="5"
+                        markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/>
+                </marker>
+              </defs>
+
+              <text class="moe-multilora__perimeter-label" x="20" y="18">FIG · MULTI-LORA</text>
+
+              <!-- Base model -->
+              <g>
+                <rect x="20" y="40" width="320" height="84" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__base-title" x="180" y="72" text-anchor="middle">GEMMA 4 26B-A4B-it</text>
+                <text class="moe-multilora__base-sub" x="180" y="92" text-anchor="middle">FROZEN BASE</text>
+                <text class="moe-multilora__base-sub" x="180" y="110" text-anchor="middle">128 EXPERTS · 4 ACTIVE/TOKEN</text>
+              </g>
+
+              <!-- Bind arrow base ← slot -->
+              <line x1="180" y1="200" x2="180" y2="132"
+                    stroke="var(--ink)" stroke-width="1" marker-end="url(#ml-arrow-v)"/>
+              <text class="moe-multilora__bind-label" x="190" y="172" text-anchor="start">BIND AT INFERENCE</text>
+
+              <!-- Adapter slot -->
+              <g>
+                <rect x="60" y="200" width="240" height="64"
+                      fill="rgba(var(--prob-blue-rgb), 0.06)"
+                      stroke="var(--prob-blue)" stroke-width="1"/>
+                <text class="moe-multilora__slot-title" x="180" y="225" text-anchor="middle">ADAPTER SLOT · 1 OF 11</text>
+                <text class="moe-multilora__slot-sub" x="180" y="248" text-anchor="middle">client_id = tenant_05</text>
+              </g>
+
+              <!-- Route arrow slot ← active tenant -->
+              <line x1="180" y1="376" x2="180" y2="272"
+                    stroke="var(--prob-blue)" stroke-width="1" marker-end="url(#ml-arrow-v)"/>
+
+              <!-- Tenant pool: 2 rows × 6/5 cells -->
+              <g class="moe-multilora__tenants">
+                <!-- Row 1: t01-t06 -->
+                <rect class="moe-multilora__tenant" x="20"  y="380" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="42"  y="400" text-anchor="middle">t01</text>
+                <rect class="moe-multilora__tenant" x="76"  y="380" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="98"  y="400" text-anchor="middle">t02</text>
+                <rect class="moe-multilora__tenant" x="132" y="380" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="154" y="400" text-anchor="middle">t03</text>
+                <rect class="moe-multilora__tenant" x="188" y="380" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="210" y="400" text-anchor="middle">t04</text>
+                <!-- t05 ACTIVE -->
+                <rect class="moe-multilora__tenant" data-active="true" x="244" y="380" width="44" height="32"
+                      fill="rgba(var(--prob-blue-rgb), 0.15)"
+                      stroke="var(--prob-blue)" stroke-width="1.5"/>
+                <text class="moe-multilora__tenant-label moe-multilora__tenant-label--active" x="266" y="400" text-anchor="middle">t05</text>
+                <rect class="moe-multilora__tenant" x="300" y="380" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="322" y="400" text-anchor="middle">t06</text>
+
+                <!-- Row 2: t07-t11 -->
+                <rect class="moe-multilora__tenant" x="48"  y="420" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="70"  y="440" text-anchor="middle">t07</text>
+                <rect class="moe-multilora__tenant" x="104" y="420" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="126" y="440" text-anchor="middle">t08</text>
+                <rect class="moe-multilora__tenant" x="160" y="420" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="182" y="440" text-anchor="middle">t09</text>
+                <rect class="moe-multilora__tenant" x="216" y="420" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="238" y="440" text-anchor="middle">t10</text>
+                <rect class="moe-multilora__tenant" x="272" y="420" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="294" y="440" text-anchor="middle">t11</text>
+              </g>
+            </svg>
+            <figcaption class="moe-multilora__caption">1 instance &middot; 11 swappable adapters &middot; sparse matrix load &middot; no cross-contamination</figcaption>
           </figure>
 
           <p>The isolation stack the engine enforces: <strong>tenant</strong> (<span class="font-mono">adapter_id</span> binding), <strong>prompt</strong> (scoped system cache), <strong>task</strong> (DAG node boundaries), <strong>KV cache</strong> (PagedAttention). Each layer is a separate guarantee &mdash; tenant data cannot leak across adapters, and the deterministic Nodes 4 + 6 either side of this one re-validate the contract anyway.</p>
@@ -602,7 +804,7 @@
       </details>
     </section>
 
-    <section class="lifecycle-node" id="node-6" data-node-id="6">
+    <section class="lifecycle-node reveal" id="node-6" data-node-id="6">
       <header class="lifecycle-node__header">
         <h3 id="node-6-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 6</span> &middot; Validator &middot; Deterministic QA</h3>
         <span class="lifecycle-node__role-badge" data-role="deterministic">DET</span>
@@ -638,7 +840,7 @@
       </aside>
     </section>
 
-    <section class="lifecycle-node" id="node-7" data-node-id="7">
+    <section class="lifecycle-node reveal" id="node-7" data-node-id="7">
       <header class="lifecycle-node__header">
         <h3 id="node-7-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 7</span> &middot; Evaluator &middot; DEMAS JIT</h3>
         <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
@@ -661,8 +863,164 @@
       <h2 class="flywheel__title" id="flywheel-h">Every run becomes training data.</h2>
     </header>
     <div class="flywheel__body">
-      <p>Production runs write to a 3-tier dataset. O-R-A-V scores and DEMAS verdicts route each output into a tier: <span class="font-mono">T1 production-baseline</span> ingests every run; <span class="font-mono">T2 quality-approved</span> takes outputs with O-R-A-V &ge; 0.7 and a clean DEMAS pass; <span class="font-mono">T3 failure-cases</span> takes outputs with O-R-A-V &lt; 0.5 or any DEMAS fail. Eighteen prompt-specific partitions sit beneath the tiers, one per pipeline prompt.</p>
-      <p>DPO preference pairs are assembled automatically from the spread between T2 and T3 &mdash; <span class="font-mono">chosen</span> from quality-approved, <span class="font-mono">rejected</span> from failure-cases. Pairs with a score gap &ge; 0.15 are kept; the rest are dropped to avoid weak gradients. Margin-maximized pairs feed curriculum-based LoRA fine-tuning per tenant; the updated adapter is hot-swapped on the next CRON cycle.</p>
+      <p>Every production run lands in a 3-tier dataset. The spread between quality and failure tiers becomes DPO preference data. The same machinery that gates the production loop generates the training signal.</p>
+
+      <figure class="flywheel-loop" aria-label="3-tier self-improvement loop: production runs feed a tiered dataset, the T2 and T3 spread becomes DPO preference pairs, per-tenant LoRA fine-tune ships on the next CRON cycle.">
+        <svg class="flywheel-loop__svg" viewBox="0 0 800 760"
+             xmlns="http://www.w3.org/2000/svg"
+             role="img" aria-hidden="true" focusable="false"
+             preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/>
+            </marker>
+            <marker id="fl-arrow-low" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-low)"/>
+            </marker>
+          </defs>
+
+          <!-- Perimeter label -->
+          <text class="flywheel-loop__perimeter-label" x="20" y="18">FIG · SELF-IMPROVEMENT LOOP</text>
+
+          <!-- ── 1. PRODUCTION RUNS (top, widest) ── -->
+          <g class="flywheel-loop__node">
+            <rect x="80" y="48" width="640" height="64" rx="0"
+                  fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+            <text class="flywheel-loop__title" x="400" y="76" text-anchor="middle">
+              PRODUCTION RUNS
+            </text>
+            <text class="flywheel-loop__sub" x="400" y="96" text-anchor="middle">
+              EVERY OUTPUT · EVERY CRON CYCLE
+            </text>
+          </g>
+          <!-- arrow + label down to T1 -->
+          <line x1="400" y1="112" x2="400" y2="158"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+          <text class="flywheel-loop__edge-label" x="412" y="135" text-anchor="start">
+            O-R-A-V SCORE · DEMAS VERDICT
+          </text>
+
+          <!-- ── 2. T1 production-baseline ── -->
+          <g class="flywheel-loop__node">
+            <rect x="80" y="158" width="640" height="64" rx="0"
+                  fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+            <text class="flywheel-loop__title" x="400" y="186" text-anchor="middle">
+              T1 · PRODUCTION-BASELINE
+            </text>
+            <text class="flywheel-loop__sub" x="400" y="206" text-anchor="middle">
+              EVERY RUN INGESTED
+            </text>
+          </g>
+
+          <!-- T1 → T2 (left) + T1 → T3 (right) split -->
+          <line x1="400" y1="222" x2="400" y2="250"
+                stroke="var(--ink)" stroke-width="1"/>
+          <line x1="220" y1="250" x2="580" y2="250"
+                stroke="var(--ink)" stroke-width="1"/>
+          <line x1="220" y1="250" x2="220" y2="278"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+          <line x1="580" y1="250" x2="580" y2="278"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+
+          <!-- ── 3a. T2 QUALITY (left, highlighted) ── -->
+          <g class="flywheel-loop__node flywheel-loop__node--accent">
+            <rect x="80" y="280" width="280" height="84" rx="0"
+                  fill="rgba(var(--prob-blue-rgb), 0.10)"
+                  stroke="var(--prob-blue)" stroke-width="1"/>
+            <text class="flywheel-loop__title flywheel-loop__title--accent" x="220" y="308" text-anchor="middle">
+              T2 · QUALITY
+            </text>
+            <text class="flywheel-loop__sub" x="220" y="332" text-anchor="middle">
+              O-R-A-V ≥ 0.7
+            </text>
+            <text class="flywheel-loop__sub" x="220" y="350" text-anchor="middle">
+              + DEMAS PASS
+            </text>
+          </g>
+
+          <!-- ── 3b. T3 FAILURE (right, highlighted) ── -->
+          <g class="flywheel-loop__node flywheel-loop__node--accent">
+            <rect x="440" y="280" width="280" height="84" rx="0"
+                  fill="rgba(var(--prob-blue-rgb), 0.10)"
+                  stroke="var(--prob-blue)" stroke-width="1"/>
+            <text class="flywheel-loop__title flywheel-loop__title--accent" x="580" y="308" text-anchor="middle">
+              T3 · FAILURE
+            </text>
+            <text class="flywheel-loop__sub" x="580" y="332" text-anchor="middle">
+              O-R-A-V &lt; 0.5
+            </text>
+            <text class="flywheel-loop__sub" x="580" y="350" text-anchor="middle">
+              OR DEMAS FAIL
+            </text>
+          </g>
+
+          <!-- merge T2 + T3 → DPO -->
+          <line x1="220" y1="364" x2="220" y2="396"
+                stroke="var(--ink)" stroke-width="1"/>
+          <line x1="580" y1="364" x2="580" y2="396"
+                stroke="var(--ink)" stroke-width="1"/>
+          <line x1="220" y1="396" x2="580" y2="396"
+                stroke="var(--ink)" stroke-width="1"/>
+          <line x1="400" y1="396" x2="400" y2="424"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+          <text class="flywheel-loop__edge-label" x="412" y="416" text-anchor="start">
+            SPREAD ≥ 0.15
+          </text>
+
+          <!-- ── 4. DPO PREFERENCE PAIRS ── -->
+          <g class="flywheel-loop__node">
+            <rect x="220" y="426" width="360" height="64" rx="0"
+                  fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+            <text class="flywheel-loop__title" x="400" y="454" text-anchor="middle">
+              DPO PREFERENCE PAIRS
+            </text>
+            <text class="flywheel-loop__sub" x="400" y="474" text-anchor="middle">
+              CHOSEN ↔ REJECTED
+            </text>
+          </g>
+          <line x1="400" y1="490" x2="400" y2="520"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+
+          <!-- ── 5. PER-TENANT LoRA FINE-TUNE ── -->
+          <g class="flywheel-loop__node">
+            <rect x="220" y="522" width="360" height="64" rx="0"
+                  fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+            <text class="flywheel-loop__title" x="400" y="550" text-anchor="middle">
+              PER-TENANT LoRA FINE-TUNE
+            </text>
+            <text class="flywheel-loop__sub" x="400" y="570" text-anchor="middle">
+              CURRICULUM-BASED
+            </text>
+          </g>
+          <line x1="400" y1="586" x2="400" y2="616"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+
+          <!-- ── 6. HOT-SWAP / NEXT CRON ── -->
+          <g class="flywheel-loop__node">
+            <rect x="220" y="618" width="360" height="64" rx="0"
+                  fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+            <text class="flywheel-loop__title" x="400" y="646" text-anchor="middle">
+              HOT-SWAP
+            </text>
+            <text class="flywheel-loop__sub" x="400" y="666" text-anchor="middle">
+              NEXT CRON CYCLE
+            </text>
+          </g>
+
+          <!-- Loop arrow back to PRODUCTION RUNS (dashed, ink-low) -->
+          <path class="flywheel-loop__cycle"
+                d="M 220 650 Q 40 650 40 400 Q 40 80 400 80"
+                fill="none" stroke="var(--ink-low)" stroke-width="1"
+                stroke-dasharray="4 4" marker-end="url(#fl-arrow-low)"/>
+          <text class="flywheel-loop__cycle-label" x="50" y="395" text-anchor="start">
+            CYCLE REPEATS
+          </text>
+        </svg>
+        <figcaption class="flywheel-loop__caption">Fig. 2 &middot; Self-improvement loop &middot; failures are labelled negatives</figcaption>
+      </figure>
+
       <p>The <strong>68.9% pass rate</strong> at the O-R-A-V/DEMAS boundary is the engine of this loop. The thresholds are tuned so the failure tier stays large enough to feed DPO with a real <span class="font-mono">chosen</span>/<span class="font-mono">rejected</span> spread. A 99% pass rate would starve the loop; 50% would burn cost. 68.9% is the production setpoint. Failures aren&rsquo;t waste &mdash; they&rsquo;re the labelled half of the training signal.</p>
       <p>The same machinery that keeps the production DAG fail-closed also generates the RLAIF-style preference data that improves the next epoch. Every block the validator rejects is a labelled negative; every block that clears DEMAS is a labelled positive. No human-in-the-loop annotation pipeline; the deterministic gates do the labelling.</p>
     </div>
