@@ -10,46 +10,46 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://manzela.github.io/pipeline-observatory/case-studies.html">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="assets/tokens.js"></script>
 <link rel="stylesheet" href="assets/chrome.css">
 <style>
   /* Page-specific: deployment timeline */
   .timeline { position: relative; padding-left: 32px; }
-  .timeline::before { content: ''; position: absolute; left: 11px; top: 4px; bottom: 4px; width: 1px; background: #424245; }
+  .timeline::before { content: ''; position: absolute; left: 11px; top: 4px; bottom: 4px; width: 1px; background: var(--ink-rule); }
   .tl-item { position: relative; padding-bottom: 28px; }
   .tl-item:last-child { padding-bottom: 0; }
-  .tl-item::before { content: ''; position: absolute; left: -25px; top: 6px; width: 9px; height: 9px; border-radius: 50%; border: 2px solid #2997ff; background: #000; }
-  .tl-item.fail::before { border-color: #f87171; }
-  .tl-item.success::before { border-color: #34d399; background: #34d399; }
+  .tl-item::before { content: ''; position: absolute; left: -25px; top: 6px; width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--prob-blue); background: var(--paper); }
+  .tl-item.fail::before { border-color: var(--signal); }
+  .tl-item.success::before { border-color: var(--det-green); background: var(--det-green); }
 </style>
 </head>
-<body class="bg-appleBg text-appleLight antialiased selection:bg-appleBlue/30">
+<body class="bg-paper text-ink antialiased selection:bg-probBlue/30">
 
 <a href="#main" class="skip-link">Skip to main content</a>
 
 <!-- BEGIN NAV -->
-<nav class="fixed top-0 left-0 right-0 z-50 glass-nav" aria-label="Primary">
+<nav class="top-nav" aria-label="Primary">
   <div class="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
-    <a href="index.html" class="text-sm font-semibold tracking-tight text-appleLight">
-      Autonomous <span class="text-appleGray font-medium ml-1">pipeline</span>
+    <a href="index.html" class="text-sm font-semibold tracking-tight text-ink">
+      Autonomous <span class="text-inkLow font-medium ml-1">pipeline</span>
     </a>
-    <ul class="hidden md:flex gap-8 list-none m-0 p-0">
-      <li><a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Profile</a></li>
-      <li><a href="index.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors" data-nav="pipeline">Pipeline</a></li>
-      <li><a href="architecture.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors" data-nav="architecture">Architecture</a></li>
-      <li><a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors" data-nav="case-studies">Case Studies</a></li>
+    <ul class="hidden lg:flex gap-8 list-none m-0 p-0">
+      <li><a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors">Profile</a></li>
+      <li><a href="index.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="pipeline">Pipeline</a></li>
+      <li><a href="index.html#dag" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="architecture">DAG schematic</a></li>
+      <li><a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="case-studies">Case Studies</a></li>
     </ul>
-    <button id="navToggle" class="md:hidden text-appleGray hover:text-appleLight transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
+    <button id="navToggle" class="lg:hidden text-inkLow hover:text-ink transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
     </button>
   </div>
-  <div id="mobileNav" class="md:hidden hidden border-t border-appleBorder px-6 py-4 flex flex-col gap-3">
-    <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2">Profile</a>
-    <a href="index.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2" data-nav="pipeline">Pipeline</a>
-    <a href="architecture.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2" data-nav="architecture">Architecture</a>
-    <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2" data-nav="case-studies">Case Studies</a>
+  <div id="mobileNav" class="lg:hidden hidden border-t border-inkRule px-6 py-4 flex flex-col gap-3">
+    <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2">Profile</a>
+    <a href="index.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="pipeline">Pipeline</a>
+    <a href="index.html#dag" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="architecture">DAG schematic</a>
+    <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="case-studies">Case Studies</a>
   </div>
 </nav>
 <!-- END NAV -->
@@ -57,53 +57,53 @@
 <main id="main" class="max-w-4xl mx-auto px-6 pt-14 pb-20">
 
   <!-- Hero -->
-  <header class="py-20 md:py-28 text-center border-b border-appleBorder">
+  <header class="py-20 md:py-28 text-center border-b border-inkRule">
     <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-tight">
       Three systems.<br>One thesis: deterministic gates first.
     </h1>
     <div class="flex flex-wrap justify-center items-center gap-3 mb-4">
-      <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-4 py-2 rounded-full">Active 2024–present</span>
+      <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-4 py-2 rounded-full">Active 2024–present</span>
     </div>
-    <div class="text-xs text-appleGray tracking-wide">
-      One page over: <a href="index.html" class="text-appleLight hover:text-appleBlue transition-colors">Pipeline</a>
-      &middot; <a href="architecture.html" class="text-appleLight hover:text-appleBlue transition-colors">Architecture</a>
+    <div class="text-xs text-inkLow tracking-wide">
+      One page over: <a href="index.html" class="text-ink hover:text-probBlue transition-colors">Pipeline</a>
+      &middot; <a href="index.html#dag" class="text-ink hover:text-probBlue transition-colors">DAG schematic</a>
       &middot; Daniel Manzela
     </div>
   </header>
 
   <!-- ═══════════ BUSINESS OUTCOMES (commercial traction band) ═══════════ -->
-  <section class="py-16 border-b border-appleBorder reveal" id="business-outcomes" aria-labelledby="business-outcomes-heading">
-    <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mb-3">Business outcomes &mdash; TNG Shopper, 2024 &ndash; present</div>
+  <section class="py-16 border-b border-inkRule reveal" id="business-outcomes" aria-labelledby="business-outcomes-heading">
+    <div class="text-[10px] uppercase tracking-widest text-probBlue font-medium mb-3">Business outcomes &mdash; TNG Shopper, 2024 &ndash; present</div>
     <h2 id="business-outcomes-heading" class="text-3xl font-bold tracking-tight mb-4">Traction</h2>
-    <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
       Commercial proof for the autonomous content pipeline. 11 paying enterprise retailers across 5 countries (currently live: Spain, Portugal, Israel; historical: United States, Mexico). Raised, signed, and shipped within the first 18 months.
     </p>
 
-    <div class="card p-px bg-appleBorder grid md:grid-cols-3 gap-px mb-10 overflow-hidden">
-      <div class="bg-appleSurface p-8">
-        <div class="font-mono text-2xl font-bold text-appleBlue mb-2">$500K</div>
-        <h3 class="text-[10px] uppercase tracking-widest text-appleGray mb-3">Raised</h3>
-        <p class="text-xs text-appleGray leading-relaxed">From top-tier angel investors. Founders-First investor base.</p>
+    <div class="card p-px bg-inkRule grid md:grid-cols-3 gap-px mb-10 overflow-hidden">
+      <div class="bg-paperDeep p-8">
+        <div class="font-mono text-2xl font-bold text-probBlue mb-2">$500K</div>
+        <h3 class="text-[10px] uppercase tracking-widest text-inkLow mb-3">Raised</h3>
+        <p class="text-xs text-inkLow leading-relaxed">From top-tier angel investors. Founders-First investor base.</p>
       </div>
-      <div class="bg-appleSurface p-8">
-        <div class="font-mono text-2xl font-bold text-appleBlue mb-2">$118K / $223K</div>
-        <h3 class="text-[10px] uppercase tracking-widest text-appleGray mb-3">Collected ARR / Booked ARR</h3>
-        <p class="text-xs text-appleGray leading-relaxed">Cash-realized revenue and signed contracts from enterprise retail clients.</p>
+      <div class="bg-paperDeep p-8">
+        <div class="font-mono text-2xl font-bold text-probBlue mb-2">$118K / $223K</div>
+        <h3 class="text-[10px] uppercase tracking-widest text-inkLow mb-3">Collected ARR / Booked ARR</h3>
+        <p class="text-xs text-inkLow leading-relaxed">Cash-realized revenue and signed contracts from enterprise retail clients.</p>
       </div>
-      <div class="bg-appleDarker p-8 border-t md:border-t-0 border-appleBorder">
-        <div class="font-mono text-2xl font-bold text-appleBlue mb-2">$1.53M</div>
-        <h3 class="text-[10px] uppercase tracking-widest text-appleBlue mb-3">Contracted ARR pipeline</h3>
-        <p class="text-xs text-appleGray leading-relaxed">From existing live and signed enterprise clients. Conditional roll-out as deployments expand to all client locations.</p>
+      <div class="bg-paperDeep p-8 border-t md:border-t-0 border-inkRule">
+        <div class="font-mono text-2xl font-bold text-probBlue mb-2">$1.53M</div>
+        <h3 class="text-[10px] uppercase tracking-widest text-probBlue mb-3">Contracted ARR pipeline</h3>
+        <p class="text-xs text-inkLow leading-relaxed">From existing live and signed enterprise clients. Conditional roll-out as deployments expand to all client locations.</p>
       </div>
     </div>
 
-    <div class="card bg-appleDarker p-6 mb-4">
+    <div class="card bg-paperDeep p-6 mb-4">
       <div class="flex items-start gap-4">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mt-1 whitespace-nowrap">Recognition</div>
-        <p class="text-xs text-appleGray leading-relaxed flex-1">Named to <strong class="text-appleLight">top-100 retail-tech startups of 2025</strong>. Independent industry recognition for the autonomous content pipeline + multi-agent architecture.</p>
+        <div class="text-[10px] uppercase tracking-widest text-probBlue font-medium mt-1 whitespace-nowrap">Recognition</div>
+        <p class="text-xs text-inkLow leading-relaxed flex-1">Named to <strong class="text-ink">top-100 retail-tech startups of 2025</strong>. Independent industry recognition for the autonomous content pipeline + multi-agent architecture.</p>
       </div>
     </div>
-    <p class="text-[10px] text-appleGray italic max-w-2xl">Revenue model: clients begin with proof-of-concept on one location, expand to all locations once SEO/AEO compliance and indexing performance are validated. The Contracted ARR figure represents the full-rollout commitment from already-signed enterprise customers.</p>
+    <p class="text-[10px] text-inkLow italic max-w-2xl">Revenue model: clients begin with proof-of-concept on one location, expand to all locations once SEO/AEO compliance and indexing performance are validated. The Contracted ARR figure represents the full-rollout commitment from already-signed enterprise customers.</p>
   </section>
 
   <!-- Editorial spine layout -->
@@ -111,333 +111,333 @@
 
     <aside class="spine" data-active-case="01" aria-label="Case study spine">
       <ol>
-        <li data-id="01"><span class="dot" aria-hidden="true"></span><a href="#agent-dag" class="label hover:text-appleLight transition-colors">01</a></li>
-        <li data-id="02"><span class="dot" aria-hidden="true"></span><a href="#gemma4" class="label hover:text-appleLight transition-colors">02</a></li>
-        <li data-id="03"><span class="dot" aria-hidden="true"></span><a href="#antigravity" class="label hover:text-appleLight transition-colors">03</a></li>
+        <li data-id="01"><span class="dot" aria-hidden="true"></span><a href="#agent-dag" class="label hover:text-ink transition-colors">01</a></li>
+        <li data-id="02"><span class="dot" aria-hidden="true"></span><a href="#gemma4" class="label hover:text-ink transition-colors">02</a></li>
+        <li data-id="03"><span class="dot" aria-hidden="true"></span><a href="#antigravity" class="label hover:text-ink transition-colors">03</a></li>
       </ol>
     </aside>
 
     <div class="spine-content">
 
       <!-- ═══════════ CASE STUDY 01 ═══════════ -->
-      <article class="py-12 border-b border-appleBorder reveal" id="agent-dag" data-case="01" data-beat="01">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mb-3">Case Study 01</div>
+      <article class="py-12 border-b border-inkRule reveal" id="agent-dag" data-case="01" data-beat="01">
+        <div class="text-[10px] uppercase tracking-widest text-probBlue font-medium mb-3">Case Study 01</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Autonomous multi-agent DAG pipeline</h2>
         <div class="flex flex-wrap items-center gap-3 mb-8">
-          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-3 py-1 rounded-full">Active 2024–present</span>
-          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-3 py-1 rounded-full">11 enterprise tenants</span>
-          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-3 py-1 rounded-full">5 countries</span>
+          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-3 py-1 rounded-full">Active 2024–present</span>
+          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-3 py-1 rounded-full">11 enterprise tenants</span>
+          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-3 py-1 rounded-full">5 countries</span>
         </div>
-        <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+        <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
           A 7-node Directed Acyclic Graph generating localized product content for 11 enterprise clients across 5 countries. Human-supervised autonomous execution. Deterministic validation fires first; the LLM activates only if the gate passes.
         </p>
 
         <!-- Problem / Approach / Result -->
-        <div class="card p-px bg-appleBorder grid md:grid-cols-3 gap-px mb-12 overflow-hidden">
-          <div class="bg-appleSurface p-8">
-            <h3 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Problem</h3>
-            <p class="text-xs text-appleGray leading-relaxed">Enterprise clients required localized, SEO-compliant product pages across dozens of cities. Manual creation is mathematically impossible at ~10.5M product-location combinations per cycle.</p>
+        <div class="card p-px bg-inkRule grid md:grid-cols-3 gap-px mb-12 overflow-hidden">
+          <div class="bg-paperDeep p-8">
+            <h3 class="text-[10px] uppercase tracking-widest text-inkLow mb-4">Problem</h3>
+            <p class="text-xs text-inkLow leading-relaxed">Enterprise clients required localized, SEO-compliant product pages across dozens of cities. Manual creation is mathematically impossible at ~10.5M product-location combinations per month.</p>
           </div>
-          <div class="bg-appleSurface p-8">
-            <h3 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Approach</h3>
-            <p class="text-xs text-appleGray leading-relaxed">A fail-closed 7-node DAG where every generative node is constrained by a dedicated RAG policy index (Google SPAM policies + E-E-A-T standards). 80% of compute is deterministic; only 20% is probabilistic. Every node boundary is audited by a JIT integrity layer.</p>
+          <div class="bg-paperDeep p-8">
+            <h3 class="text-[10px] uppercase tracking-widest text-inkLow mb-4">Approach</h3>
+            <p class="text-xs text-inkLow leading-relaxed">A fail-closed 7-node DAG with RAG-constrained generation (Google SPAM policies + E-E-A-T standards). Full architecture, deep-dives, and live trace are documented on <a href="index.html" class="text-probBlue hover:text-ink transition-colors">the Pipeline page</a>.</p>
           </div>
-          <div class="bg-appleDarker p-8 border-t md:border-t-0 border-appleBorder">
-            <h3 class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Result</h3>
-            <div class="font-mono text-2xl font-bold text-appleBlue mb-2">260K+ pages</div>
-            <p class="text-xs text-appleGray leading-relaxed">400K+ impressions across 3 client properties, 68.9% average pass rate per boundary, $0.0006/PDP end-to-end. 234 managed websites across 5 countries.</p>
+          <div class="bg-paperDeep p-8 border-t md:border-t-0 border-inkRule">
+            <h3 class="text-[10px] uppercase tracking-widest text-probBlue mb-4">Result</h3>
+            <div class="font-mono text-2xl font-bold text-probBlue mb-2">260K+ pages</div>
+            <p class="text-xs text-inkLow leading-relaxed">400K+ impressions across 3 client properties, 68.9% average pass rate per boundary, $0.0006/PDP end-to-end. 234 managed websites across 5 countries.</p>
           </div>
         </div>
 
         <!-- Why this exists (relocated from index.html) -->
         <section class="mt-12 mb-12">
-          <h3 class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Why this exists</h3>
-          <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-8">
+          <h3 class="text-xs font-semibold text-inkLow uppercase tracking-widest mb-6">Why this exists</h3>
+          <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-8">
             Multi-location retailers need unique, localized product pages for every item in every city they serve. At enterprise scale, this means millions to billions of pages — each requiring localized copy, structured data, and policy-compliant content. Manual creation doesn&rsquo;t get close.
           </p>
-          <div class="card bg-appleDarker p-10 text-center mb-8">
-            <div class="font-mono text-sm text-appleGray leading-loose">
-              <span class="text-appleLight font-semibold">100K</span> SKUs &times;
-              <span class="text-appleLight font-semibold">500</span> locations =
-              <strong class="text-3xl md:text-4xl text-appleBlue block my-4 font-bold tracking-tight">50,000,000 pages</strong>
-              <span class="text-appleGray/60 text-xs">A mid-size retailer. Hypermarkets need billions.</span>
+          <div class="card bg-paperDeep p-10 text-center mb-8">
+            <div class="font-mono text-sm text-inkLow leading-loose">
+              <span class="text-ink font-semibold">100K</span> SKUs &times;
+              <span class="text-ink font-semibold">500</span> locations =
+              <strong class="text-3xl md:text-4xl text-probBlue block my-4 font-bold tracking-tight">50,000,000 pages</strong>
+              <span class="text-inkLow/60 text-xs">A mid-size retailer. Hypermarkets need billions.</span>
             </div>
           </div>
           <div class="grid md:grid-cols-3 gap-6">
             <div>
-              <div class="text-xs font-semibold text-appleLight mb-2">Scale</div>
-              <p class="text-[11px] text-appleGray leading-relaxed">Validated with SEO leadership at retailers operating 10–10,000+ store locations. The content gap is six orders of magnitude beyond manual capacity.</p>
+              <div class="text-xs font-semibold text-ink mb-2">Scale</div>
+              <p class="text-[11px] text-inkLow leading-relaxed">Validated with SEO leadership at retailers operating 10–10,000+ store locations. The content gap is six orders of magnitude beyond manual capacity.</p>
             </div>
             <div>
-              <div class="text-xs font-semibold text-appleLight mb-2">Zero friction</div>
-              <p class="text-[11px] text-appleGray leading-relaxed">No CMS integration. No developer hours. No API setup from the client. Operates as an external, headless discovery layer that activates with a single switch.</p>
+              <div class="text-xs font-semibold text-ink mb-2">Zero friction</div>
+              <p class="text-[11px] text-inkLow leading-relaxed">No CMS integration. No developer hours. No API setup from the client. Operates as an external, headless discovery layer that activates with a single switch.</p>
             </div>
             <div>
-              <div class="text-xs font-semibold text-appleLight mb-2">Compliance-first</div>
-              <p class="text-[11px] text-appleGray leading-relaxed">Every node boundary is audited by a deterministic quality gate. Content below threshold is rejected before reaching production — fail-closed by design.</p>
+              <div class="text-xs font-semibold text-ink mb-2">Compliance-first</div>
+              <p class="text-[11px] text-inkLow leading-relaxed">Every generated page carries audited structured data (Schema.org, JSON-LD) and policy-checked copy against retailer compliance rules &mdash; the prerequisite for being indexable inventory, not noise.</p>
             </div>
           </div>
         </section>
 
         <!-- Verified Evidence -->
-        <h3 class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-4">Verified evidence &mdash; Google Search Console</h3>
-        <p class="text-[10px] text-appleGray mb-6">Aggregate results across 3 active client properties — verified via Google Search Console.</p>
+        <h3 class="text-xs font-semibold text-inkLow uppercase tracking-widest mb-4">Verified evidence &mdash; Google Search Console</h3>
+        <p class="text-[10px] text-inkLow mb-6">Aggregate results across 3 active client properties — verified via Google Search Console.</p>
 
         <div class="mb-10">
-          <div class="text-[10px] text-appleGray uppercase tracking-widest mb-4 font-medium border-b border-appleBorder pb-2">Enterprise Client A &mdash; Major European DIY Chain (Spain)</div>
+          <div class="text-[10px] text-inkLow uppercase tracking-widest mb-4 font-medium border-b border-inkRule pb-2">Enterprise Client A &mdash; Major European DIY Chain (Spain)</div>
           <div class="grid md:grid-cols-2 gap-4">
             <div class="card overflow-hidden">
               <img src="assets/client-a-indexing.jpg" alt="Google Search Console page indexing chart for Client A: 99.9K pages indexed in ~60 days" class="w-full opacity-90 hover:opacity-100 transition-opacity" loading="lazy">
-              <div class="p-5 border-t border-appleBorder">
+              <div class="p-5 border-t border-inkRule">
                 <div class="font-semibold text-sm mb-1">Page indexing</div>
-                <div class="font-mono text-xs text-appleBlue mb-2">99.9K pages indexed</div>
-                <p class="text-[10px] text-appleGray">Hockey-stick from 0 → 99.9K in ~60 days. Autonomous pipeline output.</p>
+                <div class="font-mono text-xs text-probBlue mb-2">99.9K pages indexed</div>
+                <p class="text-[10px] text-inkLow">Hockey-stick from 0 → 99.9K in ~60 days. Autonomous pipeline output.</p>
               </div>
             </div>
             <div class="card overflow-hidden">
               <img src="assets/client-a-performance.jpg" alt="Google Search Console performance chart for Client A: 54.4K impressions and 614 clicks" class="w-full opacity-90 hover:opacity-100 transition-opacity" loading="lazy">
-              <div class="p-5 border-t border-appleBorder">
+              <div class="p-5 border-t border-inkRule">
                 <div class="font-semibold text-sm mb-1">Search performance</div>
-                <div class="font-mono text-xs text-appleBlue mb-2">54.4K impressions &middot; 614 clicks</div>
-                <p class="text-[10px] text-appleGray">1.1% CTR, avg position 10.9. Zero manual content creation.</p>
+                <div class="font-mono text-xs text-probBlue mb-2">54.4K impressions &middot; 614 clicks</div>
+                <p class="text-[10px] text-inkLow">1.1% CTR, avg position 10.9. Zero manual content creation.</p>
               </div>
             </div>
           </div>
         </div>
 
         <div class="mb-10">
-          <div class="text-[10px] text-appleGray uppercase tracking-widest mb-4 font-medium border-b border-appleBorder pb-2">Enterprise Client B &mdash; Largest Supermarket Chain (Portugal)</div>
+          <div class="text-[10px] text-inkLow uppercase tracking-widest mb-4 font-medium border-b border-inkRule pb-2">Enterprise Client B &mdash; Largest Supermarket Chain (Portugal)</div>
           <div class="grid md:grid-cols-2 gap-4">
             <div class="card overflow-hidden">
               <img src="assets/client-b-indexing.jpg" alt="Google Search Console page indexing chart for Client B: 130K pages indexed" class="w-full opacity-90 hover:opacity-100 transition-opacity" loading="lazy">
-              <div class="p-5 border-t border-appleBorder">
+              <div class="p-5 border-t border-inkRule">
                 <div class="font-semibold text-sm mb-1">Page indexing</div>
-                <div class="font-mono text-xs text-appleBlue mb-2">130K pages indexed</div>
-                <p class="text-[10px] text-appleGray">Steep growth curve from 0 → 130K. Largest property by page volume.</p>
+                <div class="font-mono text-xs text-probBlue mb-2">130K pages indexed</div>
+                <p class="text-[10px] text-inkLow">Steep growth curve from 0 → 130K. Largest property by page volume.</p>
               </div>
             </div>
             <div class="card overflow-hidden">
               <img src="assets/client-b-performance.jpg" alt="Google Search Console performance chart for Client B: 245K impressions and 2.19K clicks" class="w-full opacity-90 hover:opacity-100 transition-opacity" loading="lazy">
-              <div class="p-5 border-t border-appleBorder">
+              <div class="p-5 border-t border-inkRule">
                 <div class="font-semibold text-sm mb-1">Search performance</div>
-                <div class="font-mono text-xs text-appleBlue mb-2">245K impressions &middot; 2.19K clicks</div>
-                <p class="text-[10px] text-appleGray">0.9% CTR, avg position 8.7. Highest impression volume.</p>
+                <div class="font-mono text-xs text-probBlue mb-2">245K impressions &middot; 2.19K clicks</div>
+                <p class="text-[10px] text-inkLow">0.9% CTR, avg position 8.7. Highest impression volume.</p>
               </div>
             </div>
           </div>
         </div>
 
         <div class="mb-12">
-          <div class="text-[10px] text-appleGray uppercase tracking-widest mb-4 font-medium border-b border-appleBorder pb-2">Enterprise Client C &mdash; Leading Discount Retailer (Spain)</div>
+          <div class="text-[10px] text-inkLow uppercase tracking-widest mb-4 font-medium border-b border-inkRule pb-2">Enterprise Client C &mdash; Leading Discount Retailer (Spain)</div>
           <div class="grid md:grid-cols-2 gap-4">
             <div class="card overflow-hidden">
               <img src="assets/client-c-indexing.jpg" alt="Google Search Console page indexing chart for Client C: 30.2K pages indexed" class="w-full opacity-90 hover:opacity-100 transition-opacity" loading="lazy">
-              <div class="p-5 border-t border-appleBorder">
+              <div class="p-5 border-t border-inkRule">
                 <div class="font-semibold text-sm mb-1">Page indexing</div>
-                <div class="font-mono text-xs text-appleBlue mb-2">30.2K pages indexed</div>
-                <p class="text-[10px] text-appleGray">Rapid ramp from 0 → 30.2K. Newest property in pipeline.</p>
+                <div class="font-mono text-xs text-probBlue mb-2">30.2K pages indexed</div>
+                <p class="text-[10px] text-inkLow">Rapid ramp from 0 → 30.2K. Newest property in pipeline.</p>
               </div>
             </div>
             <div class="card overflow-hidden">
               <img src="assets/client-c-performance.jpg" alt="Google Search Console performance chart for Client C: 101K impressions and 2.33K clicks" class="w-full opacity-90 hover:opacity-100 transition-opacity" loading="lazy">
-              <div class="p-5 border-t border-appleBorder">
+              <div class="p-5 border-t border-inkRule">
                 <div class="font-semibold text-sm mb-1">Search performance</div>
-                <div class="font-mono text-xs text-appleBlue mb-2">101K impressions &middot; 2.33K clicks</div>
-                <p class="text-[10px] text-appleGray">2.3% CTR, avg position 8.7. Highest-converting property.</p>
+                <div class="font-mono text-xs text-probBlue mb-2">101K impressions &middot; 2.33K clicks</div>
+                <p class="text-[10px] text-inkLow">2.3% CTR, avg position 8.7. Highest-converting property.</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Live Demo -->
-        <h3 class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Live demo</h3>
-        <div class="rounded-xl overflow-hidden border border-appleBorder mb-4 relative pt-[56.25%]">
+        <h3 class="text-xs font-semibold text-inkLow uppercase tracking-widest mb-6">Live demo</h3>
+        <div class="rounded-xl overflow-hidden border border-inkRule mb-4 relative pt-[56.25%]">
           <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/czZsPbylC1M" title="End-to-end pipeline demo — autonomous content generation walkthrough" aria-label="Demo video: end-to-end pipeline experience" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
-        <p class="text-center text-[10px] text-appleGray mb-12">End-to-end pipeline experience &mdash; the self-serve interface for autonomous content generation with human-supervised quality gates</p>
+        <p class="text-center text-[10px] text-inkLow mb-12">End-to-end pipeline experience &mdash; the self-serve interface for autonomous content generation with human-supervised quality gates</p>
 
         <!-- Engineering trade-offs -->
-        <h3 class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Engineering trade-offs</h3>
+        <h3 class="text-xs font-semibold text-inkLow uppercase tracking-widest mb-6">Engineering trade-offs</h3>
         <div class="grid md:grid-cols-2 gap-4 mb-10">
           <div class="card p-6">
             <h4 class="font-semibold text-sm mb-2">Quality vs. cost</h4>
-            <p class="text-xs text-appleGray mb-4">O-R-A-V (Observe→Reason→Act→Validate) deterministic validation engine. Node 6 runs zero-LLM rule-based checks; Node 7 (DEMAS JIT) runs SLM-as-judge evaluation inline within content generation.</p>
-            <p class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: deterministic + SLM validation, 68.9% average pass rate per boundary.</p>
+            <p class="text-xs text-inkLow mb-4">Validation that doesn&rsquo;t spend a generation budget. Rule-based checks run before the SLM-as-judge layer ever fires &mdash; cheap rejections stay cheap. Mechanism documented on <a href="index.html#orav" class="text-probBlue hover:text-ink transition-colors">the Pipeline page</a>.</p>
+            <p class="text-[10px] font-mono text-ink pt-4 border-t border-inkRule">Decision: deterministic-first validation, 68.9% pass rate.</p>
           </div>
           <div class="card p-6">
             <h4 class="font-semibold text-sm mb-2">Safety vs. throughput</h4>
-            <p class="text-xs text-appleGray mb-4">Fail-closed design means ~31% of content is rejected. Intentional &mdash; no partial or low-quality content ever propagates downstream to production surfaces.</p>
-            <p class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: fail-closed at every boundary, zero tolerance.</p>
+            <p class="text-xs text-inkLow mb-4">Fail-closed design means ~31% of content is rejected. Intentional &mdash; no partial or low-quality content ever propagates downstream to production surfaces.</p>
+            <p class="text-[10px] font-mono text-ink pt-4 border-t border-inkRule">Decision: fail-closed at every boundary, zero tolerance.</p>
           </div>
           <div class="card p-6">
             <h4 class="font-semibold text-sm mb-2">Self-improvement</h4>
-            <p class="text-xs text-appleGray mb-4">RLAIF data flywheel. DPO preference pairs generated from Node 6/7 evaluation signals for continuous model alignment.</p>
-            <p class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: closed-loop flywheel, autonomous preference pairs.</p>
+            <p class="text-xs text-inkLow mb-4">RLAIF data flywheel. DPO preference pairs generated from Node 6/7 evaluation signals for continuous model alignment.</p>
+            <p class="text-[10px] font-mono text-ink pt-4 border-t border-inkRule">Decision: closed-loop flywheel, autonomous preference pairs.</p>
           </div>
           <div class="card p-6">
             <h4 class="font-semibold text-sm mb-2">Scale vs. locality</h4>
-            <p class="text-xs text-appleGray mb-4">5 countries require different linguistic, cultural, and regulatory context. Per-locale context injection increases prompt engineering complexity but eliminates fine-tuning per market.</p>
-            <p class="text-[10px] font-mono text-appleLight pt-4 border-t border-appleBorder">Decision: context-first architecture, zero-shot locale adaptation.</p>
+            <p class="text-xs text-inkLow mb-4">5 countries require different linguistic, cultural, and regulatory context. Per-locale context injection increases prompt engineering complexity but eliminates fine-tuning per market.</p>
+            <p class="text-[10px] font-mono text-ink pt-4 border-t border-inkRule">Decision: context-first architecture, zero-shot locale adaptation.</p>
           </div>
         </div>
 
         <!-- Tech stack — trimmed to 4 most distinguishing -->
         <div class="flex flex-wrap gap-2 mb-8">
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Python</span>
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Google ADK</span>
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Vertex AI</span>
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Langfuse</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">Python</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">Google ADK</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">Vertex AI</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">Langfuse</span>
         </div>
 
         <!-- Links -->
         <div class="grid md:grid-cols-3 gap-4 mb-4">
-          <a href="https://github.com/Manzela/agent-dag-pipeline" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">GitHub repository <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
-          <a href="index.html" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">Live pipeline <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
-          <a href="architecture.html" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">Architecture view <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
+          <a href="https://github.com/Manzela/agent-dag-pipeline" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">GitHub repository <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
+          <a href="index.html" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">Live pipeline <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
+          <a href="index.html#dag" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">DAG schematic <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
         </div>
         <div class="grid md:grid-cols-4 gap-4 mb-10">
-          <a href="https://www.tngshopper.com/" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">TNG Shopper <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
-          <a href="https://www.tngshopper.com/investor-pitch-deck" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">Pitch deck <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
-          <a href="https://www.linkedin.com/company/thenextgenerationshopper" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">LinkedIn <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
-          <a href="https://www.crunchbase.com/organization/tng-shopper" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">Crunchbase <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
+          <a href="https://www.tngshopper.com/" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">TNG Shopper <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
+          <a href="https://www.tngshopper.com/investor-pitch-deck" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">Pitch deck <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
+          <a href="https://www.linkedin.com/company/thenextgenerationshopper" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">LinkedIn <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
+          <a href="https://www.crunchbase.com/organization/tng-shopper" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">Crunchbase <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
         </div>
 
         <!-- Reflection -->
-        <p class="text-sm text-appleLight leading-relaxed max-w-2xl italic">
+        <p class="text-sm text-ink leading-relaxed max-w-2xl italic">
           Deterministic gates before probabilistic agents is non-negotiable. 80% of every cycle is rule-based; only 20% is inference. That ratio is the difference between an autonomous system and an unsupervised one.
         </p>
 
         <!-- Bridge to CS02 -->
         <p class="case-bridge">
-          The pipeline&rsquo;s writer node runs Gemma 4 26B-A4B MoE on a single A100. Standing that up took 30+ deployment iterations and 20 named failure modes. <a href="#gemma4" class="text-appleBlue hover:text-appleLight transition-colors">Case Study 02 documents every one</a>.
+          The pipeline&rsquo;s writer node runs Gemma 4 26B-A4B MoE on a single A100. Standing that up took 30+ deployment iterations and 20 named failure modes. <a href="#gemma4" class="text-probBlue hover:text-ink transition-colors">Case Study 02 documents every one</a>.
         </p>
       </article>
 
       <!-- ═══════════ CASE STUDY 02 ═══════════ -->
-      <article class="py-12 border-b border-appleBorder reveal" id="gemma4" data-case="02" data-beat="02">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mb-3">Case Study 02</div>
+      <article class="py-12 border-b border-inkRule reveal" id="gemma4" data-case="02" data-beat="02">
+        <div class="text-[10px] uppercase tracking-widest text-probBlue font-medium mb-3">Case Study 02</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Gemma 4 MoE — Vertex AI deployment forensics</h2>
         <div class="flex flex-wrap items-center gap-3 mb-8">
-          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-3 py-1 rounded-full">March–April 2025</span>
-          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-3 py-1 rounded-full">16+ hours · 30+ versions</span>
-          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-3 py-1 rounded-full">20 failure modes</span>
+          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-3 py-1 rounded-full">March–April 2025</span>
+          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-3 py-1 rounded-full">16+ hours · 30+ versions</span>
+          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-3 py-1 rounded-full">20 failure modes</span>
         </div>
-        <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+        <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
           Deployed Google&rsquo;s Gemma 4 26B-A4B-it Mixture-of-Experts model on Vertex AI with vLLM. Documented 20 distinct failure modes across 30+ deployment iterations in a public forensic runbook.
         </p>
 
-        <div class="card p-px bg-appleBorder grid md:grid-cols-3 gap-px mb-12 overflow-hidden">
-          <div class="bg-appleSurface p-8">
-            <h3 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Problem</h3>
-            <p class="text-xs text-appleGray leading-relaxed">Gemma 4 MoE was newly released with no production deployment guides. Required custom vLLM builds, GCSFUSE container configs, and careful chat template engineering.</p>
+        <div class="card p-px bg-inkRule grid md:grid-cols-3 gap-px mb-12 overflow-hidden">
+          <div class="bg-paperDeep p-8">
+            <h3 class="text-[10px] uppercase tracking-widest text-inkLow mb-4">Problem</h3>
+            <p class="text-xs text-inkLow leading-relaxed">Gemma 4 MoE was newly released with no production deployment guides. Required custom vLLM builds, GCSFUSE container configs, and careful chat template engineering.</p>
           </div>
-          <div class="bg-appleSurface p-8 border-t md:border-t-0 border-appleBorder">
-            <h3 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Approach</h3>
-            <p class="text-xs text-appleGray leading-relaxed">Systematic forensic debugging across 2 deployment cycles (16+ hours, 30+ versions). Every crash, OOM, and dependency conflict documented with root-cause analysis.</p>
+          <div class="bg-paperDeep p-8 border-t md:border-t-0 border-inkRule">
+            <h3 class="text-[10px] uppercase tracking-widest text-inkLow mb-4">Approach</h3>
+            <p class="text-xs text-inkLow leading-relaxed">Systematic forensic debugging across 2 deployment cycles (16+ hours, 30+ versions). Every crash, OOM, and dependency conflict documented with root-cause analysis.</p>
           </div>
-          <div class="bg-appleDarker p-8 border-t md:border-t-0 border-appleBorder">
-            <h3 class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Result</h3>
-            <div class="font-mono text-2xl font-bold text-appleBlue mb-2">20 failure modes</div>
-            <p class="text-xs text-appleGray leading-relaxed">Forensically documented across 30+ iterations &mdash; proving the engineering diligence of developing stable, cost-effective MoE inference. Currently running stable base version while advancing toward full PRD: quality, cost efficiency, intelligence, and reliability.</p>
+          <div class="bg-paperDeep p-8 border-t md:border-t-0 border-inkRule">
+            <h3 class="text-[10px] uppercase tracking-widest text-probBlue mb-4">Result</h3>
+            <div class="font-mono text-2xl font-bold text-probBlue mb-2">20 failure modes</div>
+            <p class="text-xs text-inkLow leading-relaxed">Forensically documented across 30+ iterations &mdash; proving the engineering diligence of developing stable, cost-effective MoE inference. Currently running stable base version while advancing toward full PRD: quality, cost efficiency, intelligence, and reliability.</p>
           </div>
         </div>
 
-        <h3 class="text-xs font-semibold text-appleGray uppercase tracking-widest mb-6">Deployment timeline</h3>
+        <h3 class="text-xs font-semibold text-inkLow uppercase tracking-widest mb-6">Deployment timeline</h3>
         <div class="card p-8 mb-10">
           <div class="timeline">
             <div class="tl-item fail">
-              <div class="font-mono text-[10px] text-appleGray mb-1">v1 – v10</div>
+              <div class="font-mono text-[10px] text-inkLow mb-1">v1 – v10</div>
               <div class="text-sm font-semibold mb-1">Container bootstrap failures</div>
-              <p class="text-xs text-appleGray leading-relaxed">GCSFUSE mount crashes, OOM on model loading, vLLM version incompatibilities. Root cause: custom Google vLLM build required specific CUDA/PyTorch matrix.</p>
+              <p class="text-xs text-inkLow leading-relaxed">GCSFUSE mount crashes, OOM on model loading, vLLM version incompatibilities. Root cause: custom Google vLLM build required specific CUDA/PyTorch matrix.</p>
             </div>
             <div class="tl-item fail">
-              <div class="font-mono text-[10px] text-appleGray mb-1">v11 – v20</div>
+              <div class="font-mono text-[10px] text-inkLow mb-1">v11 – v20</div>
               <div class="text-sm font-semibold mb-1">Chat template &amp; tokenizer issues</div>
-              <p class="text-xs text-appleGray leading-relaxed">Jinja template rendering errors, special token misalignment, multi-turn conversation state corruption. Required custom <code>chat_template.jinja</code> authoring.</p>
+              <p class="text-xs text-inkLow leading-relaxed">Jinja template rendering errors, special token misalignment, multi-turn conversation state corruption. Required custom <code>chat_template.jinja</code> authoring.</p>
             </div>
             <div class="tl-item success">
-              <div class="font-mono text-[10px] text-appleGreen mb-1">v21 – v30</div>
-              <div class="text-sm font-semibold mb-1 text-appleLight">Stable base inference</div>
-              <p class="text-xs text-appleGray leading-relaxed">Working configuration locked: vLLM 0.17.2rc1.dev133 + PagedAttention + custom <code>entrypoint.sh</code>. Base inference stable; advancing toward full PRD.</p>
+              <div class="font-mono text-[10px] text-detGreen mb-1">v21 – v30</div>
+              <div class="text-sm font-semibold mb-1 text-ink">Stable base inference</div>
+              <p class="text-xs text-inkLow leading-relaxed">Working configuration locked: vLLM 0.17.2rc1.dev133 + PagedAttention + custom <code>entrypoint.sh</code>. Base inference stable; advancing toward full PRD.</p>
             </div>
             <div class="tl-item fail">
-              <div class="font-mono text-[10px] text-appleGray mb-1">Cycle 2</div>
+              <div class="font-mono text-[10px] text-inkLow mb-1">Cycle 2</div>
               <div class="text-sm font-semibold mb-1">LoRA enablement &mdash; blocked</div>
-              <p class="text-xs text-appleGray leading-relaxed">Attempted multi-LoRA serving. Identified unsolvable dependency triangle between vLLM custom build, PEFT, and model architecture. Documented as community call-to-action.</p>
+              <p class="text-xs text-inkLow leading-relaxed">Attempted multi-LoRA serving. Identified unsolvable dependency triangle between vLLM custom build, PEFT, and model architecture. Documented as community call-to-action.</p>
             </div>
           </div>
         </div>
 
         <!-- Tech stack — trimmed -->
         <div class="flex flex-wrap gap-2 mb-8">
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">vLLM</span>
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">PagedAttention</span>
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Vertex AI</span>
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">GCSFUSE</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">vLLM</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">PagedAttention</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">Vertex AI</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">GCSFUSE</span>
         </div>
 
         <div class="grid md:grid-cols-3 gap-4 mb-10">
-          <a href="https://github.com/Manzela/gemma4-vllm-deployment" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">Forensic runbook <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
-          <a href="https://github.com/Manzela/agent-dag-pipeline" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">Consumer: DAG pipeline <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
-          <a href="https://github.com/Manzela/gemma4-vllm-deployment/blob/main/docs/DEPLOYMENT_GUIDE.md" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">Deployment guide <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
+          <a href="https://github.com/Manzela/gemma4-vllm-deployment" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">Forensic runbook <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
+          <a href="https://github.com/Manzela/agent-dag-pipeline" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">Consumer: DAG pipeline <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
+          <a href="https://github.com/Manzela/gemma4-vllm-deployment/blob/main/docs/DEPLOYMENT_GUIDE.md" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">Deployment guide <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
         </div>
 
         <!-- Reflection -->
-        <p class="text-sm text-appleLight leading-relaxed max-w-2xl italic">
+        <p class="text-sm text-ink leading-relaxed max-w-2xl italic">
           Forensic documentation outperforms hagiography. 20 named failure modes with reproduction steps are more useful to the next engineer — and more honest about what shipping a frontier MoE actually costs — than a clean &ldquo;we did it&rdquo; narrative.
         </p>
 
         <!-- Bridge to CS03 -->
         <p class="case-bridge">
-          Both systems run autonomous AI agents in production. Both need a governance kernel: cost guards, policy-as-code, deterministic state. <a href="#antigravity" class="text-appleBlue hover:text-appleLight transition-colors">Case Study 03 is that kernel</a>.
+          Both systems run autonomous AI agents in production. Both need a governance kernel: cost guards, policy-as-code, deterministic state. <a href="#antigravity" class="text-probBlue hover:text-ink transition-colors">Case Study 03 is that kernel</a>.
         </p>
       </article>
 
       <!-- ═══════════ CASE STUDY 03 ═══════════ -->
-      <article class="py-12 border-b border-appleBorder reveal" id="antigravity" data-case="03" data-beat="03">
-        <div class="text-[10px] uppercase tracking-widest text-appleBlue font-medium mb-3">Case Study 03</div>
+      <article class="py-12 border-b border-inkRule reveal" id="antigravity" data-case="03" data-beat="03">
+        <div class="text-[10px] uppercase tracking-widest text-probBlue font-medium mb-3">Case Study 03</div>
         <h2 class="text-3xl font-bold tracking-tight mb-4">Antigravity-OS — AI agent governance kernel</h2>
         <div class="flex flex-wrap items-center gap-3 mb-8">
-          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-3 py-1 rounded-full">Active 2025–present</span>
-          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-3 py-1 rounded-full">8 core modules</span>
-          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-appleGray bg-appleDarker border border-appleBorder px-3 py-1 rounded-full">Apache-2.0</span>
+          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-3 py-1 rounded-full">Active 2025–present</span>
+          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-3 py-1 rounded-full">8 core modules</span>
+          <span class="inline-flex items-center text-[10px] uppercase tracking-widest text-inkLow bg-paperDeep border border-inkRule px-3 py-1 rounded-full">Apache-2.0</span>
         </div>
-        <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+        <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
           An open-source governance kernel for AI agents that enforces cost budgets, policy-as-code constraints, deterministic state tracking, and self-healing CI. The operational backbone for autonomous AI development environments.
         </p>
 
-        <div class="card p-px bg-appleBorder grid md:grid-cols-3 gap-px mb-12 overflow-hidden">
-          <div class="bg-appleSurface p-8">
-            <h3 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Problem</h3>
-            <p class="text-xs text-appleGray leading-relaxed">AI coding agents operate without cost guardrails, state persistence, or policy enforcement. Runaway token costs and context-window rot are standard failure modes.</p>
+        <div class="card p-px bg-inkRule grid md:grid-cols-3 gap-px mb-12 overflow-hidden">
+          <div class="bg-paperDeep p-8">
+            <h3 class="text-[10px] uppercase tracking-widest text-inkLow mb-4">Problem</h3>
+            <p class="text-xs text-inkLow leading-relaxed">AI coding agents operate without cost guardrails, state persistence, or policy enforcement. Runaway token costs and context-window rot are standard failure modes.</p>
           </div>
-          <div class="bg-appleSurface p-8 border-t md:border-t-0 border-appleBorder">
-            <h3 class="text-[10px] uppercase tracking-widest text-appleGray mb-4">Approach</h3>
-            <p class="text-xs text-appleGray leading-relaxed">A governance kernel with cost enforcement (per-session and cumulative budgets), policy-as-code rules, and deterministic state tracking. MCP integrations provide tool access for managed agents.</p>
+          <div class="bg-paperDeep p-8 border-t md:border-t-0 border-inkRule">
+            <h3 class="text-[10px] uppercase tracking-widest text-inkLow mb-4">Approach</h3>
+            <p class="text-xs text-inkLow leading-relaxed">A governance kernel with cost enforcement (per-session and cumulative budgets), policy-as-code rules, and deterministic state tracking. MCP integrations provide tool access for managed agents.</p>
           </div>
-          <div class="bg-appleDarker p-8 border-t md:border-t-0 border-appleBorder">
-            <h3 class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Result</h3>
-            <div class="font-mono text-2xl font-bold text-appleBlue mb-2">8 core modules</div>
-            <p class="text-xs text-appleGray leading-relaxed">Provider-agnostic governance kernel. 6 plugin domains, 7 governance frameworks. Open-source on GitHub.</p>
+          <div class="bg-paperDeep p-8 border-t md:border-t-0 border-inkRule">
+            <h3 class="text-[10px] uppercase tracking-widest text-probBlue mb-4">Result</h3>
+            <div class="font-mono text-2xl font-bold text-probBlue mb-2">8 core modules</div>
+            <p class="text-xs text-inkLow leading-relaxed">Provider-agnostic governance kernel. 6 plugin domains, 7 governance frameworks. Open-source on GitHub.</p>
           </div>
         </div>
 
         <!-- Tech stack — trimmed -->
         <div class="flex flex-wrap gap-2 mb-8">
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Python</span>
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">MCP</span>
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">Firestore</span>
-          <span class="px-3 py-1 bg-appleDarker border border-appleBorder rounded-full text-[10px] text-appleLight">GitHub Actions</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">Python</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">MCP</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">Firestore</span>
+          <span class="px-3 py-1 bg-paperDeep border border-inkRule rounded-full text-[10px] text-ink">GitHub Actions</span>
         </div>
 
         <div class="grid md:grid-cols-3 gap-4 mb-10">
-          <a href="https://github.com/Manzela/Antigravity-OS" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">GitHub repository <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
-          <a href="https://github.com/Manzela/Antigravity-OS/blob/main/ROADMAP.md" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">Roadmap <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
-          <a href="https://github.com/Manzela/Antigravity-OS/blob/main/GOVERNANCE.md" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-appleSurface transition-colors">Governance model <span class="text-appleGray" aria-hidden="true">&rarr;</span></a>
+          <a href="https://github.com/Manzela/Antigravity-OS" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">GitHub repository <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
+          <a href="https://github.com/Manzela/Antigravity-OS/blob/main/ROADMAP.md" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">Roadmap <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
+          <a href="https://github.com/Manzela/Antigravity-OS/blob/main/GOVERNANCE.md" target="_blank" rel="noopener noreferrer" class="card p-4 flex items-center justify-between text-xs font-semibold hover:bg-paperDeep transition-colors">Governance model <span class="text-inkLow" aria-hidden="true">&rarr;</span></a>
         </div>
 
         <!-- Reflection (no bridge — last case) -->
-        <p class="text-sm text-appleLight leading-relaxed max-w-2xl italic">
+        <p class="text-sm text-ink leading-relaxed max-w-2xl italic">
           Cost guards and policy-as-code are the seatbelts of agent infrastructure. They tax the happy path. They prevent runaway on the only path that matters.
         </p>
       </article>
@@ -447,10 +447,10 @@
 
   <!-- Closing reflection (replaces CTA) -->
   <section class="py-20 reveal">
-    <p class="text-base text-appleLight leading-relaxed max-w-2xl mx-auto text-center">
+    <p class="text-base text-ink leading-relaxed max-w-2xl mx-auto text-center">
       The same shape recurs across the three: a deterministic spine wrapping a probabilistic engine. A pipeline whose generative node fires only after seven gates. A model whose stable inference path was extracted from twenty failures. A governance kernel whose budgets and policies precede every agent call.
     </p>
-    <p class="mt-6 text-base md:text-lg text-appleLight leading-relaxed max-w-2xl mx-auto text-center font-semibold tracking-tight">
+    <p class="mt-6 text-base md:text-lg text-ink leading-relaxed max-w-2xl mx-auto text-center font-semibold tracking-tight">
       The thesis is the design.
     </p>
   </section>
@@ -458,16 +458,16 @@
 </main>
 
 <!-- BEGIN FOOTER -->
-<footer class="py-12 px-6 max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 border-t border-appleBorder mt-12" role="contentinfo">
-  <div class="text-sm font-semibold text-appleLight"><span data-page-title>Case Studies</span> &middot; Daniel Manzela</div>
-  <ul class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-appleGray list-none m-0 p-0">
-    <li><a href="index.html" class="hover:text-appleLight transition-colors">Pipeline</a></li>
-    <li><a href="architecture.html" class="hover:text-appleLight transition-colors">Architecture</a></li>
-    <li><a href="case-studies.html" class="hover:text-appleLight transition-colors">Case Studies</a></li>
-    <li><a href="https://manzela.github.io/Manzela/" class="hover:text-appleLight transition-colors">Profile</a></li>
-    <li><a href="https://manzela.github.io/Manzela/elysium/" class="hover:text-appleLight transition-colors">Elysium</a></li>
-    <li><a href="https://github.com/Manzela" target="_blank" rel="noopener noreferrer" class="hover:text-appleLight transition-colors">GitHub</a></li>
-    <li><a href="https://linkedin.com/in/danielmanzela" target="_blank" rel="noopener noreferrer" class="hover:text-appleLight transition-colors">LinkedIn</a></li>
+<footer class="py-12 px-6 max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 border-t border-inkRule mt-12" role="contentinfo">
+  <div class="text-sm font-semibold text-ink"><span data-page-title>Case Studies</span> &middot; Daniel Manzela</div>
+  <ul class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-inkLow list-none m-0 p-0">
+    <li><a href="index.html" class="hover:text-ink transition-colors">Pipeline</a></li>
+    <li><a href="index.html#dag" class="hover:text-ink transition-colors">DAG schematic</a></li>
+    <li><a href="case-studies.html" class="hover:text-ink transition-colors">Case Studies</a></li>
+    <li><a href="https://manzela.github.io/Manzela/" class="hover:text-ink transition-colors">Profile</a></li>
+    <li><a href="https://manzela.github.io/Manzela/elysium/" class="hover:text-ink transition-colors">Elysium</a></li>
+    <li><a href="https://github.com/Manzela" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">GitHub</a></li>
+    <li><a href="https://linkedin.com/in/danielmanzela" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">LinkedIn</a></li>
   </ul>
 </footer>
 <!-- END FOOTER -->

@@ -1,6 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
-const PAGES = ['/index.html', '/architecture.html', '/case-studies.html'];
+// architecture.html is now a redirect proxy (no <main>, no <h1>, no skip-link),
+// so it's intentionally excluded from this content-page invariants iteration.
+// Redirect-proxy behavior is tested in lifecycle.redirects.spec.js.
+const PAGES = ['/index.html', '/case-studies.html'];
 
 for (const path of PAGES) {
   test.describe(path, () => {
@@ -51,6 +54,33 @@ for (const path of PAGES) {
 
     test('no horizontal scroll at 375×812', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 812 });
+      await page.goto(path);
+      const overflow = await page.evaluate(() =>
+        document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+      expect(overflow).toBeLessThanOrEqual(1);
+    });
+
+    test('no horizontal scroll at 768×900 (tablet)', async ({ page }) => {
+      await page.setViewportSize({ width: 768, height: 900 });
+      await page.goto(path);
+      const overflow = await page.evaluate(() =>
+        document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+      expect(overflow).toBeLessThanOrEqual(1);
+    });
+
+    test('no horizontal scroll at 1024×900 (laptop)', async ({ page }) => {
+      await page.setViewportSize({ width: 1024, height: 900 });
+      await page.goto(path);
+      const overflow = await page.evaluate(() =>
+        document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+      expect(overflow).toBeLessThanOrEqual(1);
+    });
+
+    test('no horizontal scroll at 1180×900 (intermediate)', async ({ page }) => {
+      await page.setViewportSize({ width: 1180, height: 900 });
       await page.goto(path);
       const overflow = await page.evaluate(() =>
         document.documentElement.scrollWidth - document.documentElement.clientWidth

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not found — Pipeline · Daniel Manzela</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F8F6F1; --ink: #1A1A1A; --ink-low: #8A8A8A;
+    --ink-rule: rgba(26, 26, 26, 0.12); --prob-blue: #1B3A5C;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0F1418; --ink: #E8E6E0; --ink-low: #7A786E;
+      --ink-rule: rgba(232, 230, 224, 0.12); --prob-blue: #6FA0CC;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px;
+    background: var(--paper); color: var(--ink);
+    font: 400 15px/1.5 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  }
+  main { max-width: 520px; text-align: center; }
+  p { margin: 0 0 16px; }
+  .label {
+    color: var(--ink-low); font-size: 12px;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 24px;
+  }
+  a {
+    color: var(--prob-blue); text-decoration: none;
+    border-bottom: 1px solid var(--ink-rule); padding-bottom: 1px;
+  }
+  a:hover, a:focus-visible { border-color: var(--prob-blue); }
+  a:focus-visible { outline: 2px solid var(--prob-blue); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <p class="label">404</p>
+  <p>That page doesn&rsquo;t exist. Back to <a href="/">Pipeline</a>.</p>
+</main>
+</body>
+</html>

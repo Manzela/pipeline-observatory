@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# Verify nav and footer fragments are byte-identical across the three pages.
+# Verify nav and footer fragments are byte-identical across the content pages.
 # Exit non-zero on drift. Run in CI and locally before commits that touch chrome.
+#
+# architecture.html is intentionally excluded — it is now a redirect-proxy file
+# (HTTP 200 with meta-refresh + JS redirect to the merged page) and has no
+# nav or footer fragments. See spec §3 + §7.3.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -17,21 +21,19 @@ extract() {
 
 check() {
   local tag="$1"
-  local a b c
+  local a c
   a="$(extract index.html "$tag")"
-  b="$(extract architecture.html "$tag")"
   c="$(extract case-studies.html "$tag")"
-  if [[ -z "$a" || -z "$b" || -z "$c" ]]; then
+  if [[ -z "$a" || -z "$c" ]]; then
     echo "MISSING $tag fragment in one or more pages." >&2
     exit 1
   fi
-  if [[ "$a" != "$b" || "$b" != "$c" ]]; then
+  if [[ "$a" != "$c" ]]; then
     echo "DRIFT in $tag fragment across pages." >&2
-    diff <(echo "$a") <(echo "$b") || true
-    diff <(echo "$b") <(echo "$c") || true
+    diff <(echo "$a") <(echo "$c") || true
     exit 1
   fi
-  echo "OK: $tag fragment identical across all three pages."
+  echo "OK: $tag fragment identical across both content pages."
 }
 
 check NAV

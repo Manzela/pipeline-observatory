@@ -3,246 +3,1027 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pipeline — Daniel Manzela</title>
-    <meta name="description" content="The autonomous pipeline that scales organic traffic. 11 tenants, 5 countries, 234 surfaces, $0.0006/page on self-hosted Gemma 4 MoE.">
-    <meta property="og:title" content="Pipeline — Daniel Manzela">
-    <meta property="og:description" content="11 tenants · 5 countries · 234 surfaces · $0.0006 per page. Autonomous, fail-closed, self-hosted.">
+    <title>Pipeline — Multi-agent DAG, Mixture-of-Experts serving, live trace — Daniel Manzela</title>
+    <meta name="description" content="A 7-node multi-agent pipeline serving 11 enterprise retailers across 5 countries at $0.0006/PDP. MoE serving, deterministic O-R-A-V validation, live trace.">
+    <link rel="canonical" href="https://manzela.github.io/pipeline-observatory/">
+    <meta property="og:title" content="Pipeline — Multi-agent DAG, MoE serving, live trace">
+    <meta property="og:description" content="A 7-node multi-agent pipeline serving 11 enterprise retailers across 5 countries at $0.0006/PDP.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://manzela.github.io/pipeline-observatory/">
+    <meta property="og:image" content="https://manzela.github.io/pipeline-observatory/assets/og-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pipeline — Daniel Manzela">
+    <meta name="twitter:description" content="A 7-node multi-agent pipeline at $0.0006/PDP. Live trace, deterministic O-R-A-V validation.">
+    <meta name="twitter:image" content="https://manzela.github.io/pipeline-observatory/assets/og-card.png">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Pipeline — Multi-agent DAG, Mixture-of-Experts serving, live trace",
+      "description": "A 7-node multi-agent pipeline serving 11 enterprise retailers across 5 countries at $0.0006/PDP. Mixture-of-Experts serving with per-tenant Multi-LoRA adapters, deterministic O-R-A-V validation at 68.9% pass rate by design, live execution telemetry.",
+      "url": "https://manzela.github.io/pipeline-observatory/",
+      "author": {
+        "@type": "Person",
+        "name": "Daniel Manzela",
+        "url": "https://manzela.github.io/"
+      },
+      "datePublished": "2024-01-01",
+      "dateModified": "2026-05-18",
+      "publisher": {
+        "@type": "Person",
+        "name": "Daniel Manzela"
+      },
+      "about": [
+        "Multi-agent systems",
+        "Mixture-of-Experts language models",
+        "Directed Acyclic Graph pipelines",
+        "Deterministic LLM validation",
+        "Production AI observability"
+      ],
+      "keywords": "Multi-agent DAG, Mixture-of-Experts, Gemma 4, Multi-LoRA, O-R-A-V validation, Google ADK, Vertex AI, DEMAS audit",
+      "inLanguage": "en"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "TNG Shopper Pipeline (Pipeline Observatory dashboard)",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web (live dashboard); Production runs on Vertex AI + Google ADK + Modal serverless",
+      "description": "Autonomous 7-node content generation pipeline serving 11 enterprise retailers. Gemma 4 26B-A4B-it Mixture-of-Experts with per-tenant LoRA adapters. Deterministic O-R-A-V validation gating at 68.9% pass rate by design. ~10.5M product detail pages per month at $0.0006/PDP.",
+      "url": "https://manzela.github.io/pipeline-observatory/",
+      "author": {
+        "@type": "Person",
+        "name": "Daniel Manzela"
+      },
+      "programmingLanguage": ["Python", "JavaScript"],
+      "softwareRequirements": "Google Agent Development Kit, Vertex AI, vLLM, Modal serverless, Langfuse observability",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.0006",
+        "priceCurrency": "USD",
+        "description": "Cost per product detail page produced"
+      }
+    }
+    </script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x25C6;</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="assets/tokens.js"></script>
     <link rel="stylesheet" href="assets/chrome.css">
+    <noscript>
+      <style>
+        /* No-JS: collapse all .reveal animations so every section is visible.
+           Mirrors the prefers-reduced-motion fallback at the bottom of chrome.css. */
+        .reveal { opacity: 1 !important; transform: none !important; }
+        .lifecycle-node.reveal .lifecycle-node__header,
+        .lifecycle-node.reveal .lifecycle-node__architecture,
+        .lifecycle-node.reveal .node-deep-dive,
+        .lifecycle-node.reveal .demas-callout {
+          opacity: 1 !important;
+          transform: none !important;
+          transition: none !important;
+        }
+      </style>
+    </noscript>
 </head>
-<body class="bg-appleBg text-appleLight antialiased selection:bg-appleBlue/30">
+<body class="bg-paper text-ink antialiased selection:bg-probBlue/30">
 
 <a href="#main" class="skip-link">Skip to main content</a>
 
 <!-- BEGIN NAV -->
-<nav class="fixed top-0 left-0 right-0 z-50 glass-nav" aria-label="Primary">
+<nav class="top-nav" aria-label="Primary">
   <div class="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
-    <a href="index.html" class="text-sm font-semibold tracking-tight text-appleLight">
-      Autonomous <span class="text-appleGray font-medium ml-1">pipeline</span>
+    <a href="index.html" class="text-sm font-semibold tracking-tight text-ink">
+      Autonomous <span class="text-inkLow font-medium ml-1">pipeline</span>
     </a>
-    <ul class="hidden md:flex gap-8 list-none m-0 p-0">
-      <li><a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors">Profile</a></li>
-      <li><a href="index.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors" data-nav="pipeline">Pipeline</a></li>
-      <li><a href="architecture.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors" data-nav="architecture">Architecture</a></li>
-      <li><a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors" data-nav="case-studies">Case Studies</a></li>
+    <ul class="hidden lg:flex gap-8 list-none m-0 p-0">
+      <li><a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors">Profile</a></li>
+      <li><a href="index.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="pipeline">Pipeline</a></li>
+      <li><a href="index.html#dag" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="architecture">DAG schematic</a></li>
+      <li><a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors" data-nav="case-studies">Case Studies</a></li>
     </ul>
-    <button id="navToggle" class="md:hidden text-appleGray hover:text-appleLight transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
+    <button id="navToggle" class="lg:hidden text-inkLow hover:text-ink transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
     </button>
   </div>
-  <div id="mobileNav" class="md:hidden hidden border-t border-appleBorder px-6 py-4 flex flex-col gap-3">
-    <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2">Profile</a>
-    <a href="index.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2" data-nav="pipeline">Pipeline</a>
-    <a href="architecture.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2" data-nav="architecture">Architecture</a>
-    <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-appleGray hover:text-appleLight transition-colors py-2" data-nav="case-studies">Case Studies</a>
+  <div id="mobileNav" class="lg:hidden hidden border-t border-inkRule px-6 py-4 flex flex-col gap-3">
+    <a href="https://manzela.github.io/Manzela/" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2">Profile</a>
+    <a href="index.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="pipeline">Pipeline</a>
+    <a href="index.html#dag" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="architecture">DAG schematic</a>
+    <a href="case-studies.html" class="text-[10px] tracking-widest uppercase text-inkLow hover:text-ink transition-colors py-2" data-nav="case-studies">Case Studies</a>
   </div>
 </nav>
 <!-- END NAV -->
 
 <main id="main" class="max-w-4xl mx-auto px-6 pt-14">
 
-  <!-- Hero -->
-  <header class="py-24 md:py-32 text-center border-b border-appleBorder">
+  <header class="py-24 md:py-32 border-b border-inkRule" id="hero">
     <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-tight">
-      The autonomous pipeline<br>that scales organic traffic.
+      Organic traffic at any scale.
     </h1>
-    
+    <p class="text-base text-inkLow max-w-2xl leading-relaxed">
+      For multi-location brands losing organic traffic to AI search: an autonomous content pipeline that generates and publishes product-detail pages at any scale &mdash; 10 stores or 10,000, zero manual work. Built by <a href="https://tngshopper.com" class="text-ink underline underline-offset-2 hover:text-inkMid transition-colors" target="_blank" rel="noopener">TNG Shopper</a>. 11 enterprise retailers across 5 countries &middot; ~10.5M PDPs per month &middot; $0.0006 each. Live trace below.
+    </p>
+
     <!-- Headline metrics: 2 hero KPIs + 4 supporting -->
   <div class="mt-12 text-left" aria-label="Headline metrics">
-    <div class="grid md:grid-cols-2 gap-px bg-appleBorder mb-px overflow-hidden rounded-t-2xl">
-      <div class="bg-appleSurface p-10 text-center">
-        <div class="font-mono text-4xl md:text-5xl font-semibold text-appleLight mb-2" id="kpiPdps">&mdash;</div>
-        <div class="text-[10px] uppercase tracking-widest text-appleGray">PDPs per cycle</div>
-        <div class="text-[9px] text-appleGray/60 mt-2">~10.5M product-location pages</div>
+    <div class="grid lg:grid-cols-2 gap-px bg-inkRule mb-px overflow-hidden rounded-t-2xl">
+      <div class="bg-paperDeep p-10 text-center">
+        <div class="font-mono text-3xl sm:text-4xl lg:text-5xl font-semibold text-ink mb-2" id="kpiPdps">&mdash;</div>
+        <div class="text-[10px] uppercase tracking-widest text-inkLow">PDPs per month</div>
+        <div class="text-[9px] text-inkLow mt-2">~10.5M product-location pages</div>
       </div>
-      <div class="bg-appleSurface p-10 text-center">
-        <div class="font-mono text-4xl md:text-5xl font-semibold text-appleLight mb-2" id="kpiCost">&mdash;</div>
-        <div class="text-[10px] uppercase tracking-widest text-appleGray">Cost per PDP</div>
-        <div class="text-[9px] text-appleGray/60 mt-2">Self-hosted Gemma 4 MoE on A100</div>
+      <div class="bg-paperDeep p-10 text-center">
+        <div class="font-mono text-3xl sm:text-4xl lg:text-5xl font-semibold text-ink mb-2" id="kpiCost">&mdash;</div>
+        <div class="text-[10px] uppercase tracking-widest text-inkLow">Cost per PDP</div>
+        <div class="text-[9px] text-inkLow mt-2">Self-hosted Gemma 4 MoE on A100</div>
       </div>
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-appleBorder overflow-hidden rounded-b-2xl">
-      <div class="bg-appleSurface p-6 text-center">
-        <div class="font-mono text-xl font-semibold text-appleLight mb-1" id="kpiTenants">&mdash;</div>
-        <div class="text-[9px] uppercase tracking-widest text-appleGray">Enterprise tenants</div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-inkRule overflow-hidden rounded-b-2xl">
+      <div class="bg-paperDeep p-6 text-center">
+        <div class="font-mono text-xl font-semibold text-ink mb-1" id="kpiTenants">&mdash;</div>
+        <div class="text-[9px] uppercase tracking-widest text-inkLow">Enterprise tenants</div>
       </div>
-      <div class="bg-appleSurface p-6 text-center">
-        <div class="font-mono text-xl font-semibold text-appleLight mb-1" id="kpiCountries">&mdash;</div>
-        <div class="text-[9px] uppercase tracking-widest text-appleGray">Countries</div>
+      <div class="bg-paperDeep p-6 text-center">
+        <div class="font-mono text-xl font-semibold text-ink mb-1" id="kpiCountries">&mdash;</div>
+        <div class="text-[9px] uppercase tracking-widest text-inkLow">Countries</div>
       </div>
-      <div class="bg-appleSurface p-6 text-center">
-        <div class="font-mono text-xl font-semibold text-appleLight mb-1" id="kpiSites">&mdash;</div>
-        <div class="text-[9px] uppercase tracking-widest text-appleGray">Surfaces</div>
+      <div class="bg-paperDeep p-6 text-center">
+        <div class="font-mono text-xl font-semibold text-ink mb-1" id="kpiSites">&mdash;</div>
+        <div class="text-[9px] uppercase tracking-widest text-inkLow">Surfaces</div>
       </div>
-      <div class="bg-appleSurface p-6 text-center">
-        <div class="font-mono text-xl font-semibold text-appleLight mb-1" id="kpiPass">&mdash;</div>
-        <div class="text-[9px] uppercase tracking-widest text-appleGray">Deterministic pass</div>
-        <div class="text-[8px] text-appleGray/60 mt-1">Intentional fail-closed gate</div>
+      <div class="bg-paperDeep p-6 text-center">
+        <div class="font-mono text-xl font-semibold text-ink mb-1" id="kpiPass">&mdash;</div>
+        <div class="text-[9px] uppercase tracking-widest text-inkLow">Deterministic pass</div>
+        <div class="text-[8px] text-inkLow mt-1">Intentional fail-closed gate</div>
       </div>
     </div>
   </div>
   </header>
 
   <!-- The Problem -->
-  <section class="py-20 border-b border-appleBorder reveal" id="problem">
-    <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">The Problem</div>
+  <section class="py-20 border-b border-inkRule reveal" id="problem">
+    <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4">The Problem</div>
     <h2 class="text-3xl font-bold tracking-tight mb-4">Content-gen automations are unreliable at scale.</h2>
-    <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
       Every content generation pipeline in the market requires human-in-the-loop.
     </p>
     <div class="grid md:grid-cols-3 gap-6">
-      <div class="card p-6 bg-appleSurface">
-        <h3 class="text-lg font-semibold mb-2 text-appleLight">Hallucinations & Drift</h3>
-        <p class="text-xs text-appleGray">Models invent facts and hallucinate references over time, making unsupervised outputs dangerously unreliable for enterprise clients.</p>
+      <div class="card p-6 bg-paperDeep">
+        <h3 class="text-lg font-semibold mb-2 text-ink">Hallucinations & Drift</h3>
+        <p class="text-xs text-inkLow">Models invent facts and hallucinate references over time, making unsupervised outputs dangerously unreliable for enterprise clients.</p>
       </div>
-      <div class="card p-6 bg-appleSurface">
-        <h3 class="text-lg font-semibold mb-2 text-appleLight">Format Instability</h3>
-        <p class="text-xs text-appleGray">LLMs struggle to adhere to strict schema structures (JSON/Markdown) consistently, breaking downstream parsing and rendering logic.</p>
+      <div class="card p-6 bg-paperDeep">
+        <h3 class="text-lg font-semibold mb-2 text-ink">Format Instability</h3>
+        <p class="text-xs text-inkLow">LLMs struggle to adhere to strict schema structures (JSON/Markdown) consistently, breaking downstream parsing and rendering logic.</p>
       </div>
-      <div class="card p-6 bg-appleSurface">
-        <h3 class="text-lg font-semibold mb-2 text-appleLight">Cost & Latency Spikes</h3>
-        <p class="text-xs text-appleGray">Relying entirely on generative inference for every pipeline step leads to massive API costs and unpredictable execution times at volume.</p>
+      <div class="card p-6 bg-paperDeep">
+        <h3 class="text-lg font-semibold mb-2 text-ink">Cost & Latency Spikes</h3>
+        <p class="text-xs text-inkLow">Relying entirely on generative inference for every pipeline step leads to massive API costs and unpredictable execution times at volume.</p>
       </div>
     </div>
   </section>
 
-  <!-- The Solution -->
-  <section class="py-20 border-b border-appleBorder reveal" id="solution">
-    <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">The Solution</div>
-    <h2 class="text-3xl font-bold tracking-tight mb-4">Self-Improving Generative AI Pipeline</h2>
-    <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
-      Event-driven multi-agent systems using programmatic validators, automated error-handling handoffs, and production-data flywheels for continuous retraining.
-    </p>
-  </section>
-
-
-  
-
-  
-
   <!-- Telemetry sticky-stage (signature moment) -->
-  <section class="py-20 border-b border-appleBorder reveal" id="telemetry" aria-labelledby="telemetry-h">
-    <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Architecture Walkthrough</div>
+  <section class="py-20 border-b border-inkRule reveal" id="telemetry" aria-labelledby="telemetry-h">
+    <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4">Architecture Walkthrough</div>
     <h2 id="telemetry-h" class="text-3xl font-bold tracking-tight mb-4">Reading the trace.</h2>
-    <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
       Anonymized sample from a recent pipeline run. Scroll to walk through what each line means.
     </p>
 
     <div class="telemetry-stage" data-active-beat="1">
       <div class="telemetry-stage__beats">
         <article class="telemetry-stage__beat" data-beat="1">
-          <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-3 font-medium">Beat 1 of 5</div>
+          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 1 of 4</div>
           <h3 class="text-2xl font-semibold mb-3 tracking-tight">Every node fires through DEMAS.</h3>
-          <p class="text-sm text-appleGray leading-relaxed max-w-md">Six gates, every block, fail-closed. The lines marked <code class="text-appleLight">demas</code> are the JIT audit layer intercepting at every node boundary.</p>
+          <p class="text-sm text-inkLow leading-relaxed max-w-md">Six gates, every block, fail-closed. The lines marked <code class="text-ink">demas</code> are the JIT audit layer intercepting at every node boundary.</p>
         </article>
         <article class="telemetry-stage__beat" data-beat="2">
-          <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-3 font-medium">Beat 2 of 5</div>
+          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 2 of 4</div>
           <h3 class="text-2xl font-semibold mb-3 tracking-tight">Node 5 is the only inference call.</h3>
-          <p class="text-sm text-appleGray leading-relaxed max-w-md">~11 seconds of generation, ~1 millisecond of validation. The probabilistic surface is small and pinned at one node &mdash; every other node is deterministic.</p>
+          <p class="text-sm text-inkLow leading-relaxed max-w-md">~11 seconds of generation, ~1 millisecond of validation. The probabilistic surface is small and pinned at one node &mdash; every other node is deterministic.</p>
         </article>
         <article class="telemetry-stage__beat" data-beat="3">
-          <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-3 font-medium">Beat 3 of 5</div>
+          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 3 of 4</div>
           <h3 class="text-2xl font-semibold mb-3 tracking-tight">Failures don&rsquo;t propagate.</h3>
-          <p class="text-sm text-appleGray leading-relaxed max-w-md">The line marked <span class="text-appleRed font-mono">FAIL</span> halts downstream. Firestore captures the trace; the orchestrator retries with a corrected prompt. Nothing below threshold reaches production.</p>
+          <p class="text-sm text-inkLow leading-relaxed max-w-md">The line marked <span class="text-signal font-mono">FAIL</span> halts downstream. Firestore captures the trace; the orchestrator retries with a corrected prompt. Nothing below threshold reaches production.</p>
         </article>
         <article class="telemetry-stage__beat" data-beat="4">
-          <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-3 font-medium">Beat 4 of 5</div>
-          <h3 class="text-2xl font-semibold mb-3 tracking-tight">~73.5M of these lines per cycle.</h3>
-          <p class="text-sm text-appleGray leading-relaxed max-w-md">Eleven tenants, seven nodes, ~10.5M product-location pages &mdash; a full run writes about 73.5M telemetry events to Langfuse. The pipeline is silent everywhere else.</p>
-        </article>
-        <article class="telemetry-stage__beat" data-beat="5">
-          <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-3 font-medium">Beat 5 of 5</div>
-          <h3 class="text-2xl font-semibold mb-3 tracking-tight">Last full execution.</h3>
-          <p class="text-sm text-appleGray leading-relaxed max-w-md">
-            <time datetime="2026-05-07T11:45:24Z" class="font-mono text-appleLight text-base">2026-05-07T11:45:24Z</time>
-          </p>
+          <div class="text-[10px] uppercase tracking-widest text-probBlue mb-3 font-medium">Beat 4 of 4</div>
+          <h3 class="text-2xl font-semibold mb-3 tracking-tight">~73.5M of these lines per full run.</h3>
+          <p class="text-sm text-inkLow leading-relaxed max-w-md">Eleven tenants, seven nodes, ~10.5M product-location pages &mdash; a full run writes about 73.5M telemetry events to Langfuse. The pipeline is silent everywhere else.</p>
         </article>
       </div>
 
       <div class="telemetry-stage__pinned">
-        <div class="card p-4 bg-appleDarker h-full flex flex-col gap-4 overflow-hidden">
-          <!-- Top: trace log -->
+        <div class="card p-4 bg-paperDeep h-full flex flex-col gap-4 overflow-hidden">
+          <!-- Trace log only — per-node Intent Decoder card cluster removed;
+               replaced by the sticky DAG schematic. -->
           <div class="flex-1 min-h-0 overflow-y-auto telemetry-stage__trace-region">
-            <div class="text-[9px] uppercase tracking-widest text-appleGray mb-3 px-2">Trace log &middot; sample</div>
+            <div class="text-[9px] uppercase tracking-widest text-inkLow mb-3 px-2">Trace log &middot; sample</div>
             <div id="traces" class="space-y-1"></div>
-          </div>
-          <!-- Divider + bottom: caption + decoder -->
-          <div class="border-t border-appleBorder pt-4 flex-shrink-0 telemetry-stage__decoder-region">
-            <div class="text-[9px] uppercase tracking-widest text-appleGray mb-3 px-2">Intent decoder</div>
-            <p id="telemetryCaption" class="text-[11px] md:text-xs text-appleGray leading-relaxed px-2 mb-3" aria-live="polite"></p>
-            <div id="intentDecoder" class="grid grid-cols-1 sm:grid-cols-2 gap-2" aria-live="polite" aria-label="Per-node intent decoder"></div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  
+  <!-- Detail Legend removed (audit FIX 4, 2026-05-19): the aside re-rendered
+       per-node info (number/name/role/gate/agent/intent/trace) that the
+       lifecycle-node section header + body + trace line already show. The
+       sticky DAG schematic now carries wayfinding; the lifecycle section
+       carries content. No third surface needed. -->
 
-<!-- Unit Economics: cost + throughput merged -->
-  <section class="py-20 border-b border-appleBorder reveal" id="economics" aria-labelledby="economics-h">
-    <div class="text-[10px] uppercase tracking-widest text-appleBlue mb-4">Unit Economics</div>
+  <!-- Framing strip -->
+  <section class="framing-strip" id="framing" aria-label="Cross-cutting concepts">
+    <ul class="framing-strip__list">
+      <li class="framing-strip__item">
+        <a href="#multi-tenant" id="multi-tenant" class="framing-strip__anchor">
+          <span class="framing-strip__label">Multi-tenant</span>
+          <span class="framing-strip__value">11 enterprise retailers &middot; 5 countries &middot; 234 surfaces</span>
+        </a>
+      </li>
+      <li class="framing-strip__item">
+        <a href="#moe" class="framing-strip__anchor">
+          <span class="framing-strip__label">MoE &middot; Multi-LoRA</span>
+          <span class="framing-strip__value">Gemma 4 26B-A4B-it &middot; ~4B active per token &middot; per-tenant LoRA</span>
+        </a>
+      </li>
+      <li class="framing-strip__item">
+        <a href="#orav" class="framing-strip__anchor">
+          <span class="framing-strip__label">O-R-A-V validation</span>
+          <span class="framing-strip__value">Observe &middot; Reason &middot; Act &middot; Validate &middot; 68.9% pass by design</span>
+        </a>
+      </li>
+      <li class="framing-strip__item">
+        <a href="#demas" class="framing-strip__anchor">
+          <span class="framing-strip__label">DEMAS boundary</span>
+          <span class="framing-strip__value">Deterministic check at every node &middot; fail-closed &middot; JIT retry &middot; Firestore requeue</span>
+        </a>
+      </li>
+      <li class="framing-strip__item">
+        <a href="#flywheel" class="framing-strip__anchor">
+          <span class="framing-strip__label">Data flywheel</span>
+          <span class="framing-strip__value">Every run becomes training data &middot; DPO &middot; RLAIF</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+  <!-- /Framing strip -->
+
+  <!-- DAG schematic: horizontal at desktop (≥768px), vertical at mobile. -->
+  <figure class="dag-schematic" id="dag" data-dag-schematic role="group"
+          aria-label="Pipeline DAG schematic: 7 nodes with DEMAS audit perimeter around production nodes 1-6, Node 7 in R&D outside the perimeter">
+
+    <!-- ───────── Layout A: HORIZONTAL — desktop ≥768px ───────── -->
+    <svg class="dag-schematic__svg dag-schematic__svg--horizontal"
+         viewBox="0 0 1024 280" xmlns="http://www.w3.org/2000/svg"
+         preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="dag-arrow-h" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/>
+        </marker>
+        <marker id="dag-arrow-h-low" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-low)"/>
+        </marker>
+      </defs>
+
+      <!-- DEMAS perimeter label anchored to top-left corner; paint-order in CSS
+           draws a paper-colored halo so the dashed border "breaks" behind it. -->
+      <rect class="dag-schematic__perimeter" x="30" y="60" width="880" height="180"
+            fill="none" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="42" y="64" class="dag-schematic__perimeter-label">DEMAS — JIT AUDIT BOUNDARY</text>
+
+      <!-- Nodes 1-6: box width 80, x positions 60, 200, 340, 480, 620, 760 -->
+      <!-- y=110, height=80. Centers: x = 100, 240, 380, 520, 660, 800; y = 150 -->
+      <g class="dag-schematic__node" data-node-id="1" tabindex="0" role="button"
+         aria-label="Node 1, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="60" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="100" y="142" text-anchor="middle">1</text>
+        <text class="dag-schematic__name" x="100" y="162" text-anchor="middle"></text>
+      </g>
+      <line x1="140" y1="150" x2="200" y2="150" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-h)"/>
+
+      <g class="dag-schematic__node" data-node-id="2" tabindex="0" role="button"
+         aria-label="Node 2, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="200" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="240" y="142" text-anchor="middle">2</text>
+        <text class="dag-schematic__name" x="240" y="162" text-anchor="middle"></text>
+      </g>
+      <line x1="280" y1="150" x2="340" y2="150" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-h)"/>
+
+      <g class="dag-schematic__node" data-node-id="3" tabindex="0" role="button"
+         aria-label="Node 3, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="340" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="380" y="142" text-anchor="middle">3</text>
+        <text class="dag-schematic__name" x="380" y="162" text-anchor="middle"></text>
+      </g>
+      <line x1="420" y1="150" x2="480" y2="150" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-h)"/>
+
+      <g class="dag-schematic__node" data-node-id="4" tabindex="0" role="button"
+         aria-label="Node 4, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="480" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="520" y="142" text-anchor="middle">4</text>
+        <text class="dag-schematic__name" x="520" y="162" text-anchor="middle"></text>
+      </g>
+      <line x1="560" y1="150" x2="620" y2="150" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-h)"/>
+
+      <g class="dag-schematic__node" data-node-id="5" tabindex="0" role="button"
+         aria-label="Node 5, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="620" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="660" y="142" text-anchor="middle">5</text>
+        <text class="dag-schematic__name" x="660" y="162" text-anchor="middle"></text>
+      </g>
+      <line x1="700" y1="150" x2="760" y2="150" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-h)"/>
+
+      <g class="dag-schematic__node" data-node-id="6" tabindex="0" role="button"
+         aria-label="Node 6, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="760" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="800" y="142" text-anchor="middle">6</text>
+        <text class="dag-schematic__name" x="800" y="162" text-anchor="middle"></text>
+      </g>
+
+      <!-- Dotted R&D handoff: Node 6 → Node 7 (crosses the perimeter) -->
+      <line x1="840" y1="150" x2="920" y2="150" stroke="var(--ink-low)" stroke-width="1"
+            stroke-dasharray="2 4" marker-end="url(#dag-arrow-h-low)"/>
+
+      <!-- Node 7 OUTSIDE the perimeter — dashed border, R&D annotation -->
+      <g class="dag-schematic__node dag-schematic__node--rd" data-node-id="7" tabindex="0" role="button"
+         aria-label="Node 7, in R&D, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="924" y="110" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 4"/>
+        <text class="dag-schematic__num"  x="964" y="142" text-anchor="middle">7</text>
+        <text class="dag-schematic__name" x="964" y="162" text-anchor="middle"></text>
+      </g>
+      <text class="dag-schematic__rd-label" x="964" y="208" text-anchor="middle">R&amp;D · LANGFUSE</text>
+    </svg>
+
+    <!-- ───────── Layout C: VERTICAL — mobile <768px ───────── -->
+    <svg class="dag-schematic__svg dag-schematic__svg--vertical"
+         viewBox="0 0 360 980" xmlns="http://www.w3.org/2000/svg"
+         preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="dag-arrow-v" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/>
+        </marker>
+        <marker id="dag-arrow-v-low" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-low)"/>
+        </marker>
+      </defs>
+
+      <!-- DEMAS perimeter label anchored to top-left corner; paint-order in CSS
+           draws a paper-colored halo so the dashed border "breaks" behind it. -->
+      <rect class="dag-schematic__perimeter" x="40" y="40" width="280" height="780"
+            fill="none" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="52" y="44" class="dag-schematic__perimeter-label">DEMAS — JIT AUDIT BOUNDARY</text>
+
+      <!-- Nodes 1-6: box centered horizontally, x=140 (box w=80) -->
+      <!-- y positions: 70, 200, 330, 460, 590, 720. Gap between boxes = 50px (arrow fits). -->
+      <g class="dag-schematic__node" data-node-id="1" tabindex="0" role="button"
+         aria-label="Node 1, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="70" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="102" text-anchor="middle">1</text>
+        <text class="dag-schematic__name" x="180" y="122" text-anchor="middle"></text>
+      </g>
+      <line x1="180" y1="150" x2="180" y2="200" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-v)"/>
+
+      <g class="dag-schematic__node" data-node-id="2" tabindex="0" role="button"
+         aria-label="Node 2, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="200" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="232" text-anchor="middle">2</text>
+        <text class="dag-schematic__name" x="180" y="252" text-anchor="middle"></text>
+      </g>
+      <line x1="180" y1="280" x2="180" y2="330" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-v)"/>
+
+      <g class="dag-schematic__node" data-node-id="3" tabindex="0" role="button"
+         aria-label="Node 3, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="330" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="362" text-anchor="middle">3</text>
+        <text class="dag-schematic__name" x="180" y="382" text-anchor="middle"></text>
+      </g>
+      <line x1="180" y1="410" x2="180" y2="460" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-v)"/>
+
+      <g class="dag-schematic__node" data-node-id="4" tabindex="0" role="button"
+         aria-label="Node 4, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="460" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="492" text-anchor="middle">4</text>
+        <text class="dag-schematic__name" x="180" y="512" text-anchor="middle"></text>
+      </g>
+      <line x1="180" y1="540" x2="180" y2="590" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-v)"/>
+
+      <g class="dag-schematic__node" data-node-id="5" tabindex="0" role="button"
+         aria-label="Node 5, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="590" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="622" text-anchor="middle">5</text>
+        <text class="dag-schematic__name" x="180" y="642" text-anchor="middle"></text>
+      </g>
+      <line x1="180" y1="670" x2="180" y2="720" stroke="var(--ink)" stroke-width="1"
+            marker-end="url(#dag-arrow-v)"/>
+
+      <g class="dag-schematic__node" data-node-id="6" tabindex="0" role="button"
+         aria-label="Node 6, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="720" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+        <text class="dag-schematic__num"  x="180" y="752" text-anchor="middle">6</text>
+        <text class="dag-schematic__name" x="180" y="772" text-anchor="middle"></text>
+      </g>
+
+      <!-- Dotted R&D handoff: Node 6 → Node 7 — 50px gap, matches inter-node rhythm -->
+      <line x1="180" y1="800" x2="180" y2="850" stroke="var(--ink-low)" stroke-width="1"
+            stroke-dasharray="2 4" marker-end="url(#dag-arrow-v-low)"/>
+
+      <!-- Node 7 OUTSIDE the perimeter — dashed border, R&D annotation -->
+      <g class="dag-schematic__node dag-schematic__node--rd" data-node-id="7" tabindex="0" role="button"
+         aria-label="Node 7, in R&D, jump to lifecycle section">
+        <rect class="dag-schematic__box" x="140" y="850" width="80" height="80"
+              fill="var(--paper)" stroke="var(--ink)" stroke-width="1" stroke-dasharray="4 4"/>
+        <text class="dag-schematic__num"  x="180" y="882" text-anchor="middle">7</text>
+        <text class="dag-schematic__name" x="180" y="902" text-anchor="middle"></text>
+      </g>
+      <text class="dag-schematic__rd-label" x="180" y="950" text-anchor="middle">R&amp;D · LANGFUSE</text>
+    </svg>
+    <figcaption class="dag-schematic__caption">Fig. 1 &middot; Pipeline DAG &middot; 2026.05</figcaption>
+  </figure>
+  <!-- END DAG SCHEMATIC -->
+
+  <!-- Lifecycle node sections (nodes 1–7) -->
+  <div data-lifecycle-container data-active-node="1">
+
+    <section class="lifecycle-node reveal" id="node-1" data-node-id="1">
+      <header class="lifecycle-node__header">
+        <h3 id="node-1-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 1</span> &middot; City DNA &middot; Context Injection</h3>
+        <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>Every downstream node reasons about geography. Node 1 locks down locale facts &mdash; ISO codes, timezone, jurisdiction-specific data &mdash; before any of them runs. Without this step, taxonomy mapping, synonym expansion, and content generation drift on stale or invented context.</p>
+        <p>Locale Resolver validates ISO-3166 codes and timezone offsets and rejects malformed location data. If the gate passes, Grounded Search fetches factual data from verified .gov sources per locale via Gemini. No model call is made until the deterministic resolver returns clean.</p>
+        <p class="lifecycle-node__trace">Locale &rarr; Gate &rarr; Web Search &rarr; Context</p>
+      </div>
+    </section>
+
+    <section class="lifecycle-node reveal" id="node-2" data-node-id="2">
+      <header class="lifecycle-node__header">
+        <h3 id="node-2-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 2</span> &middot; Normalizer &middot; Data Cleansing</h3>
+        <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>Tenant data lands in inconsistent shapes &mdash; partial fields, free-form taxonomies, mixed product types. Node 2 maps everything to a canonical schema so every downstream node sees the same shape.</p>
+        <p>Schema Validator (Pydantic + AST) enforces strict JSON schema and fails on mismatch. Past the gate, a text classifier maps to internal taxonomy and a vision model extracts context from product images. The two outputs join on the canonical record.</p>
+        <p class="lifecycle-node__trace">Input &rarr; Schema &rarr; Classification &rarr; Record</p>
+      </div>
+    </section>
+
+    <section class="lifecycle-node reveal" id="node-3" data-node-id="3">
+      <header class="lifecycle-node__header">
+        <h3 id="node-3-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 3</span> &middot; Synonyms &middot; Expansion</h3>
+        <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>Node 3 produces the keyword surface area &mdash; locale-aware synonyms and landing page name variants &mdash; that Node 4 will filter against search volume. Over-generation is the design; the next node has the volume signal to drop the noise.</p>
+        <p>Dedup Filter runs exact-match and fuzzy deduplication (SimHash + Levenshtein) on the synonym set before any classifier runs. The LPN Generator then produces locale-tuned variants using a text classification model keyed to the tenant&rsquo;s product dictionary.</p>
+        <p class="lifecycle-node__trace">Terms &rarr; Dedup &rarr; Classification &rarr; Set</p>
+      </div>
+    </section>
+
+    <section class="lifecycle-node reveal" id="node-4" data-node-id="4">
+      <header class="lifecycle-node__header">
+        <h3 id="node-4-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 4</span> &middot; SV Gate &middot; Volume Filter</h3>
+        <span class="lifecycle-node__role-badge" data-role="deterministic">DET</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>Node 4 is a hard gate. It drops sub-threshold keywords before they reach Node 5 &mdash; where ~80% of run cost lives. Every keyword that survives this node will be generated against; everything else stops here.</p>
+        <p>Volume Fetcher queries the Google Ads API for keyword search volume per synonym per location and stages results in BigQuery. Keyword Ranker then scores keywords by commercial value per city using NumPy and custom ranking math. No LLM is invoked in this node.</p>
+        <p class="lifecycle-node__trace">Set &rarr; API Query &rarr; Math Ranking &rarr; Qualified</p>
+      </div>
+    </section>
+
+    <section class="lifecycle-node reveal" id="node-5" data-node-id="5">
+      <header class="lifecycle-node__header">
+        <h3 id="node-5-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 5</span> &middot; Writer &middot; Generation</h3>
+        <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>This is the only sustained inference path in the pipeline. ~80% of run cost lives in this ~11-second window. Every other node is either deterministic Python or a short-call classifier &mdash; the probabilistic surface is one node wide and pinned here on purpose.</p>
+        <p>Template Selector (Jinja2 + constraint set) enforces structural bounds before generation: length, heading count, content block schema. If the template gate passes, the Content Generator produces 10 SEO-optimized content blocks per product-location pair on Gemma 4 MoE with per-tenant LoRA adapters.</p>
+        <p>Multi-LoRA serving keeps adapter switching at inference time cheap. Tenant isolation runs through the adapter binding, not through separate model weights. Detailed serving topology in the inline deep-dive below.</p>
+        <p class="lifecycle-node__trace">Qualified &rarr; Template &rarr; LoRA &rarr; 10 Blocks</p>
+      </div>
+
+      <details class="node-deep-dive" id="moe" data-default-open="desktop">
+        <summary class="node-deep-dive__summary">
+          <span class="node-deep-dive__label">Inline deep-dive</span>
+          <span class="node-deep-dive__title">Mixture-of-Experts &middot; Multi-LoRA serving engine</span>
+        </summary>
+        <div class="node-deep-dive__body">
+          <p>Base model: <strong>Gemma 4 26B-A4B-it</strong>, a Mixture-of-Experts transformer. The naming convention is literal &mdash; <span class="font-mono">26B</span> total parameters, <span class="font-mono">A4B</span> means ~4B parameters fire per forward pass. A learned router selects 4 experts of 128 per token; the other 124 stay cold. The serving cost matches a dense 4B model; the capacity matches a dense 26B model.</p>
+          <p>That sparsity is what makes Node 5 affordable at production volume. At a dense 26B equivalent, the unit economics break; at ~4B active, they hold. The full cost derivation lives in <a href="#economics" class="text-probBlue hover:text-ink transition-colors">the Economics section</a>.</p>
+          <p>Multi-LoRA serving handles tenant specialization. The base MoE weights stay frozen and shared; per-tenant LoRA adapters layer on top, one per <span class="font-mono">client_id</span>. 11 enterprise retailers across 5 countries means 11 adapters bound at inference time, each carrying tuned weights from previous successful runs of that tenant&rsquo;s 18 pipeline prompts. Adapter swap is a sparse matrix load, not a model reload &mdash; one server, many tenants, no cross-contamination.</p>
+
+          <figure class="moe-multilora" aria-label="Multi-LoRA tenant-adapter architecture: 1 frozen Gemma 4 base bound at inference to 1 of 11 swappable per-tenant LoRA adapters">
+            <!-- ───────── Horizontal layout: desktop ≥768px ───────── -->
+            <svg class="moe-multilora__svg moe-multilora__svg--horizontal" viewBox="0 0 800 360"
+                 xmlns="http://www.w3.org/2000/svg"
+                 role="img" aria-hidden="true" focusable="false"
+                 preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <marker id="ml-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                        markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+                </marker>
+                <marker id="ml-arrow-low" viewBox="0 0 10 10" refX="9" refY="5"
+                        markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-low)"/>
+                </marker>
+              </defs>
+
+              <!-- Perimeter label -->
+              <text class="moe-multilora__perimeter-label" x="20" y="18">FIG · MULTI-LORA SERVING TOPOLOGY</text>
+
+              <!-- ── Base model rect (top) ── -->
+              <g class="moe-multilora__base">
+                <rect x="120" y="40" width="560" height="84" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__base-title" x="400" y="72" text-anchor="middle">
+                  GEMMA 4 26B-A4B-it · FROZEN BASE
+                </text>
+                <text class="moe-multilora__base-sub" x="400" y="98" text-anchor="middle">
+                  128 EXPERTS · 4 ACTIVE PER TOKEN · ~4B OF 26B FIRE
+                </text>
+              </g>
+
+              <!-- Bind arrow (slot → base) -->
+              <g class="moe-multilora__bind-arrow" color="var(--ink)">
+                <line x1="400" y1="200" x2="400" y2="132"
+                      stroke="currentColor" stroke-width="1"
+                      marker-end="url(#ml-arrow)"/>
+                <text class="moe-multilora__bind-label" x="408" y="172" text-anchor="start">
+                  BIND AT INFERENCE
+                </text>
+              </g>
+
+              <!-- ── Adapter slot rect (middle) ── -->
+              <g class="moe-multilora__slot">
+                <rect x="260" y="200" width="280" height="64" rx="0"
+                      fill="rgba(var(--prob-blue-rgb), 0.06)"
+                      stroke="var(--prob-blue)" stroke-width="1"/>
+                <text class="moe-multilora__slot-title" x="400" y="225" text-anchor="middle">
+                  ADAPTER SLOT · 1 OF 11
+                </text>
+                <text class="moe-multilora__slot-sub" x="400" y="248" text-anchor="middle">
+                  client_id = tenant_05
+                </text>
+              </g>
+
+              <!-- Routing arrow (active tenant → slot) -->
+              <g class="moe-multilora__route-arrow">
+                <line x1="400" y1="316" x2="400" y2="272"
+                      stroke="var(--prob-blue)" stroke-width="1"
+                      marker-end="url(#ml-arrow)" color="var(--prob-blue)"/>
+              </g>
+
+              <!-- ── 11 tenant rects (bottom row) ── -->
+              <g class="moe-multilora__tenants">
+                <!-- 11 tenants spread across x=80..720 (width 640); each rect w=44, gap=16
+                     11 * 44 = 484; 10 gaps * 16 = 160; total 644 ≈ 640. Start x=80. -->
+                <!-- t01 -->
+                <rect class="moe-multilora__tenant" x="80"  y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="102" y="336" text-anchor="middle">t01</text>
+                <!-- t02 -->
+                <rect class="moe-multilora__tenant" x="140" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="162" y="336" text-anchor="middle">t02</text>
+                <!-- t03 -->
+                <rect class="moe-multilora__tenant" x="200" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="222" y="336" text-anchor="middle">t03</text>
+                <!-- t04 -->
+                <rect class="moe-multilora__tenant" x="260" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="282" y="336" text-anchor="middle">t04</text>
+                <!-- t05 — ACTIVE -->
+                <rect class="moe-multilora__tenant" data-active="true"
+                      x="320" y="316" width="44" height="32" rx="0"
+                      fill="rgba(var(--prob-blue-rgb), 0.15)"
+                      stroke="var(--prob-blue)" stroke-width="1.5"/>
+                <text class="moe-multilora__tenant-label moe-multilora__tenant-label--active"
+                      x="342" y="336" text-anchor="middle">t05</text>
+                <!-- t06 -->
+                <rect class="moe-multilora__tenant" x="380" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="402" y="336" text-anchor="middle">t06</text>
+                <!-- t07 -->
+                <rect class="moe-multilora__tenant" x="440" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="462" y="336" text-anchor="middle">t07</text>
+                <!-- t08 -->
+                <rect class="moe-multilora__tenant" x="500" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="522" y="336" text-anchor="middle">t08</text>
+                <!-- t09 -->
+                <rect class="moe-multilora__tenant" x="560" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="582" y="336" text-anchor="middle">t09</text>
+                <!-- t10 -->
+                <rect class="moe-multilora__tenant" x="620" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="642" y="336" text-anchor="middle">t10</text>
+                <!-- t11 -->
+                <rect class="moe-multilora__tenant" x="680" y="316" width="44" height="32" rx="0"
+                      fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="702" y="336" text-anchor="middle">t11</text>
+              </g>
+            </svg>
+
+            <!-- ───────── Vertical layout: mobile <768px ─────────
+                 Same content as the horizontal variant, but the tenant row
+                 is split into 2 stacked rows (6 + 5) and the diagram is
+                 more vertical so the mono labels stay legible at 320–390px
+                 viewport widths. Active adapter is still t05. -->
+            <svg class="moe-multilora__svg moe-multilora__svg--vertical" viewBox="0 0 360 560"
+                 xmlns="http://www.w3.org/2000/svg"
+                 role="img" aria-hidden="true" focusable="false"
+                 preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <marker id="ml-arrow-v" viewBox="0 0 10 10" refX="9" refY="5"
+                        markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/>
+                </marker>
+              </defs>
+
+              <text class="moe-multilora__perimeter-label" x="20" y="18">FIG · MULTI-LORA</text>
+
+              <!-- Base model -->
+              <g>
+                <rect x="20" y="40" width="320" height="84" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__base-title" x="180" y="72" text-anchor="middle">GEMMA 4 26B-A4B-it</text>
+                <text class="moe-multilora__base-sub" x="180" y="92" text-anchor="middle">FROZEN BASE</text>
+                <text class="moe-multilora__base-sub" x="180" y="110" text-anchor="middle">128 EXPERTS · 4 ACTIVE/TOKEN</text>
+              </g>
+
+              <!-- Bind arrow base ← slot -->
+              <line x1="180" y1="200" x2="180" y2="132"
+                    stroke="var(--ink)" stroke-width="1" marker-end="url(#ml-arrow-v)"/>
+              <text class="moe-multilora__bind-label" x="190" y="172" text-anchor="start">BIND AT INFERENCE</text>
+
+              <!-- Adapter slot -->
+              <g>
+                <rect x="60" y="200" width="240" height="64"
+                      fill="rgba(var(--prob-blue-rgb), 0.06)"
+                      stroke="var(--prob-blue)" stroke-width="1"/>
+                <text class="moe-multilora__slot-title" x="180" y="225" text-anchor="middle">ADAPTER SLOT · 1 OF 11</text>
+                <text class="moe-multilora__slot-sub" x="180" y="248" text-anchor="middle">client_id = tenant_05</text>
+              </g>
+
+              <!-- Route arrow slot ← active tenant -->
+              <line x1="180" y1="376" x2="180" y2="272"
+                    stroke="var(--prob-blue)" stroke-width="1" marker-end="url(#ml-arrow-v)"/>
+
+              <!-- Tenant pool: 2 rows × 6/5 cells -->
+              <g class="moe-multilora__tenants">
+                <!-- Row 1: t01-t06 -->
+                <rect class="moe-multilora__tenant" x="20"  y="380" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="42"  y="400" text-anchor="middle">t01</text>
+                <rect class="moe-multilora__tenant" x="76"  y="380" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="98"  y="400" text-anchor="middle">t02</text>
+                <rect class="moe-multilora__tenant" x="132" y="380" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="154" y="400" text-anchor="middle">t03</text>
+                <rect class="moe-multilora__tenant" x="188" y="380" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="210" y="400" text-anchor="middle">t04</text>
+                <!-- t05 ACTIVE -->
+                <rect class="moe-multilora__tenant" data-active="true" x="244" y="380" width="44" height="32"
+                      fill="rgba(var(--prob-blue-rgb), 0.15)"
+                      stroke="var(--prob-blue)" stroke-width="1.5"/>
+                <text class="moe-multilora__tenant-label moe-multilora__tenant-label--active" x="266" y="400" text-anchor="middle">t05</text>
+                <rect class="moe-multilora__tenant" x="300" y="380" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="322" y="400" text-anchor="middle">t06</text>
+
+                <!-- Row 2: t07-t11 -->
+                <rect class="moe-multilora__tenant" x="48"  y="420" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="70"  y="440" text-anchor="middle">t07</text>
+                <rect class="moe-multilora__tenant" x="104" y="420" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="126" y="440" text-anchor="middle">t08</text>
+                <rect class="moe-multilora__tenant" x="160" y="420" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="182" y="440" text-anchor="middle">t09</text>
+                <rect class="moe-multilora__tenant" x="216" y="420" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="238" y="440" text-anchor="middle">t10</text>
+                <rect class="moe-multilora__tenant" x="272" y="420" width="44" height="32" fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+                <text class="moe-multilora__tenant-label" x="294" y="440" text-anchor="middle">t11</text>
+              </g>
+            </svg>
+            <figcaption class="moe-multilora__caption">1 instance &middot; 11 swappable adapters &middot; sparse matrix load &middot; no cross-contamination</figcaption>
+          </figure>
+
+          <p>The isolation stack the engine enforces: <strong>tenant</strong> (<span class="font-mono">adapter_id</span> binding), <strong>prompt</strong> (scoped system cache), <strong>task</strong> (DAG node boundaries), <strong>KV cache</strong> (PagedAttention). Each layer is a separate guarantee &mdash; tenant data cannot leak across adapters, and the deterministic Nodes 4 + 6 either side of this one re-validate the contract anyway.</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="lifecycle-node reveal" id="node-6" data-node-id="6">
+      <header class="lifecycle-node__header">
+        <h3 id="node-6-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 6</span> &middot; Validator &middot; Deterministic QA</h3>
+        <span class="lifecycle-node__role-badge" data-role="deterministic">DET</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>Pure deterministic Python &mdash; the final structural defense before output ships. Zero LLM calls. The probabilistic surface ended at Node 5; Node 6 enforces the contracts on what came out.</p>
+        <p>Format Check runs O(1) checks (regex + blocklist): format, word count, forbidden patterns. Past that gate, the O-R-A-V engine observes diagnostics, reasons about severity, acts with corrections, and validates the final output. Each step is a rule, not a model.</p>
+        <p>Outcomes are <span class="font-mono">PASS</span>, <span class="font-mono">RETRY</span>, or <span class="font-mono">FAIL</span>. Fail-closed: below-threshold blocks halt downstream, Firestore captures the trace, the orchestrator retries with a corrected prompt. The O-R-A-V mechanism and the boundary-level DEMAS contract are documented inline below.</p>
+        <p class="lifecycle-node__trace">Draft &rarr; Format &rarr; O-R-A-V &rarr; PASS / RETRY / FAIL</p>
+      </div>
+
+      <details class="node-deep-dive" id="orav" data-default-open="desktop">
+        <summary class="node-deep-dive__summary">
+          <span class="node-deep-dive__label">Inline deep-dive</span>
+          <span class="node-deep-dive__title">O-R-A-V Engine &middot; Observe / Reason / Act / Validate</span>
+        </summary>
+        <div class="node-deep-dive__body">
+          <p>O-R-A-V is a control-flow pattern, not a model. Node 6 executes it across every content block produced by Node 5. Zero LLM calls &mdash; pure rule-based defense-in-depth. The four axes are sequential gates, not parallel scores:</p>
+          <p><strong>O &middot; Observe</strong> &mdash; scan diagnostics across the block. Template variable leaks, internal label leaks, transactional language blocklist hits, schema deviations, character-length bounds, empty fields.<br>
+          <strong>R &middot; Reason</strong> &mdash; assign a severity tier to each diagnostic. A leaked Jinja token is a fatal; a borderline word count is a corrective; a stylistic deviation is a soft signal.<br>
+          <strong>A &middot; Act</strong> &mdash; apply deterministic corrections where the severity allows it (strip a leak, truncate to bound, retry the block with a corrected prompt). The act layer never re-prompts Node 5 with raw failure noise &mdash; only with the diagnostic the rule named.<br>
+          <strong>V &middot; Validate</strong> &mdash; final gate. The block either ships, retries, or falls through to the failure tier. There is no probabilistic appeal.</p>
+          <p>Production rate: <strong>68.9% pass</strong> across 11 tenants. The mechanism is what this section documents; <a href="#flywheel" class="text-probBlue hover:text-ink transition-colors">the Flywheel section</a> explains why the threshold sits there.</p>
+        </div>
+      </details>
+
+      <aside class="demas-callout" id="demas" aria-labelledby="demas-h">
+        <span class="demas-callout__label">Boundary callout</span>
+        <strong class="demas-callout__title" id="demas-h">DEMAS &middot; Deterministic Evaluation &amp; Monitoring Audit System</strong>
+        <p>DEMAS is not a node &mdash; it is the dashed perimeter around the production DAG. It intercepts at <em>every</em> node boundary, not just at Node 6, validating data integrity and schema compliance in real time. Node 6 is where the contract is most visible because the validator and DEMAS share the same hand-off: when a block clears O-R-A-V, DEMAS has already cleared its boundary check.</p>
+        <p>Fail-closed: rejected outputs never propagate downstream. The boundary halts on a violation; the orchestrator routes the failure based on tier. <strong>Block-level</strong> failures take ~2&times; JIT retry with a corrected prompt against the same DEMAS contract. <strong>Product-level</strong> failures route to Firestore for requeue on the next CRON cycle &mdash; the run does not block on a single product&rsquo;s recovery.</p>
+        <p>Routing tools: Pydantic + schema for the gate, Langfuse + Firestore for the failure trace. The full failure flow is the audit surface that makes the multi-tenant pipeline auditable across 234 managed websites without per-tenant operator intervention.</p>
+      </aside>
+    </section>
+
+    <section class="lifecycle-node reveal" id="node-7" data-node-id="7">
+      <header class="lifecycle-node__header">
+        <h3 id="node-7-h" tabindex="-1" class="lifecycle-node__title"><span class="lifecycle-node__num">Node 7</span> &middot; Evaluator &middot; DEMAS JIT</h3>
+        <span class="lifecycle-node__role-badge" data-role="probabilistic">PROB</span>
+        <span class="lifecycle-node__rd-flag">in R&amp;D &middot; Langfuse</span>
+      </header>
+      <div class="lifecycle-node__architecture">
+        <p>JIT consensus audit. Node 7 validates per-block content quality before commit &mdash; the qualitative complement to Node 6&rsquo;s structural checks. Currently in R&amp;D in Langfuse; not yet in the production code repo, surfaced here for completeness.</p>
+        <p>Quality Threshold guards SLM evaluation by enforcing minimum O-R-A-V scores upstream &mdash; nothing reaches the judge that the deterministic validator already rejected. SLM-as-Judge (Gemma 4 SLM) then runs language-agnostic content quality assessment inline with Node 5&rsquo;s output.</p>
+        <p class="lifecycle-node__trace">Content &rarr; Threshold &rarr; SLM Audit &rarr; Accept/Reject</p>
+      </div>
+    </section>
+
+  </div>
+  <!-- /Lifecycle node sections -->
+
+  <!-- Flywheel epilogue -->
+  <section class="flywheel" id="flywheel" data-lifecycle-section data-node-id="flywheel" aria-labelledby="flywheel-h">
+    <header class="flywheel__header">
+      <span class="flywheel__label">Epilogue</span>
+      <h2 class="flywheel__title" id="flywheel-h">Every run becomes training data.</h2>
+    </header>
+    <div class="flywheel__body">
+      <p>Every production run lands in a 3-tier dataset. The spread between quality and failure tiers becomes DPO preference data. The same machinery that gates the production loop generates the training signal.</p>
+
+      <figure class="flywheel-loop" aria-label="3-tier self-improvement loop: production runs feed a tiered dataset, the T2 and T3 spread becomes DPO preference pairs, per-tenant LoRA fine-tune ships on the next CRON cycle.">
+        <svg class="flywheel-loop__svg" viewBox="0 0 800 760"
+             xmlns="http://www.w3.org/2000/svg"
+             role="img" aria-hidden="true" focusable="false"
+             preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/>
+            </marker>
+            <marker id="fl-arrow-low" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-low)"/>
+            </marker>
+          </defs>
+
+          <!-- Perimeter label -->
+          <text class="flywheel-loop__perimeter-label" x="20" y="18">FIG · SELF-IMPROVEMENT LOOP</text>
+
+          <!-- ── 1. PRODUCTION RUNS (top, widest) ── -->
+          <g class="flywheel-loop__node">
+            <rect x="80" y="48" width="640" height="64" rx="0"
+                  fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+            <text class="flywheel-loop__title" x="400" y="76" text-anchor="middle">
+              PRODUCTION RUNS
+            </text>
+            <text class="flywheel-loop__sub" x="400" y="96" text-anchor="middle">
+              EVERY OUTPUT · EVERY CRON CYCLE
+            </text>
+          </g>
+          <!-- arrow + label down to T1 -->
+          <line x1="400" y1="112" x2="400" y2="158"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+          <text class="flywheel-loop__edge-label" x="412" y="135" text-anchor="start">
+            O-R-A-V SCORE · DEMAS VERDICT
+          </text>
+
+          <!-- ── 2. T1 production-baseline ── -->
+          <g class="flywheel-loop__node">
+            <rect x="80" y="158" width="640" height="64" rx="0"
+                  fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+            <text class="flywheel-loop__title" x="400" y="186" text-anchor="middle">
+              T1 · PRODUCTION-BASELINE
+            </text>
+            <text class="flywheel-loop__sub" x="400" y="206" text-anchor="middle">
+              EVERY RUN INGESTED
+            </text>
+          </g>
+
+          <!-- T1 → T2 (left) + T1 → T3 (right) split -->
+          <line x1="400" y1="222" x2="400" y2="250"
+                stroke="var(--ink)" stroke-width="1"/>
+          <line x1="220" y1="250" x2="580" y2="250"
+                stroke="var(--ink)" stroke-width="1"/>
+          <line x1="220" y1="250" x2="220" y2="278"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+          <line x1="580" y1="250" x2="580" y2="278"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+
+          <!-- ── 3a. T2 QUALITY (left, highlighted) ── -->
+          <g class="flywheel-loop__node flywheel-loop__node--accent">
+            <rect x="80" y="280" width="280" height="84" rx="0"
+                  fill="rgba(var(--prob-blue-rgb), 0.10)"
+                  stroke="var(--prob-blue)" stroke-width="1"/>
+            <text class="flywheel-loop__title flywheel-loop__title--accent" x="220" y="308" text-anchor="middle">
+              T2 · QUALITY
+            </text>
+            <text class="flywheel-loop__sub" x="220" y="332" text-anchor="middle">
+              O-R-A-V ≥ 0.7
+            </text>
+            <text class="flywheel-loop__sub" x="220" y="350" text-anchor="middle">
+              + DEMAS PASS
+            </text>
+          </g>
+
+          <!-- ── 3b. T3 FAILURE (right, highlighted) ── -->
+          <g class="flywheel-loop__node flywheel-loop__node--accent">
+            <rect x="440" y="280" width="280" height="84" rx="0"
+                  fill="rgba(var(--prob-blue-rgb), 0.10)"
+                  stroke="var(--prob-blue)" stroke-width="1"/>
+            <text class="flywheel-loop__title flywheel-loop__title--accent" x="580" y="308" text-anchor="middle">
+              T3 · FAILURE
+            </text>
+            <text class="flywheel-loop__sub" x="580" y="332" text-anchor="middle">
+              O-R-A-V &lt; 0.5
+            </text>
+            <text class="flywheel-loop__sub" x="580" y="350" text-anchor="middle">
+              OR DEMAS FAIL
+            </text>
+          </g>
+
+          <!-- merge T2 + T3 → DPO -->
+          <line x1="220" y1="364" x2="220" y2="396"
+                stroke="var(--ink)" stroke-width="1"/>
+          <line x1="580" y1="364" x2="580" y2="396"
+                stroke="var(--ink)" stroke-width="1"/>
+          <line x1="220" y1="396" x2="580" y2="396"
+                stroke="var(--ink)" stroke-width="1"/>
+          <line x1="400" y1="396" x2="400" y2="424"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+          <text class="flywheel-loop__edge-label" x="412" y="416" text-anchor="start">
+            SPREAD ≥ 0.15
+          </text>
+
+          <!-- ── 4. DPO PREFERENCE PAIRS ── -->
+          <g class="flywheel-loop__node">
+            <rect x="220" y="426" width="360" height="64" rx="0"
+                  fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+            <text class="flywheel-loop__title" x="400" y="454" text-anchor="middle">
+              DPO PREFERENCE PAIRS
+            </text>
+            <text class="flywheel-loop__sub" x="400" y="474" text-anchor="middle">
+              CHOSEN ↔ REJECTED
+            </text>
+          </g>
+          <line x1="400" y1="490" x2="400" y2="520"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+
+          <!-- ── 5. PER-TENANT LoRA FINE-TUNE ── -->
+          <g class="flywheel-loop__node">
+            <rect x="220" y="522" width="360" height="64" rx="0"
+                  fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+            <text class="flywheel-loop__title" x="400" y="550" text-anchor="middle">
+              PER-TENANT LoRA FINE-TUNE
+            </text>
+            <text class="flywheel-loop__sub" x="400" y="570" text-anchor="middle">
+              CURRICULUM-BASED
+            </text>
+          </g>
+          <line x1="400" y1="586" x2="400" y2="616"
+                stroke="var(--ink)" stroke-width="1" marker-end="url(#fl-arrow)"/>
+
+          <!-- ── 6. HOT-SWAP / NEXT CRON ── -->
+          <g class="flywheel-loop__node">
+            <rect x="220" y="618" width="360" height="64" rx="0"
+                  fill="var(--paper)" stroke="var(--ink)" stroke-width="1"/>
+            <text class="flywheel-loop__title" x="400" y="646" text-anchor="middle">
+              HOT-SWAP
+            </text>
+            <text class="flywheel-loop__sub" x="400" y="666" text-anchor="middle">
+              NEXT CRON CYCLE
+            </text>
+          </g>
+
+          <!-- Loop arrow back to PRODUCTION RUNS (dashed, ink-low) -->
+          <path class="flywheel-loop__cycle"
+                d="M 220 650 Q 40 650 40 400 Q 40 80 400 80"
+                fill="none" stroke="var(--ink-low)" stroke-width="1"
+                stroke-dasharray="4 4" marker-end="url(#fl-arrow-low)"/>
+          <text class="flywheel-loop__cycle-label" x="50" y="395" text-anchor="start">
+            CYCLE REPEATS
+          </text>
+        </svg>
+        <figcaption class="flywheel-loop__caption">Fig. 2 &middot; Self-improvement loop &middot; failures are labelled negatives</figcaption>
+      </figure>
+
+      <p>The <strong>68.9% pass rate</strong> at the O-R-A-V/DEMAS boundary is the engine of this loop. The thresholds are tuned so the failure tier stays large enough to feed DPO with a real <span class="font-mono">chosen</span>/<span class="font-mono">rejected</span> spread. A 99% pass rate would starve the loop; 50% would burn cost. 68.9% is the production setpoint. Failures aren&rsquo;t waste &mdash; they&rsquo;re the labelled half of the training signal, generated by the same deterministic gates that fail the production DAG closed. No human-in-the-loop annotation; the gates do the labelling.</p>
+    </div>
+  </section>
+  <!-- /Flywheel epilogue -->
+  <section class="py-20 border-b border-inkRule reveal" id="economics" data-lifecycle-section data-node-id="economics" aria-labelledby="economics-h">
+    <div class="text-[10px] uppercase tracking-widest text-probBlue mb-4">Unit Economics</div>
     <h2 id="economics-h" class="text-3xl font-bold tracking-tight mb-4">$0.0006 per page. Here&rsquo;s the math.</h2>
-    <p class="text-sm text-appleGray max-w-2xl leading-relaxed mb-10">
+    <p class="text-sm text-inkLow max-w-2xl leading-relaxed mb-10">
       The Writer node (Node 5, the only sustained inference path) runs on a self-hosted Gemma 4 26B-A4B MoE on a single A100 80GB. Fixed monthly VM cost &divide; pages served. Below: cost derivation, then the volume that produces it.
     </p>
 
-    <div class="card bg-appleDarker p-8">
-      <div class="font-mono text-sm text-appleGray leading-loose text-center">
-        <span class="text-appleLight font-semibold">$5.06</span>/hr &times; <span class="text-appleLight font-semibold">730</span> hrs/mo = <strong class="text-appleBlue">~$3,694</strong>/month <span class="text-appleGray/60">(a2-ultragpu-1g &middot; 1&times; A100 80GB)</span><br>
-        <strong class="text-appleBlue">~$3,694</strong>/month &divide; <span class="text-appleLight font-semibold">~6.16M</span> PDPs/month = <strong class="text-appleBlue">~$0.0006</strong>/PDP
+    <div class="card bg-paperDeep p-8">
+      <div class="font-mono text-sm text-inkLow leading-loose text-center">
+        <span class="text-ink font-semibold">$5.06</span>/hr &times; <span class="text-ink font-semibold">730</span> hrs/mo = <strong class="text-probBlue">~$3,694</strong>/month <span class="text-inkLow">(a2-ultragpu-1g &middot; 1&times; A100 80GB)</span><br>
+        <strong class="text-probBlue">~$3,694</strong>/month &divide; <span class="text-ink font-semibold">~6.16M</span> PDPs/month = <strong class="text-probBlue">~$0.0006</strong>/PDP
       </div>
-      <div class="mt-6 pt-4 border-t border-appleBorder font-mono text-sm text-appleGray leading-loose text-center">
-        <span class="text-appleLight font-semibold">11</span> tenants &times; <span class="text-appleLight font-semibold">~45K</span> products &times; <span class="text-appleLight font-semibold">~21</span> locations = <strong class="text-appleBlue">~10.5M PDPs</strong> per full run<br>
-        <span class="text-appleLight font-semibold">~10.5M PDPs</span> &times; <span class="text-appleLight font-semibold">7</span> DAG nodes = <strong class="text-appleBlue">~73.5M ops</strong> per full run
+      <div class="mt-6 pt-4 border-t border-inkRule font-mono text-sm text-inkLow leading-loose text-center">
+        <span class="text-ink font-semibold">11</span> tenants &times; <span class="text-ink font-semibold">~45K</span> products &times; <span class="text-ink font-semibold">~21</span> locations = <strong class="text-probBlue">~10.5M PDPs</strong> per full run<br>
+        <span class="text-ink font-semibold">~10.5M PDPs</span> &times; <span class="text-ink font-semibold">7</span> DAG nodes = <strong class="text-probBlue">~73.5M ops</strong> per full run
       </div>
     </div>
 
-    <div class="card p-px bg-appleBorder grid grid-cols-3 gap-px overflow-hidden mt-6">
-      <div class="bg-appleSurface p-6 text-center">
-        <div class="font-mono text-lg font-semibold text-appleLight mb-1">80%</div>
-        <div class="text-[9px] uppercase tracking-widest text-appleGray">Deterministic compute</div>
-        <div class="text-[8px] text-appleGray/60 mt-1">Near-zero marginal cost</div>
+    <div class="card p-px bg-inkRule grid grid-cols-1 sm:grid-cols-3 gap-px overflow-hidden mt-6">
+      <div class="bg-paperDeep p-6 text-center">
+        <div class="font-mono text-lg font-semibold text-ink mb-1">80%</div>
+        <div class="text-[9px] uppercase tracking-widest text-inkLow">Deterministic compute</div>
+        <div class="text-[8px] text-inkLow mt-1">Near-zero marginal cost</div>
       </div>
-      <div class="bg-appleSurface p-6 text-center">
-        <div class="font-mono text-lg font-semibold text-appleLight mb-1">$0</div>
-        <div class="text-[9px] uppercase tracking-widest text-appleGray">Per-token API fees</div>
-        <div class="text-[8px] text-appleGray/60 mt-1">Self-hosted Gemma 4 MoE</div>
+      <div class="bg-paperDeep p-6 text-center">
+        <div class="font-mono text-lg font-semibold text-ink mb-1">$0</div>
+        <div class="text-[9px] uppercase tracking-widest text-inkLow">Per-token API fees</div>
+        <div class="text-[8px] text-inkLow mt-1">Self-hosted Gemma 4 MoE</div>
       </div>
-      <div class="bg-appleSurface p-6 text-center">
-        <div class="font-mono text-lg font-semibold text-appleLight mb-1">~20%</div>
-        <div class="text-[9px] uppercase tracking-widest text-appleGray">Actual LLM calls</div>
-        <div class="text-[8px] text-appleGray/60 mt-1">City + client caching</div>
+      <div class="bg-paperDeep p-6 text-center">
+        <div class="font-mono text-lg font-semibold text-ink mb-1">~20%</div>
+        <div class="text-[9px] uppercase tracking-widest text-inkLow">Actual LLM calls</div>
+        <div class="text-[8px] text-inkLow mt-1">City + client caching</div>
       </div>
     </div>
   </section>
 
-  
-
 </main>
 
 <!-- BEGIN FOOTER -->
-<footer class="py-12 px-6 max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 border-t border-appleBorder mt-12" role="contentinfo">
-  <div class="text-sm font-semibold text-appleLight"><span data-page-title>Pipeline</span> &middot; Daniel Manzela</div>
-  <ul class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-appleGray list-none m-0 p-0">
-    <li><a href="index.html" class="hover:text-appleLight transition-colors">Pipeline</a></li>
-    <li><a href="architecture.html" class="hover:text-appleLight transition-colors">Architecture</a></li>
-    <li><a href="case-studies.html" class="hover:text-appleLight transition-colors">Case Studies</a></li>
-    <li><a href="https://manzela.github.io/Manzela/" class="hover:text-appleLight transition-colors">Profile</a></li>
-    <li><a href="https://manzela.github.io/Manzela/elysium/" class="hover:text-appleLight transition-colors">Elysium</a></li>
-    <li><a href="https://github.com/Manzela" target="_blank" rel="noopener noreferrer" class="hover:text-appleLight transition-colors">GitHub</a></li>
-    <li><a href="https://linkedin.com/in/danielmanzela" target="_blank" rel="noopener noreferrer" class="hover:text-appleLight transition-colors">LinkedIn</a></li>
+<footer class="py-12 px-6 max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 border-t border-inkRule mt-12" role="contentinfo">
+  <div class="text-sm font-semibold text-ink"><span data-page-title>Pipeline</span> &middot; Daniel Manzela</div>
+  <ul class="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest font-medium text-inkLow list-none m-0 p-0">
+    <li><a href="index.html" class="hover:text-ink transition-colors">Pipeline</a></li>
+    <li><a href="index.html#dag" class="hover:text-ink transition-colors">DAG schematic</a></li>
+    <li><a href="case-studies.html" class="hover:text-ink transition-colors">Case Studies</a></li>
+    <li><a href="https://manzela.github.io/Manzela/" class="hover:text-ink transition-colors">Profile</a></li>
+    <li><a href="https://manzela.github.io/Manzela/elysium/" class="hover:text-ink transition-colors">Elysium</a></li>
+    <li><a href="https://github.com/Manzela" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">GitHub</a></li>
+    <li><a href="https://linkedin.com/in/danielmanzela" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">LinkedIn</a></li>
   </ul>
 </footer>
 <!-- END FOOTER -->
 
 <script src="assets/dag-data.js"></script>
 <script src="assets/stage.js"></script>
+<script src="assets/lifecycle.js"></script>
 <script>
 PO.setActiveNav('pipeline');
 
@@ -295,11 +1076,11 @@ PO.setActiveNav('pipeline');
     l.dataset.status = t.s;
     l.className = 'trace-row font-mono text-[10px] md:text-xs py-2 px-3 flex gap-2 md:gap-4 items-center rounded';
     l.setAttribute('tabindex', '0');
-    const sc = (t.s === 'ok' || t.s === 'pass') ? 'text-appleLight font-semibold' : 'text-appleRed font-semibold';
-    l.innerHTML = '<span class="text-appleGray w-20 md:w-24 shrink-0">' + t.ts + '</span>' +
-                  '<span class="text-appleBlue w-16 md:w-20 shrink-0">' + t.st + '</span>' +
-                  '<span class="text-appleGray flex-1 truncate">' + t.ev + '</span>' +
-                  '<span class="text-appleGray/60 w-16 text-right">' + t.dur + '</span>' +
+    const sc = (t.s === 'ok' || t.s === 'pass') ? 'text-ink font-semibold' : 'text-signal font-semibold';
+    l.innerHTML = '<span class="text-inkLow w-20 md:w-24 shrink-0">' + t.ts + '</span>' +
+                  '<span class="text-probBlue w-16 md:w-20 shrink-0">' + t.st + '</span>' +
+                  '<span class="text-inkLow flex-1 truncate">' + t.ev + '</span>' +
+                  '<span class="text-inkLow w-16 text-right">' + t.dur + '</span>' +
                   '<span class="' + sc + ' w-12 text-right">' + t.s.toUpperCase() + '</span>';
     var __n = PO.DAG_NODES[t.nodeId];
     if (__n) {
@@ -315,125 +1096,10 @@ PO.setActiveNav('pipeline');
     attr: 'data-active-beat'
   });
 
-  // --- Intent Decoder panel ---
-
-  var BEAT_CAPTIONS = {
-    '1': 'DEMAS sits between nodes — not inside them. It can reject a perfectly-formed output if it violates a downstream contract, before the next node is invoked.',
-    '2': 'Nodes 1–4 deterministically narrow the candidate set; Node 5 generates against a small qualified input; Nodes 6–7 deterministically validate. The probabilistic surface is one node wide.',
-    '3': 'FAIL → Firestore trace written → downstream nodes for this PDP halt → orchestrator schedules a corrected-prompt retry. Below-threshold output never reaches production.',
-    '4': '11 tenants × 7 nodes × ~10.5M PDPs. Telemetry density is by design — every boundary writes one row so the failure of any one PDP is traceable in isolation.',
-    '5': 'Trace excerpted from the most recent full-pipeline run. Single-PDP slice; the full run carries the same row shape across all 73.5M events.'
-  };
-
-  var ALL_NODE_IDS = [1, 2, 3, 4, 5, 6, 7, 'demas'];
-
-  var stage = document.querySelector('.telemetry-stage');
-  var captionEl = document.getElementById('telemetryCaption');
-  var decoderEl = document.getElementById('intentDecoder');
-
-  function isMobileViewport() {
-    return window.matchMedia('(max-width: ' + PO.MOBILE_BREAKPOINT_PX + 'px)').matches;
-  }
-
-  function nodeIdsForActiveBeat(beat) {
-    if (!beat) return [];
-    var rows = document.querySelectorAll('[data-trace-line][data-highlight~="b' + beat + '"]');
-    var seen = {};
-    var ordered = [];
-    for (var i = 0; i < rows.length; i++) {
-      var n = rows[i].dataset.nodeId;
-      if (n === undefined) continue;
-      var key = (n === 'demas') ? 'demas' : Number(n);
-      var k = String(key);
-      if (!seen[k]) {
-        seen[k] = true;
-        ordered.push(key);
-      }
-    }
-    return ordered;
-  }
-
-  // renderCard assumes PO.DAG_NODES is dev-controlled, HTML-safe data.
-  // Do not pass user-supplied input through this function.
-  function renderCard(nodeId, includeFailRoute) {
-    var node = PO.DAG_NODES[nodeId];
-    if (!node) return '';
-    var isDet = !!node.det;
-    var color = isDet ? 'appleGreen' : 'appleBlue';
-    var roleLabel = isDet ? 'Deterministic' : 'Probabilistic';
-    var gateName = (node.gate && node.gate.nm) || '';
-    var agentName = (node.agent && node.agent.nm) || '';
-    var tools = (node.agent && node.agent.tools) || [];
-    var toolChips = tools.map(function (t) {
-      return '<span class="text-[9px] px-1.5 py-0.5 rounded border border-appleBorder bg-appleBg text-appleGray">' + t + '</span>';
-    }).join('');
-    var failChip = '';
-    if (includeFailRoute && node.failureRoute) {
-      failChip = '<div class="mt-2 pt-2 border-t border-appleRed/30 text-[9px] text-appleRed leading-snug">' + node.failureRoute + '</div>';
-    }
-    var label = (nodeId === 'demas') ? 'DEMAS' : ('Node ' + nodeId);
-    return '' +
-      '<article class="intent-card bg-appleBg border border-appleBorder rounded-lg p-3" data-node-id="' + nodeId + '">' +
-        '<div class="flex items-center gap-2 mb-2">' +
-          '<span class="font-mono text-[10px] text-' + color + ' font-semibold">' + label + '</span>' +
-          '<span class="text-[9px] uppercase tracking-widest font-semibold bg-' + color + '/10 text-' + color + ' border border-' + color + '/20 px-1.5 py-0.5 rounded">' + roleLabel + '</span>' +
-        '</div>' +
-        '<div class="font-mono text-[10px] text-appleLight mb-1 truncate" title="' + gateName + ' → ' + agentName + '">' + gateName + ' → ' + agentName + '</div>' +
-        '<div class="text-[10px] text-appleGray leading-relaxed mb-2">' + (node.intent || '') + '</div>' +
-        (toolChips ? '<div class="flex gap-1 flex-wrap">' + toolChips + '</div>' : '') +
-        failChip +
-      '</article>';
-  }
-
-  function nodeIdsToRender(beat) {
-    if (isMobileViewport()) return ALL_NODE_IDS;
-    return nodeIdsForActiveBeat(beat);
-  }
-
-  function shouldShowFailRouteForDemas(beat) {
-    if (!beat || isMobileViewport()) {
-      return true;
-    }
-    var rows = document.querySelectorAll('[data-trace-line][data-highlight~="b' + beat + '"]');
-    for (var i = 0; i < rows.length; i++) {
-      if (rows[i].dataset.status === 'fail') return true;
-    }
-    return false;
-  }
-
-  function renderDecoder(beat) {
-    if (captionEl) {
-      captionEl.textContent = BEAT_CAPTIONS[beat] || '';
-    }
-    if (!decoderEl) return;
-    var ids = nodeIdsToRender(beat);
-    var includeFail = shouldShowFailRouteForDemas(beat);
-    var html = '';
-    for (var i = 0; i < ids.length; i++) {
-      var id = ids[i];
-      html += renderCard(id, id === 'demas' && includeFail);
-    }
-    decoderEl.innerHTML = html;
-  }
-
-  renderDecoder(stage ? stage.getAttribute('data-active-beat') : '1');
-
-  if (stage && window.MutationObserver) {
-    var obs = new MutationObserver(function (mutations) {
-      for (var i = 0; i < mutations.length; i++) {
-        if (mutations[i].attributeName === 'data-active-beat') {
-          renderDecoder(stage.getAttribute('data-active-beat'));
-          break;
-        }
-      }
-    });
-    obs.observe(stage, { attributes: true, attributeFilter: ['data-active-beat'] });
-  }
-
-  var mq = window.matchMedia('(max-width: ' + PO.MOBILE_BREAKPOINT_PX + 'px)');
-  mq.addEventListener('change', function () {
-    renderDecoder(stage ? stage.getAttribute('data-active-beat') : '1');
-  });
+  // Intent Decoder card cluster and Detail Legend removed — both duplicated
+  // info already in each lifecycle-node header/body/trace line.
+  // Trace log + beat narration above are preserved; the panel shows the
+  // trace stream alone.
 })();
 </script>
 </body>

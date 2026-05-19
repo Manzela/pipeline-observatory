@@ -22,7 +22,7 @@ This repository hosts two core dashboards built with vanilla HTML/CSS/JS (zero d
 - 📊 **[Observatory Dashboard (`index.html`)](https://manzela.github.io/pipeline-observatory/index.html)**
   Live execution telemetry, model evolution timelines, geographic fanout, and an anonymized trace stream of multi-agent interactions.
 
-- 🧠 **[Deep Architecture View (`architecture.html`)](https://manzela.github.io/pipeline-observatory/architecture.html)**
+- 🧠 **[DAG schematic (deep architecture view)](https://manzela.github.io/pipeline-observatory/#dag)**
   A deep-dive explorer featuring a 7-node sequential reveal, "Glass Box" MoE/LoRA interpretability visualizations, and the O-R-A-V validation stack.
 
 ## Architecture Overview
@@ -52,13 +52,13 @@ graph LR
 
 ### Key Design Decisions
 - **Fail-Closed Policy (DEMAS):** A Just-In-Time parallel audit layer running alongside generation. Any failure halts downstream propagation.
-- **O-R-A-V Validation:** Node 6 runs Originality, Relevance, Accuracy, and Value checks via LLM-as-Judge.
+- **O-R-A-V Validation:** Node 6 runs Observe / Reason / Act / Validate gating — pure rule-based deterministic checks (zero LLM calls), 68.9% pass by design.
 - **Model Hot-Swapping:** Zero-downtime swaps between Gemma 3/4 and Gemini 2.5/3.1 Flash-Lite.
 
 ## Enterprise Scale
 Production throughput across 11 enterprise clients:
-- **~10.5M PDPs** (Product Detail Pages) per generation cycle.
-- **~73.5M Node operations** per cycle.
+- **~10.5M PDPs** (Product Detail Pages) per month.
+- **~73.5M Node operations** per month.
 - Auto-scaling up to 1,000 concurrent Modal workers.
 
 ## Project Documentation

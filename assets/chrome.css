@@ -1,10 +1,46 @@
 /* Shared chrome — loaded by all three pages.
-   Body, glass nav, hairlines, reveal, focus ring, skip link, reduced-motion fallback,
+   Industrial / utilitarian register (Aicher / Braun / Rams / Lufthansa identity).
+   Body, top-nav, hairlines, reveal, focus ring, skip link, reduced-motion fallback,
    and the per-page sticky-stage motifs (telemetry, DAG, editorial spine). */
 
+:root {
+  /* Industrial / utilitarian palette — paper + ink + 2 semantic accents */
+  --paper: #F8F6F1;
+  --paper-deep: #F2EFE7;
+  --ink: #1A1A1A;
+  --ink-mid: #4A4A4A;
+  --ink-low: #6A6A6A;   /* darkened from #8A8A8A (3.19:1) to meet WCAG AA 4.5:1 contrast on paper / paper-deep */
+  --ink-rule: rgba(26, 26, 26, 0.12);
+  --det-green: #2D5A2F;     /* deterministic nodes — drafting forest */
+  --det-green-rgb: 45, 90, 47;   /* RGB channels of #2D5A2F — for rgba() use */
+  --prob-blue: #1B3A5C;     /* probabilistic nodes — drafting navy */
+  --prob-blue-rgb: 27, 58, 92;     /* RGB channels of #1B3A5C — used for rgba(var(--prob-blue-rgb), x) in glows / focus rings / selection */
+  --signal: #B83216;        /* surgical warning accent — Aicher red */
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', monospace;
+  --z-nav: 60;
+  --z-schematic: 50;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0F1418;
+    --paper-deep: #161C20;
+    --ink: #E8E6E0;
+    --ink-mid: #B0AEA6;
+    --ink-low: #7A786E;
+    --ink-rule: rgba(232, 230, 224, 0.12);
+    --det-green: #6FAF6B;
+    --det-green-rgb: 111, 175, 107;   /* RGB channels of #6FAF6B */
+    --prob-blue: #6FA0CC;
+    --prob-blue-rgb: 111, 160, 204;  /* RGB channels of #6FA0CC */
+    --signal: #E07A5F;
+  }
+}
+
 html, body {
-  background: #000;
-  color: #f5f5f7;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   /* Defensive: prevent any nested wide content (long mono lines, scrolling DAG
      overview, embedded iframes) from triggering page-level horizontal scroll.
@@ -13,35 +49,37 @@ html, body {
   overflow-x: clip;
 }
 
+code, pre, .mono { font-family: var(--font-mono); }
+
 ::selection {
-  background: rgba(41, 151, 255, 0.3);
-  color: #f5f5f7;
+  background: rgba(var(--prob-blue-rgb), 0.25);
+  color: var(--ink);
 }
 
 /* ───────────────────────────────────────────────────────────────────────
    Solid surfaces, hairline separators (Principle 10)
    ─────────────────────────────────────────────────────────────────────── */
 .card {
-  background: #1d1d1f;
-  border: 1px solid #424245;
+  background: var(--paper-deep);
+  border: 1px solid var(--ink-rule);
   border-radius: 16px;
 }
 
 /* ───────────────────────────────────────────────────────────────────────
-   Glass on chrome only (Principle 10)
+   Top nav — industrial, solid surface, hairline rule. Glass retired.
    ─────────────────────────────────────────────────────────────────────── */
-.glass-nav {
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid #424245;
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+  background: var(--paper);
+  border-bottom: 1px solid var(--ink-rule);
+  padding: 12px 24px;
 }
 
 .nav-glass {
-  background: rgba(29, 29, 31, 0.7);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border: 1px solid #424245;
+  background: var(--paper-deep);
+  border: 1px solid var(--ink-rule);
 }
 
 /* ───────────────────────────────────────────────────────────────────────
@@ -52,8 +90,8 @@ html, body {
   left: -9999px;
   top: 0;
   padding: 8px 16px;
-  background: #f5f5f7;
-  color: #000;
+  background: var(--ink);
+  color: var(--paper);
   font-weight: 600;
   z-index: 100;
   border-radius: 4px;
@@ -62,12 +100,12 @@ html, body {
 .skip-link:focus {
   left: 8px;
   top: 8px;
-  outline: 2px solid #2997ff;
+  outline: 2px solid var(--prob-blue);
   outline-offset: 2px;
 }
 
 :focus-visible {
-  outline: 2px solid #2997ff;
+  outline: 2px solid var(--prob-blue);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -87,13 +125,60 @@ html, body {
 }
 
 /* ───────────────────────────────────────────────────────────────────────
+   Cinematic per-lifecycle-node stagger.
+   Each `<section class="lifecycle-node reveal">` is the IntersectionObserver
+   target. The base .reveal rule above handles the parent's fade + lift.
+   Below, the section's three child clusters (header, architecture body,
+   any deep-dive / DEMAS callout) start hidden with the same transform, then
+   reveal sequentially with 100ms / 200ms delays once the parent flips
+   .visible. Industrial register: motion serves comprehension (header first,
+   then body, then drill-down), no flourishes.
+   ─────────────────────────────────────────────────────────────────────── */
+.lifecycle-node.reveal .lifecycle-node__header,
+.lifecycle-node.reveal .lifecycle-node__architecture,
+.lifecycle-node.reveal .node-deep-dive,
+.lifecycle-node.reveal .demas-callout {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lifecycle-node.reveal .lifecycle-node__header        { transition-delay: 0ms; }
+.lifecycle-node.reveal .lifecycle-node__architecture  { transition-delay: 100ms; }
+.lifecycle-node.reveal .node-deep-dive,
+.lifecycle-node.reveal .demas-callout                 { transition-delay: 200ms; }
+.lifecycle-node.reveal.visible .lifecycle-node__header,
+.lifecycle-node.reveal.visible .lifecycle-node__architecture,
+.lifecycle-node.reveal.visible .node-deep-dive,
+.lifecycle-node.reveal.visible .demas-callout {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Reduced motion: instant render, no stagger. The global `*` rule at the
+   bottom already collapses transition-duration; this rule additionally
+   guarantees the child clusters land at opacity 1 / translateY 0 even
+   before any .visible class is applied, so a no-JS-but-reduced-motion or
+   `.no-js` boot still shows full content. */
+@media (prefers-reduced-motion: reduce) {
+  .lifecycle-node.reveal .lifecycle-node__header,
+  .lifecycle-node.reveal .lifecycle-node__architecture,
+  .lifecycle-node.reveal .node-deep-dive,
+  .lifecycle-node.reveal .demas-callout {
+    transition: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────
    Status dot (operational surfaces)
    ─────────────────────────────────────────────────────────────────────── */
 .status-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #34d399;
+  background: var(--det-green);
   display: inline-block;
 }
 
@@ -102,12 +187,18 @@ html, body {
    ─────────────────────────────────────────────────────────────────────── */
 .telemetry-stage {
   display: grid;
-  grid-template-columns: 1fr;
+  /* minmax(0, 1fr) allows the column (and therefore the pinned trace card) to
+     shrink below the intrinsic min-content of its descendants — without this,
+     long mono trace lines force the entire grid column to ~474px even on
+     narrow viewports and the page overflows under html { overflow-x: clip }. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 32px;
+  min-width: 0;
 }
+.telemetry-stage__pinned { min-width: 0; }
 @media (min-width: 1024px) {
   .telemetry-stage {
-    grid-template-columns: 6fr 5fr;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
     gap: 48px;
     align-items: start;
   }
@@ -129,23 +220,21 @@ html, body {
   border-left: 2px solid transparent;
 }
 .trace-row:focus-visible {
-  outline: 2px solid rgba(41, 151, 255, 0.6);
+  outline: 2px solid rgba(var(--prob-blue-rgb), 0.6);
   outline-offset: -1px;
 }
 .telemetry-stage[data-active-beat="1"] [data-trace-line]:not([data-highlight~="b1"]),
 .telemetry-stage[data-active-beat="2"] [data-trace-line]:not([data-highlight~="b2"]),
 .telemetry-stage[data-active-beat="3"] [data-trace-line]:not([data-highlight~="b3"]),
-.telemetry-stage[data-active-beat="4"] [data-trace-line]:not([data-highlight~="b4"]),
-.telemetry-stage[data-active-beat="5"] [data-trace-line]:not([data-highlight~="b5"]) {
+.telemetry-stage[data-active-beat="4"] [data-trace-line]:not([data-highlight~="b4"]) {
   opacity: 0.35;
 }
 .telemetry-stage[data-active-beat="1"] [data-highlight~="b1"],
 .telemetry-stage[data-active-beat="2"] [data-highlight~="b2"],
 .telemetry-stage[data-active-beat="3"] [data-highlight~="b3"],
-.telemetry-stage[data-active-beat="4"] [data-highlight~="b4"],
-.telemetry-stage[data-active-beat="5"] [data-highlight~="b5"] {
-  background: rgba(41, 151, 255, 0.18);
-  border-left-color: #2997ff;
+.telemetry-stage[data-active-beat="4"] [data-highlight~="b4"] {
+  background: rgba(var(--prob-blue-rgb), 0.10);
+  border-left-color: var(--prob-blue);
 }
 
 /* Intent decoder cards — fade transition synced to existing stage rhythm. */
@@ -161,8 +250,673 @@ html, body {
 /* Mobile breakpoint — synced to PO.MOBILE_BREAKPOINT_PX in assets/stage.js. */
 @media (max-width: 767px) {
   .telemetry-stage__decoder-region {
-    border-top-color: rgba(255,255,255,0.06);
+    border-top-color: var(--ink-rule);
   }
+}
+
+/* Detail-legend styles removed (audit FIX 4, 2026-05-19) — the <aside>
+   it styled has been deleted from index.html. See the comment in
+   index.html where the legend lived for rationale. */
+
+/* ───────────────────────────────────────────────────────────────────────
+   Framing strip — top-of-page horizontal cross-cutting callouts.
+   Industrial register: ink rules above and below, vertical separators
+   between items, mono labels (uppercase + tracking), sans values.
+   ─────────────────────────────────────────────────────────────────────── */
+.framing-strip {
+  margin: 32px auto;
+  max-width: 1024px;
+  padding: 0 24px;
+}
+.framing-strip__list {
+  list-style: none;
+  margin: 0;
+  padding: 16px 0;
+  border-top: 1px solid var(--ink-rule);
+  border-bottom: 1px solid var(--ink-rule);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+}
+.framing-strip__item {
+  border-left: 1px solid var(--ink-rule);
+  padding-left: 16px;
+}
+.framing-strip__item:first-child {
+  border-left: none;
+  padding-left: 0;
+}
+.framing-strip__anchor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+}
+.framing-strip__anchor:hover .framing-strip__label,
+.framing-strip__anchor:focus-visible .framing-strip__label {
+  color: var(--prob-blue);
+}
+.framing-strip__anchor:focus-visible {
+  outline: 2px solid var(--prob-blue);
+  outline-offset: 4px;
+}
+.framing-strip__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+  transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.framing-strip__value {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+/* Responsive: stack on mobile, two-up on tablet */
+@media (max-width: 767px) {
+  .framing-strip__list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .framing-strip__item {
+    border-left: none;
+    padding-left: 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ink-rule);
+  }
+  .framing-strip__item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .framing-strip__list {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 16px;
+  }
+  .framing-strip__item:nth-child(2n+1) {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+/* Mono utility class — B.4 used `.font-mono` inline in several places;
+   without this definition it fell back to body sans. One-line fix. */
+.font-mono { font-family: var(--font-mono); }
+
+/* ───────────────────────────────────────────────────────────────────────
+   Lifecycle node sections
+   One section per DAG node. Header (number + name·role + DET/PROB badge)
+   then architecture body (problem · gate→agent · result). Industrial
+   register: thin rules, sharp corners, no decoration.
+   ─────────────────────────────────────────────────────────────────────── */
+.lifecycle-node {
+  padding: 64px 24px;
+  border-top: 1px solid var(--ink-rule);
+  scroll-margin-top: 72px; /* top-nav height + breathing room */
+  /* Keep each section tall enough to dominate the IntersectionObserver
+     band (lifecycle.js rootMargin '-15% 0px -55% 0px' = ~30% of viewport).
+     Without this, multiple short sections overlap the band on scroll and
+     the scroll-sync test (each node sets data-active-node) flakes. */
+  min-height: 70vh;
+}
+.lifecycle-node__header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.lifecycle-node__title {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+  flex: 1;
+}
+/* Node N numerical prefix inside the title — mono register, dimmed.
+   Kept inside the <h3> (not a sibling span) so the test contract
+   `#node-N h3` matches /Node N/ without a separate element. */
+.lifecycle-node__num {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+  margin-right: 4px;
+}
+.lifecycle-node__title:focus-visible {
+  outline: 2px solid var(--prob-blue);
+  outline-offset: 4px;
+}
+.lifecycle-node__role-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid;
+  border-radius: 0; /* sharp corners — industrial register */
+}
+.lifecycle-node__role-badge[data-role="deterministic"] {
+  color: var(--det-green);
+  border-color: var(--det-green);
+}
+.lifecycle-node__role-badge[data-role="probabilistic"] {
+  color: var(--prob-blue);
+  border-color: var(--prob-blue);
+}
+/* Node 7 R&D annotation — separate from role badge so it stays visible
+   even if Node 7 graduates to production later (just delete the span). */
+.lifecycle-node__rd-flag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+  padding: 4px 10px;
+  border: 1px dashed var(--ink-low);
+}
+.lifecycle-node__architecture {
+  max-width: 720px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.lifecycle-node__architecture p {
+  margin: 0 0 16px;
+}
+.lifecycle-node__architecture p:last-child {
+  margin-bottom: 0;
+}
+/* Trace line: mono register, dimmed — reads as a routing/signature line,
+   not body copy. Matches the trace-row styling in the telemetry section.
+   Selector specificity matches the .lifecycle-node__architecture p rule
+   above so margin-top wins without needing !important. */
+.lifecycle-node__architecture .lifecycle-node__trace {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink-low);
+  margin: 24px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--ink-rule);
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   Inline cross-cutting deep-dives at Nodes 5 + 6
+   Surfaces MoE (#moe) inside Node 5 and O-R-A-V (#orav) + DEMAS (#demas)
+   inside Node 6. <details>/<summary> with a custom +/− indicator. Default
+   open on desktop (≥768px) via lifecycle.js initDeepDives; closed on
+   mobile so the node trace + first paragraph land above the fold.
+   Industrial register: same thin rule, paper-deep background, sharp
+   corners as the rest of the merged page.
+   ─────────────────────────────────────────────────────────────────────── */
+.node-deep-dive {
+  margin-top: 32px;
+  max-width: 720px;
+  border: 1px solid var(--ink-rule);
+  background: var(--paper-deep);
+}
+.node-deep-dive__summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  user-select: none;
+  position: relative;
+}
+.node-deep-dive__summary::-webkit-details-marker { display: none; }
+.node-deep-dive__summary::before {
+  content: '+';
+  position: absolute;
+  right: 20px;
+  top: 16px;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--ink-low);
+}
+.node-deep-dive[open] .node-deep-dive__summary::before { content: '−'; }
+.node-deep-dive__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+}
+.node-deep-dive__title {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  padding-right: 32px; /* room for the +/− indicator */
+}
+.node-deep-dive__body {
+  padding: 0 20px 20px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.node-deep-dive__body p { margin: 0 0 12px; }
+.node-deep-dive__body p:last-child { margin-bottom: 0; }
+
+/* ───────────────────────────────────────────────────────────────────────
+   Multi-LoRA serving topology diagram (replaces the prior 128-cell MoE
+   mini-grid). Inline SVG inside the #moe deep-dive. Single instance of
+   Gemma 4 26B-A4B-it on top, the active adapter slot in the middle, 11
+   tenant rects at the bottom — with the routing arrows showing the active
+   tenant bound at inference time.
+   Industrial register: thin 1px ink strokes, sharp corners, IBM Plex Mono
+   labels, prob-blue 15% tint on the active tenant + slot (matches the
+   schematic's active-node treatment).
+   Responsive: viewBox 800×360 scales via preserveAspectRatio; the
+   <figure> caps to the deep-dive body width (max-width 720px).
+   ─────────────────────────────────────────────────────────────────────── */
+.moe-multilora {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid var(--ink-rule);
+  background: var(--paper);
+}
+.moe-multilora__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Two SVG variants — horizontal at ≥768px, vertical at <768px. Mirror the
+   dag-schematic responsive pattern: same content, different geometry so
+   the mono labels stay legible at every breakpoint. */
+.moe-multilora__svg--horizontal { display: block; }
+.moe-multilora__svg--vertical   { display: none; }
+@media (max-width: 767px) {
+  .moe-multilora__svg--horizontal { display: none; }
+  .moe-multilora__svg--vertical   { display: block; }
+}
+.moe-multilora text {
+  font-family: var(--font-mono);
+  fill: var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.moe-multilora__perimeter-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+  paint-order: stroke fill;
+  stroke: var(--paper);
+  stroke-width: 4;
+}
+.moe-multilora__base-title {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  fill: var(--ink);
+  font-weight: 500;
+}
+.moe-multilora__base-sub {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+}
+.moe-multilora__bind-label {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+}
+.moe-multilora__slot-title {
+  font-size: 12px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  fill: var(--prob-blue);
+  font-weight: 500;
+}
+.moe-multilora__slot-sub {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  fill: var(--ink);
+  /* Mixed-case identifier — drop tracking so the label reads as code. */
+  letter-spacing: 0;
+}
+.moe-multilora__tenant-label {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  fill: var(--ink-low);
+}
+.moe-multilora__tenant-label--active {
+  fill: var(--prob-blue);
+  font-weight: 600;
+}
+.moe-multilora__caption {
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-low);
+  text-align: center;
+}
+
+/* Subtle pulse on the active routing arrows (t05 → slot → base) to
+   telegraph "bound at inference time". Industrial restraint: 2s cycle,
+   opacity-only, no transform jitter. Hard-coded prefers-reduced-motion
+   short-circuit below. */
+@keyframes ml-bind-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+.moe-multilora__bind-arrow,
+.moe-multilora__route-arrow {
+  animation: ml-bind-pulse 2.4s ease-in-out infinite;
+}
+.moe-multilora__route-arrow {
+  /* Stagger the two arrows by half a beat so the eye reads the flow. */
+  animation-delay: -1.2s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .moe-multilora__bind-arrow,
+  .moe-multilora__route-arrow {
+    animation: none;
+  }
+}
+
+/* DEMAS boundary callout — dashed border echoes the schematic perimeter,
+   marking DEMAS as a boundary contract rather than a node. Lives inside
+   Node 6's section, below the O-R-A-V deep-dive. */
+.demas-callout {
+  margin-top: 24px;
+  max-width: 720px;
+  padding: 20px;
+  border: 1px dashed var(--ink);
+  background: var(--paper);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.demas-callout__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+  margin-bottom: 8px;
+}
+.demas-callout__title {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+.demas-callout p { margin: 0 0 10px; }
+.demas-callout p:last-child { margin-bottom: 0; }
+
+/* ───────────────────────────────────────────────────────────────────────
+   Flywheel epilogue
+   Post-lifecycle, pre-economics. Industrial register: ink-rule top border
+   marks the close of the lifecycle cluster; mono label, sans display
+   heading, body prose. No new motion, no new tokens.
+   ─────────────────────────────────────────────────────────────────────── */
+.flywheel {
+  padding: 80px 24px 64px;
+  max-width: 1024px;
+  margin: 0 auto;
+  border-top: 1px solid var(--ink-rule);
+}
+.flywheel__header {
+  margin-bottom: 32px;
+  max-width: 720px;
+}
+.flywheel__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+  margin-bottom: 8px;
+}
+.flywheel__title {
+  font-family: var(--font-sans);
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.15;
+}
+.flywheel__body {
+  max-width: 720px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.flywheel__body p { margin: 0 0 16px; }
+.flywheel__body p:last-child { margin-bottom: 0; }
+
+/* ───────────────────────────────────────────────────────────────────────
+   Flywheel 3-tier self-improvement loop (replaces 2 prose paragraphs).
+   Inline SVG inside .flywheel__body. Single vertical stack: production
+   runs → T1 → (T2 / T3 split) → DPO pairs → per-tenant LoRA → hot-swap →
+   loop arrow back to production. Aicher industrial register: thin 1px
+   ink strokes, sharp corners, IBM Plex Mono labels, dashed loop arrow.
+   ─────────────────────────────────────────────────────────────────────── */
+.flywheel-loop {
+  margin: 8px 0 24px;
+  padding: 20px;
+  border: 1px solid var(--ink-rule);
+  background: var(--paper);
+  max-width: 720px;
+}
+.flywheel-loop__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.flywheel-loop text {
+  font-family: var(--font-mono);
+  fill: var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.flywheel-loop__perimeter-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+  paint-order: stroke fill;
+  stroke: var(--paper);
+  stroke-width: 4;
+}
+.flywheel-loop__title {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  fill: var(--ink);
+  font-weight: 500;
+}
+.flywheel-loop__title--accent {
+  fill: var(--prob-blue);
+}
+.flywheel-loop__sub {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+}
+.flywheel-loop__edge-label {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+}
+.flywheel-loop__cycle-label {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+  paint-order: stroke fill;
+  stroke: var(--paper);
+  stroke-width: 4;
+}
+.flywheel-loop__caption {
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-low);
+  text-align: center;
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   DAG schematic
+   Industrial / Aicher / Lufthansa technical-drawing register: thin ink
+   strokes, sharp corners, IBM Plex Mono labels, semantic accent fill on
+   the active node. Two SVG variants in one <figure>:
+     · --horizontal (Layout A): desktop ≥768px, 1024×280 viewBox
+     · --vertical   (Layout C): mobile  <768px, 360×980 viewBox
+   Class namespace `dag-schematic__*` avoids collision with the older
+   `.dag-node` rule above (kept for the architecture.html stage, now a
+   redirect proxy — left in place to avoid dead-code churn in this pass).
+   ─────────────────────────────────────────────────────────────────────── */
+.dag-schematic {
+  /* Sticky beneath top-nav while reader is inside the lifecycle region.
+     The figure is a direct child of <main>; sticky scope
+     therefore lasts until <main> ends (i.e., through #node-1..#node-7 +
+     #flywheel + #economics), then naturally scrolls away with <main>.
+     Background must be paper so content scrolling underneath doesn't bleed. */
+  position: sticky;
+  top: 56px;                       /* below top-nav (.top-nav padding 12px + ~32px content + 12px = ~56px) */
+  z-index: var(--z-schematic);
+  background: var(--paper);
+  margin: 48px auto 0;             /* top margin only; bottom 0 so caption hugs */
+  padding: 12px 0;                 /* breathing room within sticky band */
+  border-bottom: 1px solid var(--ink-rule);  /* hairline separator when sticky */
+}
+.dag-schematic__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+/* Default: horizontal visible, vertical hidden. */
+.dag-schematic__svg--horizontal { display: block; }
+.dag-schematic__svg--vertical   { display: none;  }
+@media (max-width: 767px) {
+  .dag-schematic__svg--horizontal { display: none;  }
+  .dag-schematic__svg--vertical   { display: block; }
+}
+
+/* All schematic text uses the mono register. fill (not color) for SVG. */
+.dag-schematic text {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  fill: var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* Perimeter label anchored to the top-left CORNER of the rect (Aicher
+   convention — labels integrated with the figure, not floating). */
+.dag-schematic__perimeter-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+  /* paint-order trick: draw a paper-colored "halo" beneath the text so the
+     dashed perimeter stroke breaks where the label sits — Aicher convention. */
+  paint-order: stroke fill;
+  stroke: var(--paper);
+  stroke-width: 4;
+}
+.dag-schematic__num {
+  font-size: 22px;
+  font-weight: 600;
+  fill: var(--ink);
+}
+.dag-schematic__name {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  fill: var(--ink);
+  text-transform: uppercase;
+}
+.dag-schematic__rd-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  fill: var(--ink-low);
+  text-transform: uppercase;
+}
+
+/* FIG. caption underneath the figure — Aicher/Braun convention. */
+.dag-schematic__caption {
+  margin: 12px auto 0;
+  max-width: 1024px;
+  padding: 0 24px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-low);
+  text-align: center;
+}
+
+/* Node group: clickable, keyboard-focusable, hovers telegraph clickability. */
+.dag-schematic__node {
+  cursor: pointer;
+  outline: none;
+}
+.dag-schematic__node:hover .dag-schematic__box {
+  stroke: var(--ink-mid);
+  stroke-width: 1.5;
+}
+.dag-schematic__node:focus-visible .dag-schematic__box {
+  stroke: var(--prob-blue);
+  stroke-width: 2;
+}
+.dag-schematic__box {
+  transition: fill 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Active-node — restrained: 15% tint fill + 1.5px colored border.
+   Type stays in ink (no inversion); the color is an accent, not blockwork. */
+.dag-schematic__node[data-active="true"][data-role="probabilistic"] .dag-schematic__box {
+  fill: rgba(var(--prob-blue-rgb), 0.15);
+  stroke: var(--prob-blue);
+  stroke-width: 1.5;
+}
+.dag-schematic__node[data-active="true"][data-role="deterministic"] .dag-schematic__box {
+  fill: rgba(var(--det-green-rgb), 0.15);
+  stroke: var(--det-green);
+  stroke-width: 1.5;
+}
+/* Active number gets bolder weight + semantic color — type carries the accent. */
+.dag-schematic__node[data-active="true"][data-role="probabilistic"] .dag-schematic__num {
+  fill: var(--prob-blue);
+}
+.dag-schematic__node[data-active="true"][data-role="deterministic"] .dag-schematic__num {
+  fill: var(--det-green);
+}
+
+/* Reduced-motion: kill the fill/stroke transition; instant swap. */
+@media (prefers-reduced-motion: reduce) {
+  .dag-schematic__box { transition: none; }
 }
 
 /* ───────────────────────────────────────────────────────────────────────
@@ -178,10 +932,8 @@ html, body {
     position: sticky;
     top: 64px;
     z-index: 10;
-    background: rgba(0, 0, 0, 0.86);
-    backdrop-filter: saturate(180%) blur(8px);
-    -webkit-backdrop-filter: saturate(180%) blur(8px);
-    border-bottom: 1px solid #424245;
+    background: var(--paper);
+    border-bottom: 1px solid var(--ink-rule);
     padding: 12px 0;
     margin-bottom: 16px;
   }
@@ -198,8 +950,8 @@ html, body {
 .dag-stage__overview::-webkit-scrollbar { display: none; }
 .dag-node {
   transition: border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
-  background: #151516;
-  border: 1px solid #424245;
+  background: var(--paper-deep);
+  border: 1px solid var(--ink-rule);
   border-radius: 12px;
   padding: 8px 10px;
   width: 92px;
@@ -220,8 +972,8 @@ html, body {
 .dag-stage[data-active-node="5"] .dag-node[data-node="5"],
 .dag-stage[data-active-node="6"] .dag-node[data-node="6"],
 .dag-stage[data-active-node="7"] .dag-node[data-node="7"] {
-  border-color: #2997ff;
-  box-shadow: 0 0 14px rgba(41, 151, 255, 0.4);
+  border-color: var(--prob-blue);
+  box-shadow: 0 0 14px rgba(var(--prob-blue-rgb), 0.3);
 }
 .dag-stage__card {
   min-height: 80vh;
@@ -231,7 +983,7 @@ html, body {
   scroll-margin-top: 200px;
 }
 .dag-arr {
-  color: #86868b;
+  color: var(--ink-low);
   font-size: 14px;
   flex-shrink: 0;
   user-select: none;
@@ -244,8 +996,8 @@ html, body {
   gap: 8px;
   padding: 24px;
   justify-items: center;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid #424245;
+  background: var(--paper-deep);
+  border: 1px solid var(--ink-rule);
   border-radius: 12px;
   margin-bottom: 20px;
 }
@@ -253,14 +1005,14 @@ html, body {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #424245;
+  background: var(--ink-rule);
   transition: background 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .expert.active {
-  background: #2997ff;
-  box-shadow: 0 0 12px rgba(41, 151, 255, 0.5);
+  background: var(--prob-blue);
+  box-shadow: 0 0 12px rgba(var(--prob-blue-rgb), 0.4);
   transform: scale(1.5);
 }
 @media (max-width: 768px) {
@@ -304,39 +1056,38 @@ html, body {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border: 2px solid #424245;
+  border: 2px solid var(--ink-rule);
   background: transparent;
   transition: all 0.25s ease;
   flex-shrink: 0;
 }
 .spine .label {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
-  color: #86868b;
+  color: var(--ink-low);
   letter-spacing: 0.1em;
   transition: color 0.25s ease;
 }
 .spine[data-active-case="01"] li[data-id="01"] .dot,
 .spine[data-active-case="02"] li[data-id="02"] .dot,
 .spine[data-active-case="03"] li[data-id="03"] .dot {
-  border-color: #2997ff;
-  background: #2997ff;
-  box-shadow: 0 0 8px rgba(41, 151, 255, 0.45);
+  border-color: var(--prob-blue);
+  background: var(--prob-blue);
+  box-shadow: 0 0 8px rgba(var(--prob-blue-rgb), 0.35);
 }
 .spine[data-active-case="01"] li[data-id="01"] .label,
 .spine[data-active-case="02"] li[data-id="02"] .label,
 .spine[data-active-case="03"] li[data-id="03"] .label {
-  color: #f5f5f7;
+  color: var(--ink);
 }
 @media (max-width: 1023px) {
   .spine {
     position: sticky;
     top: 56px;
-    background: rgba(0, 0, 0, 0.86);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: var(--paper);
     padding: 12px;
     border-radius: 8px;
+    border: 1px solid var(--ink-rule);
     z-index: 10;
   }
   .spine ol {
@@ -347,19 +1098,19 @@ html, body {
 }
 
 .case-bridge {
-  border-top: 1px solid #424245;
-  border-bottom: 1px solid #424245;
+  border-top: 1px solid var(--ink-rule);
+  border-bottom: 1px solid var(--ink-rule);
   padding: 24px 0;
   margin: 40px auto;
   font-style: italic;
-  color: #86868b;
+  color: var(--ink-low);
   text-align: center;
   font-size: 14px;
   line-height: 1.7;
   max-width: 42rem;
 }
-.case-bridge::before { content: "—— "; color: #424245; }
-.case-bridge::after  { content: " ——"; color: #424245; }
+.case-bridge::before { content: "—— "; color: var(--ink-rule); }
+.case-bridge::after  { content: " ——"; color: var(--ink-rule); }
 
 /* ───────────────────────────────────────────────────────────────────────
    Reduced-motion fallback (Principle 12 floor)
@@ -375,7 +1126,7 @@ html, body {
   /* Sticky-stages substitute the documented static composition: */
   .telemetry-stage__pinned { position: static; height: auto; }
   .telemetry-stage [data-trace-line] { opacity: 1 !important; background: transparent !important; border-left-color: transparent !important; }
-  .dag-stage__pinned { position: static; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .dag-stage__pinned { position: static; background: transparent; }
   .dag-stage .dag-node { opacity: 1 !important; box-shadow: none !important; }
   .spine { position: static !important; }
   .expert.active { transform: none; }
