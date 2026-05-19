@@ -140,7 +140,7 @@
           </div>
           <div class="bg-paperDeep p-8">
             <h3 class="text-[10px] uppercase tracking-widest text-inkLow mb-4">Approach</h3>
-            <p class="text-xs text-inkLow leading-relaxed">A fail-closed 7-node DAG where every generative node is constrained by a dedicated RAG policy index (Google SPAM policies + E-E-A-T standards). 80% of compute is deterministic; only 20% is probabilistic. Every node boundary is audited by a JIT integrity layer.</p>
+            <p class="text-xs text-inkLow leading-relaxed">A fail-closed 7-node DAG with RAG-constrained generation (Google SPAM policies + E-E-A-T standards). Full architecture, deep-dives, and live trace are documented on <a href="index.html" class="text-probBlue hover:text-ink transition-colors">the Pipeline page</a>.</p>
           </div>
           <div class="bg-paperDeep p-8 border-t md:border-t-0 border-inkRule">
             <h3 class="text-[10px] uppercase tracking-widest text-probBlue mb-4">Result</h3>
@@ -174,7 +174,7 @@
             </div>
             <div>
               <div class="text-xs font-semibold text-ink mb-2">Compliance-first</div>
-              <p class="text-[11px] text-inkLow leading-relaxed">Every node boundary is audited by a deterministic quality gate. Content below threshold is rejected before reaching production — fail-closed by design.</p>
+              <p class="text-[11px] text-inkLow leading-relaxed">Every generated page carries audited structured data (Schema.org, JSON-LD) and policy-checked copy against retailer compliance rules &mdash; the prerequisite for being indexable inventory, not noise.</p>
             </div>
           </div>
         </section>
@@ -261,8 +261,8 @@
         <div class="grid md:grid-cols-2 gap-4 mb-10">
           <div class="card p-6">
             <h4 class="font-semibold text-sm mb-2">Quality vs. cost</h4>
-            <p class="text-xs text-inkLow mb-4">O-R-A-V (Observe→Reason→Act→Validate) deterministic validation engine. Node 6 runs zero-LLM rule-based checks; Node 7 (DEMAS JIT) runs SLM-as-judge evaluation inline within content generation.</p>
-            <p class="text-[10px] font-mono text-ink pt-4 border-t border-inkRule">Decision: deterministic + SLM validation, 68.9% average pass rate per boundary.</p>
+            <p class="text-xs text-inkLow mb-4">Validation that doesn&rsquo;t spend a generation budget. Rule-based checks run before the SLM-as-judge layer ever fires &mdash; cheap rejections stay cheap. Mechanism documented on <a href="index.html#orav" class="text-probBlue hover:text-ink transition-colors">the Pipeline page</a>.</p>
+            <p class="text-[10px] font-mono text-ink pt-4 border-t border-inkRule">Decision: deterministic-first validation, 68.9% pass rate.</p>
           </div>
           <div class="card p-6">
             <h4 class="font-semibold text-sm mb-2">Safety vs. throughput</h4>

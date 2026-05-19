@@ -578,7 +578,7 @@
         </summary>
         <div class="node-deep-dive__body">
           <p>Base model: <strong>Gemma 4 26B-A4B-it</strong>, a Mixture-of-Experts transformer. The naming convention is literal &mdash; <span class="font-mono">26B</span> total parameters, <span class="font-mono">A4B</span> means ~4B parameters fire per forward pass. A learned router selects 4 experts of 128 per token; the other 124 stay cold. The serving cost matches a dense 4B model; the capacity matches a dense 26B model.</p>
-          <p>That sparsity is what makes Node 5 affordable at production volume. ~10.5M product detail pages per month pass through this node. At a dense 26B equivalent, the unit economics break. At ~4B active, the pipeline lands at <span class="font-mono">$0.0006/PDP</span> end-to-end &mdash; ~80% of which is spent right here.</p>
+          <p>That sparsity is what makes Node 5 affordable at production volume. At a dense 26B equivalent, the unit economics break; at ~4B active, they hold. The full cost derivation lives in <a href="#economics" class="text-probBlue hover:text-ink transition-colors">the Economics section</a>.</p>
           <p>Multi-LoRA serving handles tenant specialization. The base MoE weights stay frozen and shared; per-tenant LoRA adapters layer on top, one per <span class="font-mono">client_id</span>. 11 enterprise retailers across 5 countries means 11 adapters bound at inference time, each carrying tuned weights from previous successful runs of that tenant&rsquo;s 18 pipeline prompts. Adapter swap is a sparse matrix load, not a model reload &mdash; one server, many tenants, no cross-contamination.</p>
 
           <figure class="moe-multilora" aria-label="Multi-LoRA tenant-adapter architecture: 1 frozen Gemma 4 base bound at inference to 1 of 11 swappable per-tenant LoRA adapters">
@@ -804,14 +804,14 @@
           <strong>R &middot; Reason</strong> &mdash; assign a severity tier to each diagnostic. A leaked Jinja token is a fatal; a borderline word count is a corrective; a stylistic deviation is a soft signal.<br>
           <strong>A &middot; Act</strong> &mdash; apply deterministic corrections where the severity allows it (strip a leak, truncate to bound, retry the block with a corrected prompt). The act layer never re-prompts Node 5 with raw failure noise &mdash; only with the diagnostic the rule named.<br>
           <strong>V &middot; Validate</strong> &mdash; final gate. The block either ships, retries, or falls through to the failure tier. There is no probabilistic appeal.</p>
-          <p>The <strong>68.9% pass rate</strong> is by design, not by accident. The thresholds are tuned so the failure tier is large enough to feed the DPO data flywheel downstream with a real <span class="font-mono">chosen</span>/<span class="font-mono">rejected</span> spread. A 99% pass rate would starve the loop; a 50% rate would burn cost. 68.9% is where the curve sits in production across 11 tenants and ~10.5M PDPs per month.</p>
+          <p>Production rate: <strong>68.9% pass</strong> across 11 tenants. The mechanism is what this section documents; <a href="#flywheel" class="text-probBlue hover:text-ink transition-colors">the Flywheel section</a> explains why the threshold sits there.</p>
         </div>
       </details>
 
       <aside class="demas-callout" id="demas" aria-labelledby="demas-h">
         <span class="demas-callout__label">Boundary callout</span>
         <strong class="demas-callout__title" id="demas-h">DEMAS &middot; Deterministic Evaluation &amp; Monitoring Audit System</strong>
-        <p>DEMAS is not a node &mdash; it is the dashed perimeter around the production DAG. It intercepts at <em>every</em> node boundary, not just at Node 6, validating data integrity and schema compliance in real time. Node 6 is where the contract is most visible because the validator and DEMAS share the same <strong>68.9% pass rate</strong> metric: when a block clears O-R-A-V, DEMAS already cleared its hand-off.</p>
+        <p>DEMAS is not a node &mdash; it is the dashed perimeter around the production DAG. It intercepts at <em>every</em> node boundary, not just at Node 6, validating data integrity and schema compliance in real time. Node 6 is where the contract is most visible because the validator and DEMAS share the same hand-off: when a block clears O-R-A-V, DEMAS has already cleared its boundary check.</p>
         <p>Fail-closed: rejected outputs never propagate downstream. The boundary halts on a violation; the orchestrator routes the failure based on tier. <strong>Block-level</strong> failures take ~2&times; JIT retry with a corrected prompt against the same DEMAS contract. <strong>Product-level</strong> failures route to Firestore for requeue on the next CRON cycle &mdash; the run does not block on a single product&rsquo;s recovery.</p>
         <p>Routing tools: Pydantic + schema for the gate, Langfuse + Firestore for the failure trace. The full failure flow is the audit surface that makes the multi-tenant pipeline auditable across 234 managed websites without per-tenant operator intervention.</p>
       </aside>
@@ -998,8 +998,7 @@
         <figcaption class="flywheel-loop__caption">Fig. 2 &middot; Self-improvement loop &middot; failures are labelled negatives</figcaption>
       </figure>
 
-      <p>The <strong>68.9% pass rate</strong> at the O-R-A-V/DEMAS boundary is the engine of this loop. The thresholds are tuned so the failure tier stays large enough to feed DPO with a real <span class="font-mono">chosen</span>/<span class="font-mono">rejected</span> spread. A 99% pass rate would starve the loop; 50% would burn cost. 68.9% is the production setpoint. Failures aren&rsquo;t waste &mdash; they&rsquo;re the labelled half of the training signal.</p>
-      <p>The same machinery that keeps the production DAG fail-closed also generates the RLAIF-style preference data that improves the next epoch. Every block the validator rejects is a labelled negative; every block that clears DEMAS is a labelled positive. No human-in-the-loop annotation pipeline; the deterministic gates do the labelling.</p>
+      <p>The <strong>68.9% pass rate</strong> at the O-R-A-V/DEMAS boundary is the engine of this loop. The thresholds are tuned so the failure tier stays large enough to feed DPO with a real <span class="font-mono">chosen</span>/<span class="font-mono">rejected</span> spread. A 99% pass rate would starve the loop; 50% would burn cost. 68.9% is the production setpoint. Failures aren&rsquo;t waste &mdash; they&rsquo;re the labelled half of the training signal, generated by the same deterministic gates that fail the production DAG closed. No human-in-the-loop annotation; the gates do the labelling.</p>
     </div>
   </section>
   <!-- END FLYWHEEL EPILOGUE -->
